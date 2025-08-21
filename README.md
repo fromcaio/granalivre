@@ -1,0 +1,3 @@
+/doc
+/next
+readme.md
