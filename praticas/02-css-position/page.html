@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="custom.css">
+    <style>
+        div {
+            margin: 10px;
+            padding: 10px;
+            border: 1px solid black;
+        }
+        #caixa{
+            width: 300px;
+            height: 1200px;
+            background-color: lightblue;
+            position: relative;
+        }
+        #sc1 {
+            width: 100px;
+            height: 100px;
+            background-color: lightcoral;
+            /* to make absolute work the father must be relative or also absolute */
+            position: absolute;
+            top: 20px;
+            left: 20px;
+        }
+        #sc2 {
+            width: 100px;
+            height: 100px;
+            background-color: lightgreen;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+        }
+        #sc3 {
+            width: 100px;
+            height: 100px;
+            background-color: lightgoldenrodyellow;
+            position: sticky;
+            top: 0;
+            left: 0;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div id="caixa">
+        <div id="sc1"></div>
+        <div id="sc3"></div>
+        <div id="sc2"></div>
+    </div>
+</body>
+</html>

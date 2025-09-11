@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #container { 
+            background-color: blue;
+            height: 300px; 
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap; /* passa para próxima linha */
+            align-content: flex-start; /*precisa do wrap*/
+            justify-content: center; /*alinhamento horizontal*/ 
+            align-items: flex-start; /*alinhamento vertical*/ 
+        }
+        #container div { background-color: green; width: 100px; margin: 10px; padding: 20px; }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <div id="item1">1</div>
+        <div id="item2">1</div>
+        <div id="item3">1</div>
+        <div id="item4">1</div>
+        <div id="item5">1</div>
+        <div id="item6">1</div>
+    </div>
+</body>
+</html>
