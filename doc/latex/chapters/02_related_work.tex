@@ -1,0 +1,123 @@
+\chapter{Referencial Teórico}\label{cap:ref_teorico}
+
+\section{Fundamentação}
+
+Nesta seção são apresentados os conceitos teóricos e tecnologias adotadas que fundamentaram o desenvolvimento do SI proposto neste projeto. 
+
+\subsection{Sistemas de Informação}
+
+De modo geral, o desenvolvimento de software, incluindo o de SIs, pode ser descrito nas seguintes etapas \cite{pressman2021}:
+
+\begin{enumerate}
+    
+    \item Concepção: compreende a identificação do domínio de aplicação do sistema, os perfis de usuários, o ambiente de execução, sua funcionalidade geral e limites de escopo;
+   
+    \item Elaboração: compreende a definição da base tecnologia do SI, da sua funcionalidade estrutural (arquitetura) e identificação dos requisitos/casos de uso;
+   
+    \item Construção: compreende na implementação e teste das estruturas que realizam a funcionalidade do sistema;
+    
+    \item Implantação: compreende na instalação do sistema no ambiente de operação, incluindo todos os ajustes e testes necessários.
+    
+\end{enumerate}
+
+Ressalta-se que essas etapas estão apresentadas aqui de maneira genérica. Existem diversos modelos de processo de desenvolvimento de software que especificam e organizam essas atividades, cada um a sua maneira\cite{pressman2021}.
+
+
+Os requisitos expressam as necessidades e restrições colocadas sobre o produto
+de software que contribuem para a solução de algum problema do mundo real. Esta área
+envolve elicitação, análise, especificação e validação dos requisitos de software\cite{SWEBOK}.
+
+\subsection{Desenvolvimento web}
+
+Com o crescimento na diversidade dos dispositivos tecnológicos, cada vez mais aplicações web tem se tornado a plataforma de escolha dos usuários finais. Isso se deve a flexibilidade de acesso, podendo ser acessado por qualquer dispositivo com acesso a navegadores de qualquer lugar do mundo \cite{ref6}. Desta forma diversos produtos de várias áreas optaram por migrar seus serviços para plataformas web. Por exemplo, aplicações de edição de texto, aplicativos de escritório e serviços, plataformas bancárias, sistemas de mercado de ações, entre outras.
+
+Para que o desenvolvimento de uma aplicação web seja bem sucedido, é de suma importância aplicar conceitos provenientes da Engenharia de Software. Ginige e Marugesan (2001) \cite{ref7} sugerem os seguintes passos para atingir um desenvolvimento e implantação bem sucedido, passos esses que se influenciam e devem ser iterativos:
+
+\begin{enumerate}
+    \item Entender a funcionalidade geral do sistema, seu ambiente de operação, incluindo seus objetivos de negócios e requerimentos.
+    \item Ter clareza sobre os \textit{Stakeholders}, ou seja, os principais usuários do sistema, a organização que precisa do sistema e quem é financia o desenvolvimento.
+    \item Especificar os requisitos(iniciais) funcionais, técnicos e não técnicos. E reconhecer que esses podem não permanecer os mesmos.
+    \item Desenvolver uma arquitetura que apresente os requirimentos técnicos e não técnicos.
+    \item Identificar subprocessos para implementar na arquitetura. Caso esses subprocessos sejam muito complexos de gerenciar, quebra-los novamente até atingir tarefas de baixa complexidade de gerenciamento.
+    \item Desenvolver e implementar os subprocessos.
+    \item Incorporar mecanismos eficientes para gerenciar a evolução, mudanças e manutenção do sistema web.
+    \item Identificar os problemas não técnicos.
+    \item Medir a performance do sistema.
+    \item Refinar e melhorar o sistema. 
+    
+\end{enumerate}
+
+\subsection{Tecnologias e conceitos}
+
+Nesta seção, são apresentadas as tecnologias utilizadas no desenvolvimento do sistema proposto, destacando suas características que justificam sua seleção para este trabalho.
+
+\subsubsection{HTML e CSS}
+
+HTML (HyperText Markup Language) e CSS (Cascading Style Sheets) são duas tecnologias fundamentais para a criação de páginas na web. O HTML é a linguagem de marcação responsável pela estruturação do conteúdo, definindo elementos como títulos, parágrafos, imagens, links e tabelas. Ele fornece a base sobre a qual todos os outros componentes de uma página são construídos, organizando as informações de forma hierárquica e semântica. Conforme observado em estudos, o HTML funciona como uma linguagem de marcação descritiva, onde os elementos são usados para descrever o significado semântico do conteúdo, ao invés de apenas formatá-lo \cite{bernard2005html}. Por outro lado, o CSS é a linguagem usada para controlar a apresentação visual, sendo descrito como uma ferramenta essencial para a separação de estrutura e design, permitindo uma personalização sofisticada e consistente da aparência de páginas web \cite{smith2008css}.
+
+\subsubsection{Javascript e Typescript}
+
+O JavaScript é uma das linguagens mais utilizadas na modernidade. Sua popularidade pode ser explicada pela sua alta usabilidade, além de sua natureza dinâmica e permissiva \cite{andreasen2017survey}. Por um lado, essa flexibilidade pode ser considerada favorável em termos de agilidade e facilidade no desenvolvimento, mas por outro, pode se tornar algo muito complexo em aplicações de escalas maiores. Com isso o Typescript surge para endereçar essa deficiência. Conhecido por ser um \textit{Superset} do Javascript, o Typescript enriquece o JS, com classes, interfaces, módulos e tipagem estática, assistindo os programadores de forma leve, flexível e de fácil usabilidade \cite{bierman2014understanding}.
+
+
+\subsubsection{React e Next.js}
+
+A complexidade e o dinamismo das aplicações modernas faz-se necessário a utilização de Frameworks e bibliotecas que auxiliam no desenvolvimento. React, biblioteca Javascript que pode estar definida na camada View de uma arquitetura MVC (Model, View, Controller) possibilita a criação de interfaces modulares, isto é feito através da construção de UIs a partir de pequenas unidades. Esses componentes poderão ser reutilizados e combinados em outros componentes que formarão a interface.\cite{react} 
+O React permite a criação de Single Page Applications (SPA's), que são aplicações que carregam todos os recursos necessários na requisição inicial, e, em seguida, os componentes da página são substituídos por outros componentes a partir da interação do usuário.\cite{jadhav2015single}. SPA's contribuem para criação de aplicações modernas uma vez que, conteúdos dinamicamente carregados entregam uma experiencia para o usuário mais fluída, aproximando de aplicações Desktop. Mas por outro lado, esse tipo de construção não entrega somente aspectos positivos, SPA's são comumente conhecidos por apresentar uma alto trafego de API, além de complexidades em lidar com Search Engine Optimization (SEO)\cite{konshin2018next}.
+
+Next.js é um Framework React, que somado a todos os benefícios já oferecidos pelo React, incorporam à experiencia de desenvolvimento recursos prontos para produção como Server Side Rendering (SSR), Static Site Generation (SSG) e Incremental Site Regeneration (ISR)\cite{dinku2022react}. Dessa forma, o Next.js enriquece o desenvolvimento a partir do React solucionando as deficiências previamente apresentadas.
+
+\subsubsection{Nodejs}
+
+Node.js é uma tecnologia que permite a execução de código JavaScript no lado do servidor, fora do ambiente do navegador. Antes de sua criação, o JavaScript era amplamente utilizado apenas para programação frontend, limitando seu uso ao lado do cliente. Com o surgimento do Node.js, em 2009, essa barreira foi quebrada, permitindo que desenvolvedores utilizassem JavaScript em todo o \textit{stack} de desenvolvimento, tanto no \textit{front-end} quanto no \textit{back-end}. A importância do Node.js na web é notável, pois ele oferece um ambiente de execução assíncrono e orientado à eventos, apresentando ótima capacidade de lidar com um grande número de conexões simultâneas com baixa latência e eficiência de recursos, Desta forma, o Node.js é ideal para aplicações de alto desempenho, como servidores web, APIs e sistemas de tempo real. Lee, J. and Kim, H., exaltam que a arquitetura baseada em eventos do Node.js permite uma escalabilidade horizontal significativa, reduzindo a sobrecarga do servidor e otimizando o uso de recursos \cite{lee2019nodejs}.
+
+Em resumo, o Node.js transformou o JavaScript em uma linguagem de propósito geral, ampliando suas capacidades e solidificando sua posição como uma das tecnologias mais influentes e versáteis da web moderna.
+
+\subsubsection{Express.js}
+
+O Express.js é um framework minimalista e flexível para o desenvolvimento de aplicações web e APIs em Node.js. Ele simplifica a criação de servidores, oferecendo ferramentas e funcionalidades para gerenciar rotas, requisições, respostas, middleware e outras operações comuns no desenvolvimento backend. Por ser leve e extensível, o Express.js é amplamente utilizado, permitindo que os desenvolvedores criem desde aplicações simples até sistemas complexos e escaláveis. Ele também se integra facilmente com outros pacotes do ecossistema Node.js, tornando-o uma escolha popular para aplicações web modernas.
+
+\subsubsection{Arquitetura Limpa}
+
+A arquitetura limpa possibilita a criação de sistemas robustos, onde as regras de negócio são isoladas das interfaces externas, favorecendo a evolução contínua e a redução de acoplamento \cite{silva2018arquiteturalimpa}. Esse isolamento entre camadas contribui para um design de software que é mais sustentável e adaptável a mudanças futuras \cite{martins2017arquiteturaclean}. O conceito consiste em um design de software que organiza o código em camadas, cada uma com responsabilidades bem definidas, para tornar o sistema mais modular, flexível e fácil de manter. A ideia principal é separar a lógica de negócios (as regras principais da aplicação) da interface do usuário, dos detalhes técnicos, como bancos de dados e \textit{frameworks}. Na Arquitetura Limpa (Figura \ref{fig:CleanArq}), o sistema é dividido em quatro camadas principais:
+
+    \begin{itemize}
+        \item Entidades: Contém as regras de negócios mais gerais e não dependem de nada externo. São o núcleo do sistema.
+        \item Casos de Uso: Define as regras de negócios específicas da aplicação, controlando o fluxo de dados entre as outras camadas.
+        \item Interface de Adaptação: Serve como uma ponte entre os casos de uso e as camadas externas, como a interface do usuário ou banco de dados.
+        \item Interface Externa: Inclui detalhes como \textit{frameworks}, bibliotecas, e interfaces de usuário. Essa camada pode ser trocada sem afetar o restante do sistema.
+    \end{itemize}
+
+Esta arquitetura ajuda a manter o código organizado e facilita a adaptação do sistema a novas tecnologias ou mudanças nos requisitos, pois cada camada é independente das outras. Isso significa que mudanças em uma camada não afetam as outras, resultando em um sistema mais robusto e com maior facilidade de evolução \cite{silva2018arquiteturalimpa}. Além disso, estudos indicam que o uso da arquitetura limpa aumenta significativamente a testabilidade do código, uma vez que as dependências entre módulos são minimizadas \cite{pereira2020testabilidadearquitetura}.
+
+
+
+
+% \begin{figure}[h]
+%     \centering
+%     \includegraphics[width=300px]{imgs/clean-arch-2.png}
+%     \caption{Arquitetura Limpa.}
+%     \label{fig:CleanArq}
+% \end{figure}
+
+
+ciencias exatas, hospedagem, longevidade, portabilidade
+
+interesse por áreas diversas, algo que deve continuar a mudar, vivencia pessoal com a educação
+
+obj geral, autonomia dos autores, permanencia e portabilidade
+
+obj especifico, oferecer suporte a elementos essenciais para produção tecnico-cientifica,
+trecho de codigo, expressoes matematicas, organização e semantica do conteudo
+
+lacunas significativas quando queremos nos referir a plataformas gratuitas, que não exijam vinculos
+
+\section{Trabalhos Relacionados}
+
+Esta Sessão apresenta os trabalhos relacionados que servem como base para este estudo. Serão discutidas abordagens, metodologias e resultados relevantes encontrados na literatura, destacando contribuições significativas e identificando limitações que motivam a proposta deste trabalho.
+
+%  ideia geral, web ou nao, gratuito, 
+
+O ClickUp \cite{clickup} é uma plataforma de gestão de projetos e produtividade amplamente reconhecida por sua aplicação em diversos setores, incluindo o ambiente educacional. A ferramenta disponibiliza recursos que possibilitam a organização, o acompanhamento e o gerenciamento de tarefas de maneira colaborativa, configurando-se como uma solução eficaz para a otimização de processos administrativos e acadêmicos em instituições de ensino superior. No entanto, sua versão gratuita é limitada ao uso individual, sendo necessária a assinatura de planos pagos para viabilizar a utilização colaborativa entre equipes e múltiplos usuários.
+
+O artigo Sistema de Gerenciamento de Planos de Curso \cite{oliveirasistema} apresenta uma proposta de ferramenta voltada ao aprimoramento da gestão de processos em instituições de ensino superior, com ênfase no controle, monitoramento e execução das atividades relacionadas aos planos de curso. O sistema busca automatizar e padronizar os procedimentos de elaboração e gerenciamento desses planos, visando à otimização do tempo dos colaboradores e ao aumento da eficiência institucional. Contudo, uma limitação identificada no trabalho reside na ausência de uma interface do sistema, cuja implementação foi indicada como uma proposta para estudos futuros.

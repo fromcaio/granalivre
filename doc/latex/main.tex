@@ -1,0 +1,226 @@
+%% ===================================================================================
+%% Undergraduate Thesis Template using abntex2
+%% Version: 1.0
+%% Based on the original abntex2 model by the abnTeX2 group and derivatives.
+%% This template is designed to be a clean, modern, and easy-to-use starting
+%% point for undergraduate theses, following ABNT standards.
+%% ===================================================================================
+
+% Use the new 'freelance-doc' class
+\documentclass[
+	% -- Memoir Class Options --
+	12pt,% Font size
+	openright,% Chapters start on odd-numbered pages
+	oneside,% For single-sided printing
+	a4paper,% Paper size
+	% -- Babel Package Options --
+	english,% Additional language for hyphenation
+	brazil% Main document language
+]{freelance-doc}
+
+%% ===================================================================================
+%% PACKAGE IMPORTS
+%% ===================================================================================
+
+% -----------------------------------------------------------------------------------
+% -- Fundamental Packages
+% -----------------------------------------------------------------------------------
+\usepackage[T1]{fontenc}      % Use 8-bit T1 fonts
+\usepackage[utf8]{inputenc}   % UTF-8 input encoding for accents and special characters
+\usepackage{lmodern}          % Use the Latin Modern font family for better PDF rendering
+\usepackage{indentfirst}      % Indent the first paragraph of each section
+\usepackage{cmap}             % Make the PDF searchable and copyable
+
+% -----------------------------------------------------------------------------------
+% -- Graphics and Colors
+% -----------------------------------------------------------------------------------
+\usepackage{graphicx}         % For including images
+% \usepackage{xcolor}           % Already being added
+\usepackage{subcaption}       % For creating subfigures within a figure environment
+
+% -----------------------------------------------------------------------------------
+% -- Tables and Listings
+% -----------------------------------------------------------------------------------
+\usepackage{booktabs}         % For professional-quality tables
+\usepackage{listings}         % For basic code listings
+\usepackage{minted}           % For advanced, syntax-highlighted code listings (requires Python's Pygments)
+% \usepackage[table]{xcolor}    % To add color to table rows/cells
+\usepackage{multirow}         % For 
+% -----------------------------------------------------------------------------------
+% -- Mathematics
+% -----------------------------------------------------------------------------------
+\usepackage{amsmath, amsfonts, amssymb} % For advanced math typesetting
+
+% -----------------------------------------------------------------------------------
+% -- Code Formating
+% --------------------------------------------------------------------------------------
+\usepackage{inconsolata} % or try \usepackage{inconsolata} or \usepackage{FiraMono}
+\lstset{
+    numbers=left,
+    numberstyle=\tiny,
+    numbersep=8pt,                  % Space between line numbers and code
+    frame=single,                   % Box around code
+    framesep=6pt,                   % Space between frame and code
+    xleftmargin=2em,                % Indent code block to fit line numbers
+    xrightmargin=1em,
+    breaklines=true,
+    postbreak=\mbox{$\hookrightarrow$\space},
+    basicstyle=\linespread{1.05}\ttfamily\footnotesize, % Use better mono font and size
+    keywordstyle=,
+    commentstyle=,
+    stringstyle=,
+    showstringspaces=false,
+    tabsize=2,
+    captionpos=b,
+    rulecolor=,
+}
+% -----------------------------------------------------------------------------------
+% -- Citation and Bibliography
+% -----------------------------------------------------------------------------------
+\usepackage[num]{abntex2cite}  % ABNT compliant citation style (numeric)
+% For author-date style, use: \usepackage[alf]{abntex2cite}
+
+%% ===================================================================================
+%% CUSTOM COMMANDS AND CONFIGURATIONS
+%% ===================================================================================
+
+%% ===================================================================================
+%% DOCUMENT INFORMATION (Updated for Freelance Work)
+%% ===================================================================================
+
+% [TODO: Fill in your project information here]
+\titulo{Project Title Here}
+\autor{Your Full Name (Developer)}
+\cliente{Client Name or Company}
+\local{City, State}
+\data{\the\year}
+
+% --- Images for the Cover Page ---
+% [TODO: Make sure these image files exist in the 'imgs' folder]
+\toplogo{imgs/cover-top.png}
+\bottomlogo{imgs/cover-bottom.png}
+\closingimage{imgs/closing-image.png} % <-- ADD THIS LINE
+% -----------------------------------------------------------------------------------
+% -- PDF Hyperlinks and Metadata Configuration
+% -----------------------------------------------------------------------------------
+\definecolor{hyperlinkblue}{RGB}{41, 5, 195} % Custom blue for links
+
+\makeatletter
+\hypersetup{
+    pdftitle={\@title},
+    pdfauthor={\@author},
+    pdfsubject={\imprimirpreambulo},
+    pdfcreator={LaTeX with abnTeX2},
+    pdfkeywords={keyword1}{keyword2}{keyword3},
+    colorlinks=true,
+    linkcolor=hyperlinkblue,
+    citecolor=hyperlinkblue,
+    filecolor=magenta,
+    urlcolor=hyperlinkblue,
+    bookmarksdepth=4,
+    bookmarkstype=toc
+}
+\makeatother
+
+% -----------------------------------------------------------------------------------
+% -- Spacing and Layout
+% -----------------------------------------------------------------------------------
+\setlength{\parindent}{1.5cm} % Paragraph indentation
+\setlength{\parskip}{0.2cm}   % Vertical space between paragraphs
+
+% -----------------------------------------------------------------------------------
+% -- Indexing
+% -----------------------------------------------------------------------------------
+\makeindex % Generate the index file
+
+%% ===================================================================================
+%% DOCUMENT START
+%% ===================================================================================
+\begin{document}
+
+% Use Brazilian Portuguese hyphenation patterns and spacing rules
+\frenchspacing
+
+% ----------------------------------------------------------
+% -- PRE-TEXTUAL ELEMENTS
+% ----------------------------------------------------------
+\pretextual
+
+% --- Cover and Title Page ---
+% \imprimircapa
+\imprimircapalogo
+\imprimirfolhaderosto
+
+% --- Other pre-textual elements (Approval page, Dedication, etc.) are in a separate file ---
+% [TODO: Edit the 'pretextual_elements.tex' file with your information]
+\include{pretextual_elements}
+
+% --- List of Figures ---
+\pdfbookmark[0]{\listfigurename}{lof}
+\listoffigures*
+\cleardoublepage
+
+% --- List of Tables (Optional) ---
+% [TODO: Uncomment the following lines if your thesis contains tables]
+\pdfbookmark[0]{\listtablename}{lot}
+\listoftables*
+\cleardoublepage
+
+% --- List of Acronyms and Abbreviations ---
+% [TODO: Add your acronyms to the 'acronyms.tex' file and uncomment below]
+\include{acronyms}
+
+% --- List of Symbols (Optional) ---
+% [TODO: Uncomment if you have a list of symbols]
+\begin{simbolos}
+   \item[$ \alpha $] -- Description of alpha symbol.
+   \item[$ \beta $] -- Description of beta symbol.
+\end{simbolos}
+\cleardoublepage
+
+% --- Table of Contents ---
+\pdfbookmark[0]{\contentsname}{toc}
+\tableofcontents*
+\cleardoublepage
+
+% ----------------------------------------------------------
+% -- TEXTUAL ELEMENTS (CHAPTERS)
+% ----------------------------------------------------------
+\textual
+
+% [TODO: Write your chapters in these separate .tex files]
+% This modular approach is highly recommended for managing large documents.
+\include{chapters/01_introduction}
+\include{chapters/02_related_work}
+\include{chapters/03_methodology}
+\include{chapters/04_development}
+% \include{chapters/05_results}
+\include{chapters/06_conclusion}
+
+% ----------------------------------------------------------
+% -- POST-TEXTUAL ELEMENTS
+% ----------------------------------------------------------
+\postextual
+\bookmarksetup{startatroot} % Resets bookmark hierarchy for post-textual elements
+
+% --- Bibliography ---
+% The 'abnt-num' style creates numeric citations. For author-date, use 'abnt-alf'.
+\bibliographystyle{abnt-num}
+% The .bib file containing your references
+% [TODO: Add your references to the 'references.bib' file]
+\bibliography{references}
+
+% --- Appendices (Optional) ---
+% [TODO: Uncomment if you have appendices]
+\include{posttextual/appendix_a}
+
+% --- Attachments (Optional) ---
+% [TODO: Uncomment if you have attachments]
+\include{posttextual/attachment_a}
+
+% --- Index (Optional) ---
+% [TODO: Uncomment to print the remissive index]
+% \printindex
+% --- ADD THE CLOSING PAGE COMMAND HERE ---
+\imprimirclosingpage
+\end{document}
