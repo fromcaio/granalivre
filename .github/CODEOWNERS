@@ -1,0 +1,5 @@
+# CODEOWNERS para GranaLivre
+# Cada alteração no repositório precisa ser revisada por @fromcaio antes de mesclar na branch main.
+
+# Aplica a todas as pastas e arquivos do repositório
+/ @fromcaio
