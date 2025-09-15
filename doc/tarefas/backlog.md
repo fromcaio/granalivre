@@ -1,0 +1,5 @@
+- Protótipos de baixa fidelidade
+- Diagrama de casos de uso
+- Diagrama relacional do banco de dados
+- Cronograma
+- Documentação
