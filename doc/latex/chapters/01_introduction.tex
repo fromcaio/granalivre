@@ -1,72 +1,27 @@
 \chapter{Introdução}\label{cap:intro}
 
 \section{Contextualização}
-A disseminação de conhecimento gratuito tem se mostrado uma prática cada vez mais relevante no contexto educacional, especialmente com o crescimento de plataformas online e de iniciativas de educação aberta. Professores, pesquisadores e outros produtores de conteúdo — especialmente nas ciências exatas, como ciência da computação, matemática e física — enfrentam, no entanto, diversas dificuldades ao tentar compartilhar materiais ricos, interativos e bem formatados de forma acessível e sem barreiras tecnológicas significativas. A produção e publicação de conteúdos como cursos e artigos frequentemente exige o domínio de múltiplas ferramentas, além de conhecimento técnico para lidar com formatações, códigos, fórmulas matemáticas e outros elementos fundamentais ao ensino moderno.
+O controle financeiro pessoal é uma prática essencial para o equilíbrio das finanças de qualquer indivíduo. Apesar disso, muitas pessoas ainda encontram dificuldades em organizar receitas, despesas e investimentos de forma clara e acessível. Nesse cenário, surgem ferramentas digitais que auxiliam na gestão financeira, mas grande parte delas é paga, limitada ou não oferece transparência no uso dos dados.
 
-% \begin{listing}[h]
-%     \lstinputlisting[language=c, firstline=10, lastline=20]{../../src/shell.c}
-%     \caption{Trecho de código em c extraído do arquivo \texttt{/src/shell.c.}}
-%     \label{list:label}
-% \end{listing}
-
-
-Apesar do avanço de editores e plataformas voltadas para a escrita digital, muitos desses ambientes não foram concebidos para atender às necessidades específicas de educadores que desejam compartilhar materiais com qualidade técnica e visual, mas sem abrir mão da simplicidade de uso. A ausência de funcionalidades integradas — como realce automático de código (code highlighting), suporte facilitado a fórmulas matemáticas escritas em LaTeX, criação de tabelas acessíveis e estruturação semântica do conteúdo — torna o processo de produção mais demorado e propenso a erros.
-
-Nesse cenário, foi desenvolvido o FromCaio, um sistema web interativo voltado à criação e publicação de cursos e artigos educacionais. A proposta central é oferecer uma plataforma intuitiva que reduza as barreiras técnicas enfrentadas por educadores, promovendo a criação de conteúdo gratuito, acessível e com recursos avançados de formatação. O sistema permite que os próprios autores construam e publiquem seus materiais diretamente na plataforma, com o suporte de funcionalidades modernas que otimizam a experiência de escrita e de leitura.
-
-Nesse cenário, foi desenvolvido o FromCaio, um sistema web interativo voltado à criação e publicação de cursos e artigos educacionais. A proposta central é oferecer uma plataforma intuitiva que reduza as barreiras técnicas enfrentadas por educadores, promovendo a criação de conteúdo gratuito, acessível e com recursos avançados de formatação. O sistema permite que os próprios autores construam e publiquem seus materiais diretamente na plataforma, contando com funcionalidades modernas que otimizam tanto a experiência de escrita quanto a de leitura.
-
-
-% citações citacao1\cite{pressman2021} citacao2 \cite{KeRainerJr2019}.
+Com base nessa necessidade, o projeto \textit{GranaLivre} foi idealizado como uma plataforma \textit{open source} voltada para o gerenciamento de finanças pessoais. Seu propósito é oferecer uma solução simples, intuitiva e acessível, permitindo que qualquer usuário tenha maior controle sobre suas finanças sem depender de sistemas proprietários.
 
 \section{Motivação}
-A educação tem o poder de transformar vidas. Essa afirmação, embora frequentemente repetida, se comprova de forma concreta na trajetória de inúmeros indivíduos — inclusive na do próprio autor deste trabalho. O ensino revelou-se um divisor de águas, não apenas por despertar o desejo de aprender e compartilhar conhecimento, mas também por dar sentido a aspectos da realidade que antes passavam despercebidos. Através da educação, temas antes invisíveis tornaram-se compreensíveis, e eventualmente até mesmo belos.
-
-Aprender, apesar de desafiador, é uma das experiências mais enriquecedoras que alguém pode vivenciar. Seu impacto se manifesta de forma ampla: no plano intelectual, amplia a visão de mundo e desenvolve o pensamento crítico; no profissional, abre oportunidades e fortalece habilidades; e no pessoal, alimenta a curiosidade, o senso de propósito e a realização de contribuir com os outros.
-
-Foi a partir dessa vivência que surgiu o desejo de colaborar ativamente para a ampliação do acesso ao conhecimento, valorizando especialmente os profissionais que se dedicam à produção científica e educacional. A motivação principal deste trabalho é criar um ambiente que respeite e reconheça esse esforço, oferecendo uma plataforma aberta, intuitiva e acessível tanto para quem ensina quanto para quem aprende.
-
-A proposta do FromCaio nasce, portanto, da convicção de que democratizar o conhecimento vai além de simplesmente distribuí-lo. É preciso garantir sua qualidade, relevância e potencial transformador. O objetivo é proporcionar um espaço onde educadores possam produzir e compartilhar conteúdos que gerem impacto verdadeiro — tanto na vida de indivíduos quanto na atuação de empresas e instituições. Este projeto busca ser um passo concreto nessa direção.
+A motivação para o desenvolvimento do \textit{GranaLivre} está diretamente ligada à importância da autonomia financeira e à democratização do acesso a ferramentas de planejamento. Além disso, muitas soluções existentes são documentadas apenas em inglês, o que dificulta a participação de desenvolvedores brasileiros. O \textit{GranaLivre}, ao disponibilizar toda a documentação em português, busca valorizar a comunidade local e ampliar as oportunidades de contribuição, considerando a cultura e as necessidades específicas do público brasileiro.
 
 \section{Objetivos}
 
 \subsection{Objetivo Geral}
-
-Desenvolver uma plataforma independente de publicação de materiais didáticos e científicos, com foco na autonomia dos autores, na permanência e portabilidade do conteúdo e no impacto profissional e social da produção intelectual.
+Desenvolver uma aplicação web de finanças pessoais que permita aos usuários organizar receitas, despesas, investimentos e patrimônio de forma simples e intuitiva.
 
 \subsection{Objetivos Específicos}
-
 \begin{itemize}
-    \item Oferecer suporte a elementos essenciais para a produção técnico-científica, como trechos de código, expressões matemáticas e organização semântica do conteúdo;
-    \item Viabilizar a publicação e a colaboração em projetos educacionais mesmo fora de contextos institucionais, eliminando barreiras técnicas e operacionais comuns em plataformas tradicionais;
-    \item Adotar o formato \textit{markdown}, estendido com funcionalidades específicas da plataforma, a fim de garantir a longevidade, a portabilidade e o reaproveitamento dos materiais produzidos;
-    \item Implementar recursos avançados como realce de sintaxe (\textit{code highlighting}) para múltiplas linguagens de programação;
-    \item Desenvolver, em versões futuras, funcionalidades como a geração automática de gráficos interativos, ampliando as possibilidades pedagógicas e científicas;
-    \item Estabelecer uma política de publicação responsável, com curadoria leve, baseada na expertise dos autores, a fim de assegurar a qualidade e a credibilidade dos conteúdos publicados.
+    \item Disponibilizar uma plataforma \textit{open source}, gratuita e acessível a qualquer usuário;
+    \item Permitir o registro e acompanhamento de receitas e despesas;
+    \item Facilitar a gestão de contas recorrentes, assinaturas e metas financeiras;
+    \item Oferecer visualização clara do saldo disponível e do patrimônio acumulado;
+    \item Produzir documentação em português para engajar a comunidade de desenvolvedores brasileiros;
+    \item Estabelecer uma base sólida para futuras evoluções do sistema, integrando recursos mais avançados de planejamento financeiro.
 \end{itemize}
 
 \section{Justificativa}
-
-A proposta deste trabalho se justifica por sua relevância em múltiplas esferas: acadêmica, educacional, social e tecnológica. Em um cenário em que o acesso ao conhecimento cresce continuamente, aumenta também a necessidade por ferramentas que não apenas permitam a publicação de conteúdo, mas que assegurem sua qualidade, acessibilidade e independência.
-
-Apesar do avanço das plataformas digitais, ainda existem lacunas significativas — especialmente para educadores, pesquisadores e estudantes que desejam publicar ou colaborar na produção de conteúdo. Isso é ainda mais evidente entre aqueles que buscam alternativas gratuitas de publicação, sem depender de sistemas institucionais mais rígidos, os quais frequentemente impõem barreiras técnicas e operacionais. Essas limitações acabam desestimulando a criação de conteúdo educativo de qualidade — um processo que, por si só, já é desafiador — e que poderia ser significativamente fortalecido com a redução das barreiras técnicas envolvidas.
-
-
-Ao contrário de ambientes virtuais de aprendizagem amplamente utilizados, como o Moodle — cuja proposta central é gerenciar cursos e atividades acadêmicas institucionais —, o \textit{FromCaio} foi concebido especificamente como uma plataforma de publicação autônoma de conteúdos didáticos e científicos. Embora o Moodle cumpra eficientemente seu papel em contextos formais de ensino, adaptá-lo por meio de extensões para atender a fluxos editoriais mais flexíveis exigiria modificações complexas e uma adesão a requisitos técnicos institucionais. O \textit{FromCaio}, por sua vez, busca justamente superar essas limitações, permite que professores e estudantes colaborem na criação de projetos, orientados institucionalmente ou não, sem que precisem se adequar a modelos rígidos de publicação, favorecendo a clareza, a didática e o controle autoral sobre o material produzido.
-
-Essa independência é sustentada por decisões técnicas que favorecem tanto a longevidade quanto a portabilidade dos materiais produzidos. A adoção do formato \textit{markdown} — ainda que estendido com funcionalidades específicas da plataforma — permite a migração e o reaproveitamento de conteúdos de forma ágil e eficaz, inclusive a partir de outros formatos amplamente utilizados no meio acadêmico, como slides e roteiros de aula. Essa flexibilidade é ainda fortalecida pelo uso de ferramentas externas baseadas em inteligência artificial generativa, que auxiliam na conversão entre formatos distintos, preservando a coerência, a estrutura e a utilidade pedagógica do conteúdo ao longo de diferentes contextos de publicação.
-
-Complementando esse conjunto de soluções, a plataforma oferece recursos que ampliam o potencial técnico e didático dos materiais. Um dos destaques é o suporte ao realce de sintaxe (\textit{code highlighting}) para mais de 40 linguagens de programação — incluindo C, Python, Assembly e Arduino —, número que continuará a crescer conforme novas necessidades surgirem e conteúdos forem adicionados. Versões futuras também preveem funcionalidades como a geração automática de gráficos interativos, abrindo novas possibilidades de aplicação pedagógica e científica.
-
-Por fim, embora valorize a liberdade editorial, a proposta adota uma política de publicação responsável, pautada na credibilidade e na qualidade. A autoria é reservada a usuários com expertise comprovada — como professores universitários, profissionais especializados ou estudantes sob orientação adequada. Essa curadoria leve tem como objetivo assegurar que os conteúdos publicados estejam alinhados ao propósito da plataforma: promover impacto real e positivo na formação intelectual, profissional e pessoal dos leitores.
-
-\section{Organização da Monografia}
-
-Além deste capítulo, os demais estão organizados da seguinte forma:
-
-\begin{itemize}
-    \item Capítulo \ref{cap:ref_teorico}: Contém o referencial teórico, onde foram fundamentados os conceitos, técnicas e tecnologias utilizadas no decorrer do estudo. Além disso, também são apresentados os trabalhos relacionados;
-    \item Capítulo \ref{cap:metodologia}: Neste capitulo é apresentado a metodologia, contendo as etapas realizadas no desenvolvimento do sistema;
-    \item Capítulo \ref{cap:dev_sist}: São relatados as etapas da construção dos sistema, assim como os resultados alcançados no desenvolvimento e testes;
-    \item Capítulo \ref{cap:conclusao}: Neste capitulo são apresentadas as conclusões dos autores junto as considerações finais e proposta de trabalhos futuros;
-\end{itemize}
+A justificativa do \textit{GranaLivre} está na necessidade crescente de ferramentas confiáveis, acessíveis e abertas para controle financeiro. Ao adotar o modelo \textit{open source}, o projeto garante não apenas a transparência no uso dos dados, mas também a possibilidade de evolução contínua por meio da colaboração da comunidade. Outro diferencial está na produção de documentação totalmente em português, o que reduz barreiras de entrada e valoriza a cultura local, permitindo que desenvolvedores brasileiros tenham maior facilidade para participar ativamente da evolução da plataforma. Assim, busca-se construir um sistema que ajude os usuários a alcançar maior organização e independência financeira.
