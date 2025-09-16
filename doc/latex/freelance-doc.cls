@@ -94,7 +94,9 @@
 % \definecolor{summary_frame}{gray}{0.85} % Border color
 
 \definecolor{summary_bg}{gray}{0.95}     % Light gray background
-\definecolor{summary_frame}{rgb}{0.004,0.318,0.533}  % #015188 converted to RGB
+% \definecolor{summary_frame}{rgb}{0.004,0.318,0.533}  % #015188 converted to RGB
+% we will use #4B8F83 to summary_frame
+\definecolor{summary_frame}{rgb}{0.294,0.561,0.514}  % #4B8F83 converted to RGB
 
 \RenewDocumentEnvironment{resumo}{o}{%
   \IfNoValueF{#1}{\pdfbookmark[1]{#1}{resumo}}% Add bookmark if title exists
@@ -125,7 +127,7 @@
 \makeatletter
 % --- Command for Client Name ---
 \newcommand{\cliente}[1]{\gdef\@cliente{#1}}
-\newcommand{\imprimircliente}{\@cliente}
+% \newcommand{\imprimircliente}{\@cliente}
 
 % --- Commands for Cover Page Images ---
 \newcommand{\toplogo}[1]{\gdef\@toplogo{#1}}
@@ -167,8 +169,8 @@
     \begin{center}
       {\ABNTEXchapterfont\bfseries\Huge\imprimirtitulo\par} % Project Title
       \vspace{2cm}
-      {\ABNTEXchapterfont\Large Client: \imprimircliente\par} % Client
-      \vspace{1cm}
+      % {\ABNTEXchapterfont\Large Client: \imprimircliente\par} % Client
+      % \vspace{1cm}
       {\ABNTEXchapterfont\large\imprimirautor\par} % Developer Name
       \vspace{1cm}
       {\large\imprimirdata\par} % Date
@@ -201,9 +203,9 @@
     \hspace{.45\textwidth}%
     \begin{minipage}{.5\textwidth}
       \SingleSpacing
-      \textbf{Client:} \imprimircliente
+      % \textbf{Client:} \imprimircliente
       \par\vspace{0.5cm}\par
-      \textbf{Project Deliverable}
+      \textbf{Gestão financeira fácil, intuitiva e open source.}
     \end{minipage}%
     \vfill
     % --- Location and Date ---
