@@ -1,31 +1,42 @@
-\chapter{Desenvolvimento do Sistema}\label{cap:dev_sist}
+\chapter{Desenvolvimento}\label{cap:desenvolvimento}
 
-\section{O sistema}
+Este capítulo apresenta os artefatos produzidos durante a primeira \textit{sprint} do projeto, contemplando a modelagem inicial do sistema. Os elementos aqui descritos foram fundamentais para alinhar a visão da equipe em relação às funcionalidades, à interface do usuário e à estrutura do banco de dados.
 
-O sistema dispõe de uma funcionalidade que auxilia as coordenadorias e departamentos nas definição dos encargos semestrais. Para isso, os cursos devem ser cadastrados ao sistema e administradores vinculados aos mesmos. A partir disso, eles passarão a ser responsáveis pelo seu gerenciamento. Professores poderão ser cadastrados para que possam se dispor a ministrar disciplinas, informando dados sobre a mesma e sobre sua própria disponibilidade de horário. Por fim, o sistema auxiliará a administração das Coordenadorias nas definições de disciplinas e seus professores, avaliação dos planos de ensino, e por último, definir o quadro de horário do devido semestre.
+\section{Diagrama de Casos de Uso}
+O diagrama de casos de uso tem como objetivo ilustrar, de forma abstrata, as principais funcionalidades do sistema e os atores envolvidos. Este artefato permitiu identificar, já na fase inicial, quais interações devem ser suportadas pela aplicação.
 
-\section{Requisitos}\label{section:dev:req}
+% \begin{figure}[H]
+%     \centering
+%     \includegraphics[width=0.9\textwidth]{imagens/casos_uso.png}
+%     \caption{Diagrama de Casos de Uso do Sistema}
+%     \label{fig:casos_uso}
+% \end{figure}
 
-\subsection{Atores}
-O sistema dispõem de diferentes tipos de usuários que desempenham seus devidos papeis, sendo estes:
+\section{Protótipos de Baixa Fidelidade}
+Os protótipos de baixa fidelidade foram desenvolvidos para representar a organização e o fluxo das telas do sistema, servindo como base para discussões e refinamentos futuros. Essa etapa auxilia na antecipação de problemas de usabilidade e na validação das ideias de interface junto à equipe.
 
-    \begin{description}
-        \item[Administrador Geral:] Responsável pelo gerenciamento geral do sistema. É encarregado de criar os cursos e atribuir administradores aos mesmos. 
-        \item[Administrador de Curso:] Qualificação usualmente atribuída aos Coordenadores, Vice Coordenadores e Secretários dos cursos, são responsáveis pelo gerenciamento específicos do seu curso, como informações básicas do mesmo, gestão dos usuários Professores, Membros do Colegiado e definição de horários.
-        \item[Professor:] Papel atribuído aos professores dos cursos. Dentre outras responsabilidades, esses deverão se dispor a ministrar disciplinas, apresentando informações sobre as mesmas, como numero de vagas, plano de ensino e necessidade de laboratórios.
-        \item[Membro do colegiado:] Usuários que serão responsáveis pela avaliação dos planos de ensino das disciplinas.
-        \item[Chefe de Departamento:] Usuários que serão responsáveis pela gerenciamento dos Departamentos.
-    \end{description}
+% \begin{figure}[H]
+%     \centering
+%     \includegraphics[width=0.9\textwidth]{imagens/prototipo1.png}
+%     \caption{Protótipo de baixa fidelidade da tela de login}
+%     \label{fig:prot_login}
+% \end{figure}
 
-\newpage
-\subsection{Casos de uso}\label{subsec:casosdeuso}
+% \begin{figure}[H]
+%     \centering
+%     \includegraphics[width=0.9\textwidth]{imagens/prototipo2.png}
+%     \caption{Protótipo de baixa fidelidade da tela inicial}
+%     \label{fig:prot_inicial}
+% \end{figure}
 
-lorem
+% Adicionar outras telas conforme necessário
 
+\section{Diagrama Relacional do Banco de Dados}
+A modelagem do banco de dados foi realizada com o objetivo de estruturar as entidades fundamentais para o funcionamento do sistema, assegurando integridade referencial e eficiência nas consultas. O diagrama relacional reflete as tabelas e os relacionamentos definidos.
 
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=450px]{imgs/model_db.png}
-    \caption{Diagrama Casos de Uso.}
-    \label{fig:Figura1}
-\end{figure}
+% \begin{figure}[H]
+%     \centering
+%     \includegraphics[width=0.9\textwidth]{imagens/der.png}
+%     \caption{Diagrama Relacional do Banco de Dados}
+%     \label{fig:der}
+% \end{figure}
