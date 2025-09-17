@@ -1,84 +1,64 @@
 \chapter{Metodologia}\label{cap:metodologia}
 
-Para alcançar o objetivo de desenvolver uma plataforma de publicação robusta, escalável e intuitiva, a construção do sistema FromCaio seguiu um processo de desenvolvimento iterativo e incremental. Esta abordagem permitiu a entrega de valor contínua e a adaptação a novos requisitos de forma flexível. O projeto foi estruturado nas seguintes macroetapas:
+O desenvolvimento da plataforma \textit{GranaLivre} segue uma abordagem iterativa e incremental, organizada em quatro \textit{sprints} com duração aproximada de três semanas cada. Essa estrutura busca garantir entregas contínuas, com ciclos curtos de planejamento, implementação e validação. O cronograma definido contempla as seguintes entregas:
 
-\begin{enumerate}
-    \item Pesquisa e Definição das Tecnologias, cujos fundamentos são detalhados no Capítulo \ref{cap:ref_teorico}.
-    \item Levantamento e Análise de Requisitos.
-    \item Projeto da Arquitetura e Modelagem de Dados.
-    \item Implementação e Validação do Sistema.
-\end{enumerate}
+\begin{itemize}
+    \item \textbf{Sprint 1}: 23/09/2025
+    \item \textbf{Sprint 2}: 21/10/2025
+    \item \textbf{Sprint 3}: 11/11/2025
+    \item \textbf{Sprint 4}: 09/12/2025
+\end{itemize}
 
+\section{Sprint 1: Organização e Estruturação}
 
-\section{Levantamento e Análise de Requisitos}\label{section:req}
+O primeiro ciclo concentrou-se na preparação do ambiente e na definição de diretrizes para todo o projeto. As principais atividades realizadas foram:
 
-Nesta fase inicial, a coleta de requisitos foi realizada por meio de uma abordagem multifacetada. Primeiramente, conduziu-se uma análise de plataformas de publicação de conteúdo já consolidadas (como Medium, DEV.to e blogs acadêmicos) para identificar funcionalidades essenciais, padrões de interface e lacunas que o FromCaio poderia suprir. Em paralelo, foram realizadas discussões com o Professor Orientador para alinhar os objetivos do projeto com as necessidades de educadores e produtores de conteúdo técnico. A partir dessa análise, foram definidos os requisitos funcionais, como o sistema de autenticação, o editor baseado em Markdown, o suporte a LaTeX e o realce de sintaxe de código, e os requisitos não funcionais, como desempenho, usabilidade e portabilidade do conteúdo.
+\begin{itemize}
+    \item Estruturação da documentação inicial.
+    \item Organização do repositório no GitHub, incluindo definição de \textit{branching model} e fluxo de trabalho.
+    \item Definição de papéis da equipe.
+    \item Elaboração de um diagrama de casos de uso.
+    \item Modelagem do banco de dados relacional, com diagrama entidade-relacionamento (DER).
+    \item Criação de protótipos de baixa fidelidade de todas as telas.
+    \item Estabelecimento do cronograma de entregas para os quatro \textit{sprints}.
+\end{itemize}
 
+Este conjunto de entregas garantiu uma base sólida, tanto técnica quanto organizacional, para o desenvolvimento nas etapas seguintes.
 
-\section{Projeto da Arquitetura e Modelagem de Dados}
+\section{Sprints 2 a 4: Desenvolvimento Iterativo}
 
-Com os requisitos definidos, o projeto focou na definição de uma arquitetura limpa e desacoplada, visando a manutenibilidade e a escalabilidade futuras da plataforma.
+A partir da segunda \textit{sprint}, o foco \textbf{será} o desenvolvimento integrado das funcionalidades. Cada funcionalidade \textbf{será tratada} como um todo, contemplando:
 
-A arquitetura do sistema foi dividida em duas partes principais: o \textit{back-end} (servidor e API) e o \textit{front-end} (interface do usuário). Para o \textbf{back-end}, optou-se pelo uso de \textbf{Node.js} com o framework \textbf{Express.js} para a construção de uma API RESTful. Essa escolha se deve à performance suficiente em operações de entrada/saída (I/O) e ao vasto ecossistema de bibliotecas, que facilitam a implementação de funcionalidades como autenticação, processamento de Markdown e interação com o banco de dados. A lógica de negócio foi isolada em módulos específicos, garantindo que a camada de aplicação permanecesse independente do framework web.
+\begin{itemize}
+    \item \textbf{Front-end:} implementação das interfaces utilizando \textbf{Next.js}, com HTML, CSS e JavaScript.
+    \item \textbf{Back-end:} desenvolvimento de serviços e regras de negócio com \textbf{Django} (Python).
+    \item \textbf{Banco de dados:} modelagem e integração com o \textbf{PostgreSQL}.
+    \item \textbf{Containerização:} uso de \textbf{Docker} para padronizar o ambiente de desenvolvimento e facilitar a implantação.
+\end{itemize}
 
-Para a construção do \textbf{front-end}, foi escolhido o framework \textbf{Next.js}, que é baseado em \textbf{React}. A escolha do Next.js foi estratégica devido aos seus recursos de Renderização no Lado do Servidor (SSR) e Geração de Site Estático (SSG). Tais funcionalidades são cruciais para uma plataforma de conteúdo como o FromCaio, pois garantem um excelente desempenho de carregamento das páginas e otimização para motores de busca (SEO), tornando o conteúdo facilmente encontrável.
+Esse modelo permitirá que funcionalidades completas, como cadastro e autenticação de usuários, sejam projetadas, implementadas e testadas em uma mesma \textit{sprint}, assegurando sua validação prática desde o início.
 
-A \textbf{modelagem de dados} foi realizada com a criação de um diagrama entidade-relacionamento (DER) para estruturar as principais entidades do sistema, como `Usuários`, `Artigos`, `Cursos` e `Categorias`. O banco de dados foi projetado para garantir a integridade referencial e suportar de forma eficiente as consultas necessárias para a exibição dos conteúdos e gerenciamento da plataforma.
+\section{Gestão de Qualidade de Código}
 
-\section{Implementação e Validação do Sistema}
-
-A fase de implementação seguiu uma abordagem iterativa, desenvolvendo e integrando as funcionalidades em ciclos. O desenvolvimento foi organizado da seguinte forma:
-
-\begin{enumerate}
-    \item \textbf{Desenvolvimento do Back-end (API):} Inicialmente, foi implementada a API com todos os \textit{endpoints} necessários para o CRUD (Create, Read, Update, Delete) das entidades, além das regras de negócio para permissões, publicação e processamento do conteúdo.
-    \item \textbf{Desenvolvimento do Front-end:} Com a API funcional, a interface do usuário foi construída, consumindo os dados do \textit{back-end}. Cada componente da interface, como o editor de texto, a visualização de artigos e os painéis de usuário, foi desenvolvido de forma modular.
-    \item \textbf{Validação:} Ao final de cada ciclo de implementação, foram realizados testes para validar as funcionalidades. Foram aplicados testes unitários nas regras de negócio críticas do \textit{back-end} e testes de integração para verificar a comunicação entre o \textit{front-end} e a API. Adicionalmente, foi realizada uma validação funcional manual, simulando o uso da plataforma por autores e leitores para garantir que os requisitos foram atendidos e que a experiência de uso era intuitiva e fluida.
-\end{enumerate}
+Além da divisão funcional, a equipe estabeleceu um papel específico de revisão de código. Um dos desenvolvedores será responsável por avaliar a qualidade da implementação, garantindo a aderência a boas práticas de escrita e a consistência do estilo. Nenhum código será integrado ao repositório principal sem a devida aprovação via \textit{pull request}, assegurando a qualidade contínua do projeto.
 
 \section{Cronograma}
 
-O cronograma a seguir apresenta as etapas planejadas para o desenvolvimento do projeto \textit{FromCaio}, abrangendo desde o planejamento inicial até a finalização e entrega da monografia.
+O cronograma de execução do projeto está detalhado na Tabela \ref{tab:cronograma}. Ele foi estruturado de forma a permitir a progressão gradual das entregas, conciliando documentação, prototipação e desenvolvimento.
 
 \begin{table}[h!]
 \centering
-\caption{Cronograma de Desenvolvimento do Projeto FromCaio}
+\caption{Cronograma de Desenvolvimento do Projeto GranaLivre}
 \label{tab:cronograma}
 \renewcommand{\arraystretch}{1.3}
-\begin{tabular}{@{}p{3.2cm} p{5.5cm} p{2.5cm} p{2.5cm}@{}}
+\begin{tabular}{@{}p{3.2cm} p{7cm} p{2.5cm}@{}}
 \toprule
-\textbf{Etapa} & \textbf{Atividade Específica} & \textbf{Início} & \textbf{Término} \\
+\textbf{Sprint} & \textbf{Atividades Principais} & \textbf{Entrega} \\
 \midrule
-
-\multirow{3}{*}{\parbox[l]{3cm}{Planejamento\\e Arquitetura}}
-& Detalhamento dos requisitos & 21/07/2025 & 27/07/2025 \\
-& Definição da arquitetura e tecnologias & 21/07/2025 & 27/07/2025 \\
-& Modelagem do banco de dados (DER) & 21/07/2025 & 27/07/2025 \\
-\midrule
-
-\multirow{4}{*}{\parbox[l]{3cm}{Desenvolvimento do Back-End}}
-& Configuração do ambiente (API) & 28/07/2025 & 03/08/2025 \\
-& Sistema de autenticação de usuários & 28/07/2025 & 03/08/2025 \\
-& CRUD para Artigos e Cursos & 04/08/2025 & 10/08/2025 \\
-& Lógica de processamento de conteúdo & 04/08/2025 & 10/08/2025 \\
-\midrule
-
-\multirow{4}{*}{\parbox[l]{3cm}{Desenvolvimento do Front-End}}
-& Configuração do ambiente (UI) & 11/08/2025 & 17/08/2025 \\
-& Páginas estáticas e painel do usuário & 11/08/2025 & 24/08/2025 \\
-& Implementação do editor de texto & 18/08/2025 & 24/08/2025 \\
-& Telas de visualização de conteúdo & 25/08/2025 & 31/08/2025 \\
-\midrule
-
-\multirow{3}{*}{\parbox[l]{3cm}{Integração e Testes}}
-& Conexão do Front-end com a API & 25/08/2025 & 31/08/2025 \\
-& Testes de ponta a ponta (E2E) & 01/09/2025 & 07/09/2025 \\
-& Correção de bugs e refatoração & 01/09/2025 & 07/09/2025 \\
-\midrule
-
-\multirow{3}{*}{\parbox[l]{3cm}{Finalização e Documentação}}
-& Validação final e ajustes & 08/09/2025 & 14/11/2025 \\
-& Redação da monografia & 08/09/2025 & 14/11/2025 \\
-& Preparação da apresentação & 08/09/2025 & 14/11/2025 \\
+Sprint 1 & Documentação, organização do repositório, definição de papéis, casos de uso, DER e protótipos & 23/09/2025 \\
+Sprint 2 & Desenvolvimento inicial (cadastro, login e autenticação); integração front/back/banco & 21/10/2025 \\
+Sprint 3 & Expansão de funcionalidades (contas, assinaturas e saídas); testes e ajustes & 11/11/2025 \\
+Sprint 4 & Expansão de funcionalidades (entradas, investimentos e patrimônio); testes e ajustes & 09/12/2025 \\
 \bottomrule
 \end{tabular}
 \end{table}
