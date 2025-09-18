@@ -5,12 +5,26 @@ Este capítulo apresenta os artefatos produzidos durante a primeira \textit{spri
 \section{Diagrama de Casos de Uso}
 O diagrama de casos de uso tem como objetivo ilustrar, de forma abstrata, as principais funcionalidades do sistema e os atores envolvidos. Este artefato permitiu identificar, já na fase inicial, quais interações devem ser suportadas pela aplicação.
 
-% \begin{figure}[H]
-%     \centering
-%     \includegraphics[width=0.9\textwidth]{imagens/casos_uso.png}
-%     \caption{Diagrama de Casos de Uso do Sistema}
-%     \label{fig:casos_uso}
-% \end{figure}
+\begin{figure}[H]
+    \centering
+    \includesvg[width=1\textwidth]{imgs/diagrama-casos-de-uso.svg}
+    \caption{Diagrama de Casos de Uso do Sistema}
+    \label{fig:casos_uso}
+\end{figure}
+
+\subsection{Descrição dos Casos de Uso}
+\begin{itemize}
+    \item \textbf{Entrar}:Permite que o usuário acesse o sistema utilizando suas credenciais (e-mail e senha).
+    \item \textbf{Cadastrar}: Possibilita que novos usuários criem uma conta no sistema, informando seus dados básicos.
+    \item \textbf{Visualizar Resumo Financeiro}: Exibe uma visão geral da situação financeira do usuário, incluindo saldo disponível, movimentações recentes, contas a pagar, patrimônio. Também mostra um gráfico que relaciona os bens e as despesas, e ainda permite ao usuário registrar despesas e entradas eventuais de maneira rápida.
+    \item \textbf{Gerenciar Saídas}: Permite registrar, editar e excluir despesas. Inclui a categorização de gastos para facilitar a análise.
+    \item \textbf{Gerenciar Contas Recorrentes}: Facilita o controle de despesas fixas, como contas de serviços públicos, aluguel, entre outras. Permite adicionar, editar e remover contas recorrentes.
+    \item \textbf{Gerenciar Entradas}: Permite registrar, editar e excluir receitas. Inclui a categorização de entradas para facilitar a análise.
+    \item \textbf{Gerenciar Patrimônio}: Possibilita o cadastro de bens, como imóveis, veículos ou outros ativos de valor, permitindo acompanhar sua valorização ou depreciação.
+    \item \textbf{Gerenciar Investimentos}: Permite cadastrar, acompanhar e atualizar informações sobre investimentos. Inclui também a possibilidade de liquidar investimentos, registrando sua venda ou encerramento.
+    \item \textbf{Gerenciar Conta}: Permite ao usuário atualizar suas informações pessoais, alterar a senha e excluir sua conta do sistema.
+    \item \textbf{Sair}: Permite que o usuário encerre sua sessão no sistema de forma segura.
+\end{itemize}
 
 \section{Protótipos de Baixa Fidelidade}
 Os protótipos de baixa fidelidade foram desenvolvidos para representar a organização e o fluxo das telas do sistema, servindo como base para discussões e refinamentos futuros. Essa etapa auxilia na antecipação de problemas de usabilidade e na validação das ideias de interface junto à equipe.
