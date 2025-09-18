@@ -1,0 +1,31 @@
+@startuml GranaLivreUseCases
+left to right direction
+
+actor "Usuário" as User
+
+rectangle "GranaLivre" {
+    usecase "Entrar" as UC_Entrar
+    usecase "Cadastrar" as UC_Cadastrar
+    usecase "Gerenciar Saídas" as UC_Gerenciar_Saídas
+    usecase "Gerenciar Contas Recorrentes" as UC_Gerenciar_Contas_Recorrentes
+    usecase "Gerenciar Entradas" as UC_Gerenciar_Entradas
+    usecase "Gerenciar Patrimônio" as UC_Gerenciar_Patrimonio
+    usecase "Gerenciar Investimentos" as UC_Gerenciar_Investimentos
+    usecase "Sair" as UC_Sair
+
+    UC_Gerenciar_Saídas --> UC_Entrar : <<include>>
+    UC_Gerenciar_Contas_Recorrentes --> UC_Entrar : <<include>>
+    UC_Gerenciar_Entradas --> UC_Entrar : <<include>>
+    UC_Gerenciar_Patrimonio --> UC_Entrar : <<include>>
+    UC_Gerenciar_Investimentos --> UC_Entrar : <<include>>
+    UC_Sair --> UC_Entrar : <<include>>
+}
+
+User --> UC_Cadastrar
+User --> UC_Gerenciar_Saídas
+User --> UC_Gerenciar_Contas_Recorrentes
+User --> UC_Gerenciar_Entradas
+User --> UC_Gerenciar_Patrimonio
+User --> UC_Gerenciar_Investimentos
+User --> UC_Sair
+@enduml
