@@ -6,26 +6,40 @@ actor "Usuário" as User
 rectangle "GranaLivre" {
     usecase "Entrar" as UC_Entrar
     usecase "Cadastrar" as UC_Cadastrar
-    usecase "Gerenciar Saídas" as UC_Gerenciar_Saídas
-    usecase "Gerenciar Contas Recorrentes" as UC_Gerenciar_Contas_Recorrentes
-    usecase "Gerenciar Entradas" as UC_Gerenciar_Entradas
-    usecase "Gerenciar Patrimônio" as UC_Gerenciar_Patrimonio
-    usecase "Gerenciar Investimentos" as UC_Gerenciar_Investimentos
+    usecase "Visualizar Resumo Financeiro" as UC_Resumo
+    usecase "Gerenciar Saídas" as UC_Saidas
+    usecase "Gerenciar Despesas Recorrentes" as UC_DespesasRec
+    usecase "Gerenciar Entradas" as UC_Entradas
+    usecase "Gerenciar Entradas Recorrentes" as UC_EntradasRec
+    usecase "Gerenciar Patrimônio" as UC_Patrimonio
+    usecase "Gerenciar Investimentos" as UC_Investimentos
+    ' usecase "Liquidar Investimento" as UC_LiquidarInvest
+    usecase "Gerenciar Conta" as UC_Conta
     usecase "Sair" as UC_Sair
 
-    UC_Gerenciar_Saídas --> UC_Entrar : <<include>>
-    UC_Gerenciar_Contas_Recorrentes --> UC_Entrar : <<include>>
-    UC_Gerenciar_Entradas --> UC_Entrar : <<include>>
-    UC_Gerenciar_Patrimonio --> UC_Entrar : <<include>>
-    UC_Gerenciar_Investimentos --> UC_Entrar : <<include>>
+    ' Relacionamentos de inclusão
+    UC_Saidas --> UC_Entrar : <<include>>
+    UC_DespesasRec --> UC_Entrar : <<include>>
+    UC_Entradas --> UC_Entrar : <<include>>
+    UC_EntradasRec --> UC_Entrar : <<include>>
+    UC_Patrimonio --> UC_Entrar : <<include>>
+    UC_Investimentos --> UC_Entrar : <<include>>
+    UC_Resumo --> UC_Entrar : <<include>>
+    ' UC_LiquidarInvest --> UC_Investimentos : <<extend>>
     UC_Sair --> UC_Entrar : <<include>>
+    UC_Conta --> UC_Entrar : <<include>>
 }
 
+' Associações com o usuário
 User --> UC_Cadastrar
-User --> UC_Gerenciar_Saídas
-User --> UC_Gerenciar_Contas_Recorrentes
-User --> UC_Gerenciar_Entradas
-User --> UC_Gerenciar_Patrimonio
-User --> UC_Gerenciar_Investimentos
+User --> UC_Resumo
+User --> UC_Saidas
+User --> UC_DespesasRec
+User --> UC_Entradas
+User --> UC_EntradasRec
+User --> UC_Patrimonio
+User --> UC_Investimentos
 User --> UC_Sair
+User --> UC_Conta
+
 @enduml
