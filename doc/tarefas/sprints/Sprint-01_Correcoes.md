@@ -3,9 +3,13 @@
 **Objetivo:** Melhorar documento produzido na sprint1, incluindo telas, diagramas, logos, etc.
 
 - [ ] Telas
-	- [ ] Modificar Entrada para permitir entradas recorrentes
-	- [ ] Modificar saida para que o usuário informe de qual investimento a retirada esta sendo feita
-	- [ ] Modificar Saida para permitir saidas recorrentes
+	- [x] Tela de Resumo (Caio Reis)
+	- [x] Tela de Entradas (Caio Reis)
+	- [ ] Tela de Saidas
+		- [ ] Opcao de Programar Saidas Recorrentes
+	- [ ] Tela de Conta Corrente
+	- [ ] Revisar tela Investimento
+	- [ ] Revisar tela patrimonio
 - [ ] Diagrama de casos de uso
 	- [ ] Substituir "conta" por "usuario"
 	- [ ] Se certificar de que todos os elementos tenham verbos e sejam bem descritivos
