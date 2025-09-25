@@ -21,8 +21,15 @@ O \textit{Node.js} é utilizado como ambiente de execução do Next.js, permitin
 O \textit{back-end} do sistema é desenvolvido em Python, utilizando o framework \textit{Django}. Esse framework fornece uma estrutura robusta para o desenvolvimento rápido de aplicações web, oferecendo recursos nativos como sistema de autenticação, gerenciamento de banco de dados via ORM e uma arquitetura organizada em padrões de projeto.  
 O Django foi escolhido por sua maturidade, comunidade ativa e facilidade de integração com diferentes bancos de dados relacionais.
 
-\subsection{PostgreSQL}
-O banco de dados escolhido para o projeto é o \textit{PostgreSQL}, um sistema de gerenciamento de banco de dados relacional (\textit{RDBMS}) amplamente utilizado em aplicações críticas devido à sua confiabilidade, segurança e suporte a consultas complexas. Sua compatibilidade com o ORM do Django facilita o desenvolvimento e a manutenção da camada de persistência de dados.
+\subsection{SQLite}
+O banco de dados escolhido para o projeto é o \textit{SQLite}, um sistema de gerenciamento de banco de dados relacional (RDBMS) \textit{serverless} (sem servidor). Sua principal vantagem reside na leveza e simplicidade, armazenando todo o banco de dados em um único arquivo no sistema de arquivos. Esta escolha é estratégica para o \textit{GranaLivre} por diversos motivos:
+\begin{itemize}
+    \item \textbf{Execução Local e Portabilidade:} Por não requerer um processo de servidor separado, o SQLite é ideal para aplicações onde o usuário executa o software localmente, eliminando a complexidade de gerenciar uma instância de banco de dados externa. Isso também facilita a implementação de futuras versões desktop, onde a base de dados pode ser facilmente empacotada com a aplicação.
+    \item \textbf{Facilidade na Geração de Instaladores:} Ao empacotar a aplicação, o arquivo do banco de dados SQLite pode ser incluído diretamente, resultando em instaladores mais leves e fáceis de distribuir, sem a necessidade de configurar um banco de dados complexo no ambiente do usuário.
+    \item \textbf{Desenvolvimento Simplificado:} A integração com o ORM do Django é transparente e a manutenção da camada de persistência de dados se torna mais direta, pois não há dependências de serviços de banco de dados externos durante o desenvolvimento.
+    \item \textbf{Desempenho para Aplicações de Usuário Único:} Para o perfil de uso do \textit{GranaLivre}, que foca no controle financeiro pessoal e geralmente opera em modo de usuário único, o desempenho do SQLite é mais do que adequado e eficiente.
+\end{itemize}
+A compatibilidade nativa do Django com SQLite facilita seu uso e manutenção, tornando-o uma escolha robusta para as necessidades atuais e futuras do projeto.
 
 \subsection{Docker}
 Para simplificar o processo de desenvolvimento, implantação e utilização do sistema, será utilizado o \textit{Docker}. Essa tecnologia permite a criação de ambientes isolados e padronizados, garantindo que a aplicação possa ser executada de maneira consistente em diferentes máquinas e servidores.  
