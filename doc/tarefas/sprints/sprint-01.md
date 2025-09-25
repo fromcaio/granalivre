@@ -45,13 +45,13 @@
   - [x] Exportar diagramas para PDF e PNG
   - Local: `doc/diagramas/casos-uso.excalidraw` e `exportados-pdf/`
 
-- [x] **Modelo ER (Banco de Dados)**
+- [x] **Modelo ER (Banco de Dados)** (**Felipe e Caio Reis**)
   - [x] Criar diagrama relacional das tabelas
   - [x] Inserir campos e relacionamentos
   - [x] Exportar para PDF e PNG
   - Local: `doc/diagramas/er-diagrama.excalidraw` e `exportados-pdf/`
 
-- [x] **Documento em PDF**
+- [x] **Documento em PDF** (**Caio Reis**)
   - [x] Inserir todas as telas exportadas, diagramas e cronograma
   - [x] Adicionar nome dos membros da equipe, descrição do sistema e link do GitHub
   - [x] Compilar o documento LaTeX

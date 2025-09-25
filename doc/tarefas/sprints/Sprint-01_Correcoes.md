@@ -6,15 +6,22 @@
 	- [x] Tela de Resumo (Caio Reis)
 	- [x] Tela de Entradas (Caio Reis)
 	- [ ] Tela de Saidas
-		- [ ] Opcao de Programar Saidas Recorrentes
 	- [ ] Tela de Conta Corrente
 	- [ ] Revisar tela Investimento
 	- [ ] Revisar tela patrimonio
 - [ ] Diagrama de casos de uso
-	- [ ] Substituir "conta" por "usuario"
-	- [ ] Se certificar de que todos os elementos tenham verbos e sejam bem descritivos
+	- [x] Substituir "conta" por "usuario" (Caio Reis)
+	- [x] Se certificar de que todos os elementos tenham verbos e sejam bem descritivos (Caio Reis)
 	- [ ] Adiicionar operações especificas, como liquidar, realizar aporte, etc. (Não estão inclusas em gerenciar)
-	- [ ] Remover Include
-	- [ ] Adicionar Gerenciar Usuario
+		- [x] Gerenciar Usuario (Caio Reis)
+		- [x] Gerenciar Entradas (Caio Reis)
+		- [x] Gerenciar Saídas (Caio Reis)
+		- [ ] Gerenciar Conta Corrente
+		- [ ] Gerenciar Investimentos
+		- [ ] Gerenciar Patrimônio
+	- [x] Remover Include (Caio Reis)
+	- [x] Adicionar Gerenciar Usuario (Caio Reis)
 - [ ] Diagrama Banco de Dados
 	- [ ] Refatorar diagrama de banco de dados. Tanto os investimentos, quanto as entradas e saidas recorrentes, assim como o patrimonio, são transações dado que são adicionados ao banco.
+- [ ] Documentação
+	- [x] Alterar documentação, usar SQLite ao invés de Postgress (Caio Reis)
