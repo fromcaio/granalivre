@@ -10,3 +10,8 @@
     - [x] pagina de cadastro sem customizacao
     - [x] pagina de login sem customização
     - [x] pagina para testar logout e refresh
+    - [x] pagina para testar logout e refresh
+- [x] documentação
+	- [x] tutorial execucao front-end (/doc/tutoriais/)
+	- [x] tutorial execucao back-end
+	- [x] tutorial git-e-github
