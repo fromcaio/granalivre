@@ -1,1 +1,0 @@
-Django é um framework 
