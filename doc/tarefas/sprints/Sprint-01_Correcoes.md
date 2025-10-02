@@ -25,3 +25,4 @@
 	- [ ] Refatorar diagrama de banco de dados. Tanto os investimentos, quanto as entradas e saidas recorrentes, assim como o patrimonio, são transações dado que são adicionados ao banco.
 - [ ] Documentação
 	- [x] Alterar documentação, usar SQLite ao invés de Postgress (Caio Reis)
+	- [ ] Alterar prototipos do sistema
