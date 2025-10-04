@@ -1,84 +1,151 @@
-# GranaLivre
+# Grana Livre 💸
 
-**GranaLivre** é um sistema open source de finanças pessoais, que permite aos usuários controlar receitas, despesas, investimentos e patrimônio. Este repositório organiza todo o desenvolvimento inicial, desde protótipos de baixa fidelidade até diagramas, sistema e documentação.
+![Badge de Licença](https://img.shields.io/badge/licen%C3%A7a-MIT-green)
+![Badge de Status](https://img.shields.io/badge/status-em%20desenvolvimento-yellow)
 
-## Estrutura do Repositório
+**Uma plataforma open source de gerenciamento de finanças pessoais, desenvolvida por brasileiros e para brasileiros.**
 
-```
-/ (raiz do repositório)
-├── doc/                  # Toda a documentação do projeto
-│   ├── diagramas/        # Diagramas (UML, ER, casos de uso, etc.)
-│   │   ├── casos-uso.excalidraw
-│   │   ├── er-diagrama.excalidraw
-│   │   └── exportados/   # versões em PDF/PNG para inclusão no LaTeX
-│   │   │   ├── casos-uso.png
-│   ├── latex/            # Arquivos-fonte em LaTeX
-│   │   ├── main.tex      # Documento principal
-│   │   ├── seções/       # Seções separadas (importadas no main.tex)
-│   │   └── bib/          # Caso precisem referências bibliográficas
-│   └── pdf/              # Versões finais exportadas (main.pdf)
-│
-├── telas/                # Protótipos de baixa fidelidade
-│   ├── excalidraw/       # Arquivos editáveis
-│   └── exportados/       # PNG/PDF das telas
-│
-├── tarefas/              # Checklists e organização das atividades
-│   ├── backlog.md        # Lista geral de tarefas
-│   ├── sprints/          # Organização por entregas
-│   │   └── sprint-01.md
-│   └── responsaveis.md   # Quem cuida de quê
-│
-├── praticas/             # Pastas para práticas/testes de equipe
-│   ├── css-display-flex/
-│   ├── html-forms/
-│   └── ...
-│
-└── granalivre/           # Código-fonte do sistema (quando iniciarem dev)
-    ├── frontend/
-    ├── backend/
-    └── database/
-```
+---
 
-## Como Contribuir
+## 📖 Tabela de Conteúdos
 
-1. **Clonar o repositório**
+- [Sobre o Projeto](#-sobre-o-projeto)
+- [✨ Funcionalidades](#-funcionalidades)
+- [🛠️ Tecnologias Utilizadas](#️-tecnologias-utilizadas)
+- [🚀 Começando](#-começando)
+  - [Pré-requisitos](#pré-requisitos)
+  - [Instalação](#instalação)
+- [📂 Estrutura de Arquivos](#-estrutura-de-arquivos)
+- [🤝 Como Contribuir](#-como-contribuir)
+- [📄 Licença](#-licença)
+
+---
+
+## 💻 Sobre o Projeto
+
+O **Grana Livre** nasceu da necessidade de uma ferramenta de controle financeiro que fosse ao mesmo tempo poderosa, acessível e alinhada à realidade brasileira. Muitas soluções no mercado são pagas, limitadas ou não transparentes com o uso dos dados do usuário. Além disso, a documentação em inglês e a complexidade de projetos já estabelecidos dificultam a entrada de novos desenvolvedores, especialmente estudantes e a comunidade brasileira.
+
+Nosso objetivo é criar uma plataforma **gratuita, de código aberto e totalmente documentada em português**, que não apenas ajude os usuários a organizar suas finanças, mas que também sirva como um **ambiente de aprendizado e colaboração** para desenvolvedores do Brasil.
+
+### Por que o Grana Livre?
+
+- **Gratuito e Acessível:** Controle total sobre suas finanças sem custos ou limitações.
+- **Transparência e Segurança:** Seu código é aberto. Você sabe exatamente como seus dados são tratados.
+- **Foco na Comunidade Brasileira:** Desenvolvido pensando nas nossas necessidades, com documentação e suporte em português.
+- **Ambiente Colaborativo:** Um projeto ideal para quem quer aprender, contribuir e crescer junto com uma comunidade engajada.
+
+---
+
+## ✨ Funcionalidades
+
+O Grana Livre permite que você organize toda a sua vida financeira em um só lugar:
+
+- ✅ **Dashboard Intuitivo:** Tenha um resumo claro do seu saldo, patrimônio e movimentações recentes.
+- 📊 **Gestão de Receitas e Despesas:** Registre e categorize todas as suas entradas e saídas.
+- 🔄 **Contas Recorrentes:** Automatize o controle de despesas fixas como aluguel, assinaturas e contas de consumo.
+- 📈 **Controle de Investimentos:** Cadastre e acompanhe a evolução dos seus investimentos.
+- 🏠 **Gerenciamento de Patrimônio:** Registre bens como imóveis e veículos para ter uma visão completa do seu patrimônio.
+- 🎯 **Metas Financeiras (em breve):** Planeje seus objetivos e acompanhe seu progresso.
+
+---
+
+## 🛠️ Tecnologias Utilizadas
+
+O projeto é construído com tecnologias modernas e robustas, separando as responsabilidades entre o frontend e o backend.
+
+| Camada         | Tecnologias                                                                                                                                                                                                                                   |
+| :------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Frontend**   | ![Next JS](https://img.shields.io/badge/Next-black?style=for-the-badge&logo=next.js&logoColor=white) ![TailwindCSS](https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white) ![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E) |
+| **Backend**    | ![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54) ![Django](https://img.shields.io/badge/django-%23092E20.svg?style=for-the-badge&logo=django&logoColor=white)                             |
+| **Banco de Dados** | ![SQLite](https://img.shields.io/badge/sqlite-%2307405e.svg?style=for-the-badge&logo=sqlite&logoColor=white)                                                                                                                             |
+| **Ambiente**   | ![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)                                                                                                                                |
+| **Controle de Versão** | ![Git](https://img.shields.io/badge/git-%23F05033.svg?style=for-the-badge&logo=git&logoColor=white) ![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)                   |
+
+---
+
+## 🚀 Começando
+
+Para executar o projeto localmente, recomendamos o uso de Docker, que simplifica a configuração do ambiente.
+
+### Pré-requisitos
+
+Antes de começar, garanta que você tenha as seguintes ferramentas instaladas:
+
+- [Git](https://git-scm.com/)
+- [Docker](https://www.docker.com/products/docker-desktop/)
+- [Docker Compose](https://docs.docker.com/compose/install/)
+
+### Instalação
+
+1. **Clone o repositório:**
+
+   ```sh
+   git clone https://github.com/fromcaio/granalivre.git
+   cd granalivre
+   ```
+
+2. **Suba os contêineres do Docker:**
+
+   O projeto é containerizado para facilitar a execução. Em breve, disponibilizaremos o docker-compose.yml para rodar tudo com um único comando.
+
+   ```sh
+   docker-compose up --build
+   ```
+
+   Este comando irá construir as imagens do frontend e do backend e iniciar os serviços.
+
+3. **Acesse a aplicação:**
+
+   - Frontend: http://localhost:3000
+   - Backend API: http://localhost:8000
+
+Para guias mais detalhados sobre como executar cada parte separadamente, consulte nossos tutoriais:
+
+- [Guia de Execução do Backend](doc/tutoriais/backend.md)
+- [Guia de Execução do Frontend](doc/tutoriais/frontend.md)
+
+---
+
+## 📂 Estrutura de Arquivos
+
+O projeto está organizado da seguinte forma para facilitar a navegação e o desenvolvimento:
+
 ```bash
-git clone https://github.com/seuusuario/granalivre.git
-cd granalivre
+granalivre/
+├── .github/              # Configurações de Actions e templates para o GitHub
+├── codigo-fonte/         # Código principal da aplicação
+│   ├── backend/          # Aplicação Django (Python)
+│   └── frontend/         # Aplicação Next.js
+├── doc/                  # Documentação completa do projeto
+│   ├── diagramas/        # Diagramas de arquitetura, casos de uso, etc.
+│   ├── telas/            # Protótipos de baixa e alta fidelidade
+│   └── tutoriais/        # Guias de configuração e execução
+└── README.md             # Este arquivo que você está lendo :)
 ```
 
-2. **Criar uma nova branch para sua atividade**
-```bash
-git checkout -b minha-atividade
-```
+---
 
-3. **Adicionar alterações e realizar commit**
-```bash
-git add .
-git commit -m "Descrição do que foi feito"
-```
+## 🤝 Como Contribuir
 
-4. **Enviar a branch para o GitHub**
-```bash
-git push origin minha-atividade
-```
+Nós encorajamos fortemente a contribuição da comunidade! Se você quer ajudar a construir o Grana Livre, aqui estão algumas formas de começar:
 
-5. Abrir Pull Request no GitHub
-- No repositório no GitHub, clique em Compare & pull request da sua branch.
-- Escreva um título claro e uma descrição breve do que foi feito.
-- Escolha a branch main como base para mesclar.
-- Adicione revisores da equipe, se necessário.
-- Clique em Create Pull Request.
-- Aguarde a revisão e aprovação.
+1. **Reporte Bugs e Sugira Ideias:** Abra uma Issue detalhando o problema ou a sua sugestão de melhoria.
+2. **Melhore a Documentação:** Encontrou algo que pode ser melhor explicado? Nos ajude a melhorar a documentação!
+3. **Desenvolva Funcionalidades:** Se você quer colocar a mão no código, siga os passos abaixo.
 
-## Protótipos e Diagramas
+### Fluxo de Contribuição
 
-- Criar ou editar arquivos em telas/excalidraw/ ou doc/diagramas/.
-- Exportar versões PDF/PNG para telas/exportados/ ou doc/diagramas/exportados-pdf/.
-- Referenciar esses arquivos no LaTeX (doc/latex/seções/06-prototipos.tex).
-
-## Tarefas e Organização
-
-- Atualizar checklists em tarefas/sprints/.
-- Registrar responsabilidades em tarefas/responsaveis.md.
-- Usar Issues para discutir problemas ou sugestões.
+1. Faça um Fork do projeto.
+2. Crie uma branch para a sua funcionalidade:
+   ```sh
+   git checkout -b feature/minha-feature
+   ```
+3. Faça o commit das suas alterações:
+   ```sh
+   git commit -m 'feat: Adiciona minha feature'
+   ```
+4. Faça o push para a sua branch:
+   ```sh
+   git push origin feature/minha-feature
+   ```
+5. Abra um Pull Request para que possamos avaliar
