@@ -20,6 +20,9 @@
 \usepackage{colortbl}         % For \rowcolor and \cellcolor commands
 \usepackage[most]{tcolorbox}  % Load this AFTER xcolor
 \usepackage{xparse} % For advanced command redefinition
+\setlength{\parindent}{1.5cm}
+\usepackage{indentfirst}
+
 %% ===================================================================================
 %% CUSTOM TABLE OF CONTENTS STYLING (using memoir native commands)
 %% Final working version with fixes for Bibliography and Attachments indentation.
@@ -127,7 +130,7 @@
 \makeatletter
 % --- Command for Client Name ---
 \newcommand{\cliente}[1]{\gdef\@cliente{#1}}
-% \newcommand{\imprimircliente}{\@cliente}
+\newcommand{\imprimircliente}{\@cliente}
 
 % --- Commands for Cover Page Images ---
 \newcommand{\toplogo}[1]{\gdef\@toplogo{#1}}
@@ -155,8 +158,8 @@
   \clearpage
   \thispagestyle{empty}%
   \newgeometry{left=0pt, right=0pt, top=0pt, bottom=0pt}%
-  \setlength{\parindent}{0pt}%
-  \setlength{\parskip}{0pt}%
+  % \setlength{\parindent}{0pt}%
+  % \setlength{\parskip}{0pt}%
   
   \noindent%
   \begin{minipage}[t][\paperheight]{\paperwidth}
@@ -168,9 +171,9 @@
     % --- Main Content ---
     \begin{center}
       {\ABNTEXchapterfont\bfseries\Huge\imprimirtitulo\par} % Project Title
-      \vspace{2cm}
-      % {\ABNTEXchapterfont\Large Client: \imprimircliente\par} % Client
-      % \vspace{1cm}
+      \vspace{1cm}
+      {\ABNTEXchapterfont\Large \imprimircliente\par} % Client
+      \vspace{1cm}
       {\ABNTEXchapterfont\large\imprimirautor\par} % Developer Name
       \vspace{1cm}
       {\large\imprimirdata\par} % Date
