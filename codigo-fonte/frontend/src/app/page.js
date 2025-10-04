@@ -53,23 +53,6 @@ export default function Home() {
               Welcome to GranaLivre
             </h1>
           )}
-          
-          {user && (
-            <div className="space-x-4">
-              <button 
-                onClick={handleLogout}
-                className="bg-red-600 hover:bg-red-700 text-white font-semibold px-6 py-3 rounded-lg transition duration-200"
-              >
-                Logout
-              </button>
-              <button 
-                onClick={handleRefresh}
-                className="bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-3 rounded-lg transition duration-200"
-              >
-                Refresh Token
-              </button>
-            </div>
-          )}
         </div>
       </div>
     </div>

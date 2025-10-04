@@ -81,18 +81,20 @@ Antes de começar, garanta que você tenha as seguintes ferramentas instaladas:
 
    ```sh
    git clone https://github.com/fromcaio/granalivre.git
-   cd granalivre
+   cd granalivre/codigo-fonte/
    ```
 
 2. **Suba os contêineres do Docker:**
 
-   O projeto é containerizado para facilitar a execução. Em breve, disponibilizaremos o docker-compose.yml para rodar tudo com um único comando.
+   O projeto é containerizado para facilitar a execução.
 
    ```sh
    docker-compose up --build
    ```
 
    Este comando irá construir as imagens do frontend e do backend e iniciar os serviços.
+
+   > **Nota:** O primeiro build pode demorar alguns minutos, pois instala todas as dependências e configura o ambiente de desenvolvimento com live reload (hot reload) para backend e frontend. Nas próximas execuções, o processo será muito mais rápido, pois as camadas já estarão em cache.
 
 3. **Acesse a aplicação:**
 
