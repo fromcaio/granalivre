@@ -16,6 +16,51 @@ class UserInfoView(RetrieveUpdateAPIView):
 
     def get_object(self):
         return self.request.user
+    
+    def update(self, request, *args, **kwargs):
+        user = self.get_object()
+        data = request.data
+
+        current_password = data.get("current_password")
+        if not current_password:
+            return Response({"current_password": "Senha atual obrigatória."}, status=status.HTTP_400_BAD_REQUEST)
+        if not user.check_password(current_password):
+            return Response({"current_password": "Senha atual incorreta."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Update username and email
+        username = data.get("username")
+        email = data.get("email")
+        if username:
+            user.username = username
+        if email:
+            user.email = email
+
+        # Handle password change
+        new_password = data.get("new_password")
+        if new_password:
+            user.set_password(new_password)
+
+        user.save()
+        return Response(self.get_serializer(user).data, status=status.HTTP_200_OK)
+
+    def patch(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)
+
+    def put(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)
+    
+    def delete(self, request, *args, **kwargs):
+        user = self.get_object()
+        current_password = request.data.get("current_password")
+        if not current_password:
+            return Response({"current_password": "Senha atual obrigatória."}, status=status.HTTP_400_BAD_REQUEST)
+        if not user.check_password(current_password):
+            return Response({"current_password": "Senha atual incorreta."}, status=status.HTTP_400_BAD_REQUEST)
+        user.delete()
+        response = Response({"message": "Conta excluída com sucesso."}, status=status.HTTP_200_OK)
+        response.delete_cookie('access_token')
+        response.delete_cookie('refresh_token')
+        return response
 
 class UserRegistrationView(CreateAPIView):
     serializer_class = RegisterUserSerializer

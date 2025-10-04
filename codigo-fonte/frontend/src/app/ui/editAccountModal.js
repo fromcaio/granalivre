@@ -1,9 +1,10 @@
 'use client'
 import { useState } from "react";
 import axios from "axios";
+import { formStyles } from "@/utils/variables";
 
 export default function EditAccountModal({ user, onClose, onUpdated }) {
-  const [firstName, setFirstName] = useState(user?.first_name || "");
+  const [username, setUsername] = useState(user?.username || "");
   const [email, setEmail] = useState(user?.email || "");
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -17,23 +18,23 @@ export default function EditAccountModal({ user, onClose, onUpdated }) {
     e.preventDefault();
     resetErrors();
 
-    if (!firstName.trim()) return setErr("Informe o nome.");
+    if (!username.trim()) return setErr("Informe o nome de usuário.");
     if (!email.trim()) return setErr("Informe o e-mail.");
+    if (!currentPassword) return setErr("Informe a senha atual para confirmar as alterações.");
 
-    const changingPassword = newPassword || confirmNew || currentPassword;
+    const changingPassword = newPassword || confirmNew;
     if (changingPassword) {
-      if (!currentPassword) return setErr("Informe a senha atual.");
       if (!newPassword) return setErr("Informe a nova senha.");
       if (newPassword.length < 6) return setErr("Nova senha mínimo 6 caracteres.");
       if (newPassword !== confirmNew) return setErr("Nova senha e confirmação não coincidem.");
     }
 
     const payload = {
-      first_name: firstName,
-      email
+      username: username,
+      email,
+      current_password: currentPassword
     };
     if (changingPassword) {
-      payload.current_password = currentPassword;
       payload.new_password = newPassword;
     }
 
@@ -63,66 +64,78 @@ export default function EditAccountModal({ user, onClose, onUpdated }) {
 
   return (
     <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/40">
-      <div className="bg-white w-full max-w-lg rounded-lg shadow-xl p-6">
+      <div className={formStyles.formWrapper + " max-w-lg relative"}>
+        <button
+          type="button"
+          onClick={onClose}
+          className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors duration-200 cursor-pointer"
+          aria-label="Fechar"
+        >
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
         <h2 className="text-lg font-semibold text-gray-800 mb-4">Editar Conta</h2>
-        <form onSubmit={submit} className="space-y-4">
+        <form onSubmit={submit} className={formStyles.form}>
           {err && (
             <div className="text-sm text-red-600 bg-red-50 border border-red-200 px-3 py-2 rounded">
               {err}
             </div>
           )}
 
-            <div>
-              <label className="block text-sm font-medium mb-1">Nome</label>
-              <input
-                className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
-                value={firstName}
-                onChange={(e)=>setFirstName(e.target.value)}
-              />
-            </div>
+          <div>
+            <label className="block text-sm font-medium mb-1 text-gray-700">Nome de Usuário</label>
+            <input
+              className={formStyles.input}
+              value={username}
+              onChange={(e)=>setUsername(e.target.value)}
+            />
+          </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1">E-mail</label>
+            <label className="block text-sm font-medium mb-1 text-gray-700">E-mail</label>
             <input
               type="email"
-              className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+              className={formStyles.input}
               value={email}
               onChange={(e)=>setEmail(e.target.value)}
             />
           </div>
 
+          <div>
+            <label className="block text-sm font-medium mb-1 text-gray-700">Senha Atual</label>
+            <input
+              type="password"
+              className={formStyles.input}
+              value={currentPassword}
+              onChange={(e)=>setCurrentPassword(e.target.value)}
+              placeholder="Confirme sua identidade"
+              required
+            />
+          </div>
+
           <div className="pt-2 border-t">
-            <p className="text-sm font-medium text-gray-700 mb-2">Alterar Senha (opcional)</p>
-            <div className="space-y-3">
+            <p className="text-sm font-medium text-gray-700 mb-4">Alterar Senha (opcional)</p>
+            <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium mb-1">Senha Atual</label>
+                <label className="block text-sm font-medium mb-1 text-gray-700">Nova Senha</label>
                 <input
                   type="password"
-                  className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
-                  value={currentPassword}
-                  onChange={(e)=>setCurrentPassword(e.target.value)}
-                  placeholder="Necessária se for trocar a senha"
+                  className={formStyles.input}
+                  value={newPassword}
+                  onChange={(e)=>setNewPassword(e.target.value)}
+                  placeholder="Deixe vazio para manter"
                 />
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium mb-1">Nova Senha</label>
-                  <input
-                    type="password"
-                    className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
-                    value={newPassword}
-                    onChange={(e)=>setNewPassword(e.target.value)}
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1">Confirmar Nova Senha</label>
-                  <input
-                    type="password"
-                    className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
-                    value={confirmNew}
-                    onChange={(e)=>setConfirmNew(e.target.value)}
-                  />
-                </div>
+              <div>
+                <label className="block text-sm font-medium mb-1 text-gray-700">Confirmar Nova Senha</label>
+                <input
+                  type="password"
+                  className={formStyles.input}
+                  value={confirmNew}
+                  onChange={(e)=>setConfirmNew(e.target.value)}
+                  placeholder="Confirme a nova senha"
+                />
               </div>
             </div>
           </div>
@@ -131,13 +144,13 @@ export default function EditAccountModal({ user, onClose, onUpdated }) {
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-sm rounded border border-gray-300 hover:bg-gray-100"
+              className={formStyles.cancelButton}
             >
               Cancelar
             </button>
             <button
               disabled={loading}
-              className="px-5 py-2 text-sm rounded bg-green-600 text-white hover:bg-green-500 disabled:opacity-50"
+              className={formStyles.loginButton}
             >
               {loading ? "Salvando..." : "Salvar"}
             </button>

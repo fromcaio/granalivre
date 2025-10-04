@@ -21,6 +21,14 @@ export default function TopBar() {
     getUser();
   }, []);
 
+  // Function to refresh user info after editing
+  const handleUserUpdated = async () => {
+    try {
+      const updatedUser = await getUserInfo();
+      setUser(updatedUser);
+    } catch {}
+  };
+
   return (
     <nav className="bg-gradient-to-r from-green-600 to-emerald-600 shadow-lg">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -59,7 +67,11 @@ export default function TopBar() {
       </div>
 
       {showEdit && (
-        <EditAccountModal user={user} onClose={() => setShowEdit(false)} />
+        <EditAccountModal
+          user={user}
+          onClose={() => setShowEdit(false)}
+          onUpdated={handleUserUpdated}
+        />
       )}
       {showDelete && (
         <DeleteAccountModal onClose={() => setShowDelete(false)} />
