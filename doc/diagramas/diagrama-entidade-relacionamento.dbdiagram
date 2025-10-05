@@ -1,0 +1,110 @@
+// Grana Livre - Diagrama Entidade-Relacionamento (ERD)
+// Versão 2.0 - Modelo Simplificado sem Contas Bancárias
+// As transações são consolidadas por usuário.
+
+//// ---- TABELAS PRINCIPAIS ---- ////
+
+Table Usuario {
+  id integer [pk, increment]
+  nome varchar(255) [not null]
+  email varchar(255) [unique, not null]
+  senha varchar(255) [not null, note: 'O Django gerenciará o hashing da senha']
+  data_criacao timestamp [default: `now()`]
+}
+
+Table Categoria {
+  id integer [pk, increment]
+  usuario_id integer [ref: > Usuario.id, not null]
+  nome varchar(100) [not null]
+  tipo_transacao varchar(10) [not null, note: 'Entrada ou Saida']
+  data_criacao timestamp [default: `now()`]
+}
+
+Table Transacao {
+  id integer [pk, increment]
+  usuario_id integer [ref: > Usuario.id, not null]
+  categoria_id integer [ref: > Categoria.id, not null]
+  descricao varchar(255) [not null]
+  valor decimal(15, 2) [not null]
+  tipo_transacao varchar(10) [not null, note: 'Entrada ou Saida']
+  data date [not null]
+  efetivado boolean [not null, default: true, note: 'Para controle de transações futuras/pendentes']
+  data_criacao timestamp [default: `now()`]
+}
+
+Table DespesaRecorrente {
+  id integer [pk, increment]
+  usuario_id integer [ref: > Usuario.id, not null]
+  categoria_id integer [ref: > Categoria.id, not null]
+  descricao varchar(255) [not null]
+  valor decimal(15, 2) [not null]
+  dia_vencimento integer [not null, note: 'Dia do mês para o vencimento']
+  data_inicio date
+  data_fim date [note: 'Opcional, para despesas com prazo definido']
+  ativa boolean [not null, default: true]
+  data_criacao timestamp [default: `now()`]
+}
+
+Table ReceitaRecorrente {
+  id integer [pk, increment]
+  usuario_id integer [ref: > Usuario.id, not null]
+  categoria_id integer [ref: > Categoria.id, not null]
+  descricao varchar(255) [not null]
+  valor decimal(15, 2) [not null]
+  dia_recebimento integer [not null, note: 'Dia do mês para o recebimento']
+  data_inicio date
+  data_fim date [note: 'Opcional, para receitas com prazo definido']
+  ativa boolean [not null, default: true]
+  data_criacao timestamp [default: `now()`]
+}
+
+Table Patrimonio {
+  id integer [pk, increment]
+  usuario_id integer [ref: > Usuario.id, not null]
+  nome varchar(255) [not null]
+  tipo_patrimonio varchar(50) [note: 'Ex: Imóvel, Veículo, Outro']
+  valor_inicial decimal(15, 2) [not null]
+  data_aquisicao date [not null]
+  valor_liquidacao decimal(15, 2) [note: 'Valor de venda do bem']
+  data_liquidacao date
+  status varchar(20) [not null, default: 'Ativo', note: 'Ativo ou Liquidado']
+  data_criacao timestamp [default: `now()`]
+}
+
+// ---- ESTRUTURA DE INVESTIMENTOS COM MOVIMENTAÇÕES ---- //
+
+Table Investimento {
+  id integer [pk, increment]
+  usuario_id integer [ref: > Usuario.id, not null]
+  
+  // --- Campos de Identificação ---
+  nome varchar(255) [not null, note: 'Nome do ativo ou título. Ex: CDB Banco X, Ações da Empresa Y']
+  tipo_investimento varchar(50) [not null, note: 'Ex: Renda Fixa, Ação, FII, Cripto']
+  status varchar(20) [not null, default: 'Ativo', note: 'Ativo ou Resgatado']
+  
+  // --- Campos Específicos para RENDA FIXA ---
+  tipo_rentabilidade varchar(50) [note: 'Ex: Prefixado, Pós-fixado, Híbrido.']
+  taxa_rentabilidade varchar(50) [note: 'Ex: 10% a.a., 110% CDI, IPCA + 5.5%.']
+  data_vencimento date
+  
+  // --- Campos Específicos para RENDA VARIÁVEL ---
+  ticker varchar(10) [note: 'Ex: PETR4, MXRF11.']
+  
+  data_criacao timestamp [default: `now()`]
+}
+
+Table MovimentacaoInvestimento {
+  id integer [pk, increment]
+  investimento_id integer [ref: > Investimento.id, not null]
+  tipo_movimentacao varchar(50) [not null, note: 'Aporte, Resgate, Rendimento, Dividendo, JCP']
+  data date [not null]
+  
+  // --- Para Renda Fixa e Aportes/Resgates Totais ---
+  valor decimal(15, 2) [not null]
+  
+  // --- Para Renda Variável ---
+  quantidade decimal(18, 8) [note: 'Número de cotas/ações movimentadas']
+  preco_unitario decimal(15, 2) [note: 'Preço da cota/ação na data da movimentação']
+  
+  data_criacao timestamp [default: `now()`]
+} 

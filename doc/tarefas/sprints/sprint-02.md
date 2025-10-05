@@ -6,6 +6,8 @@
     - [x] configurar api de login (Caio Reis)
     - [x] configurar api de cadastro (Caio Reis)
     - [x] configurar api para dar refresh nos tokens (Caio Reis)
+    - [x] api de edição de dados do usuario (Caio Reis)
+    - [x] api de remoção de conta do usuario (Caio Reis)
 - [x] frontend
     - [x] pagina de cadastro sem customizacao (Caio Reis)
     - [x] pagina de login sem customização (Caio Reis)
@@ -13,11 +15,16 @@
     - [x] pagina para testar logout e refresh (Caio Reis)
     - [x] customizando pagina de login (Caio Reis)
     - [x] customizando pagina de registro (Caio Reis)
-    - [ ] componente topbar
+    - [x] componente topbar
 	    - [x] inicio do desenvolvimento (Caio Reis)
-	    - [ ] adicionar popup editar
-	    - [ ] adicionar popup excluir
+	    - [x] adicionar popup editar (Caio Reis)
+	    - [x] adicionar popup excluir (Caio Reis)
+- [x] configuração docker
+    - [x] front-end
+    - [x] back-end
+    - [x] docker-compose
 - [x] documentação
-	- [x] tutorial execucao front-end (/doc/tutoriais/)
-	- [x] tutorial execucao back-end
-	- [x] tutorial git-e-github
+	- [x] tutorial execucao front-end (/doc/tutoriais/) (Caio Reis)
+	- [x] tutorial execucao back-end (Caio Reis)
+	- [x] tutorial git-e-github (Caio Reis)
+    - [x] update no readme e tutorial de build do docker (Caio Reis)
