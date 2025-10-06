@@ -17,7 +17,6 @@
   - [Instalação](#instalação)
 - [📂 Estrutura de Arquivos](#-estrutura-de-arquivos)
 - [🤝 Como Contribuir](#-como-contribuir)
-- [📄 Licença](#-licença)
 
 ---
 
