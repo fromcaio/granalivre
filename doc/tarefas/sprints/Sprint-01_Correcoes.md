@@ -5,7 +5,7 @@
 - [ ] Telas
 	- [x] Tela de Resumo (Caio Reis)
 	- [x] Tela de Entradas (Caio Reis)
-	- [ ] Tela de Saidas
+	- [x] Tela de Saidas (Gabriel Vaz)
 	- [ ] Tela de Conta Corrente
 	- [ ] Revisar tela Investimento
 	- [ ] Revisar tela patrimonio
