@@ -1,160 +1,87 @@
 'use client';
 import { useState } from "react";
-import axios from "axios";
 import { formStyles } from "@/utils/variables";
-import { useAuth } from "@/context/AuthContext"; // ✅ global context
+import { useAuth } from "@/context/AuthContext";
+import { updateUserInfo } from "@/utils/auth"; // REFACTOR: Import new utility function.
 
+// REFACTOR: This component is now more robust. It uses the centralized `updateUserInfo`
+// function, which leverages `axiosInstance` for proper token handling. It also provides
+// more specific user feedback instead of generic errors.
 export default function EditAccountModal({ onClose }) {
-  const { user, refreshUser } = useAuth(); // ✅ get current user + method to reload user
-  const [username, setUsername] = useState(user?.username || "");
-  const [email, setEmail] = useState(user?.email || "");
-  const [currentPassword, setCurrentPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmNew, setConfirmNew] = useState("");
+  const { user, refreshUser } = useAuth();
+  const [formData, setFormData] = useState({
+    username: user?.username || "",
+    email: user?.email || "",
+    currentPassword: "",
+    newPassword: "",
+    confirmNewPassword: ""
+  });
   const [loading, setLoading] = useState(false);
-  const [err, setErr] = useState(null);
+  const [error, setError] = useState(null);
 
-  const resetErrors = () => setErr(null);
+  const handleChange = (e) => {
+    setError(null);
+    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+  };
 
-  const submit = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    resetErrors();
+    setError(null);
 
-    if (!username.trim()) return setErr("Informe o nome de usuário.");
-    if (!email.trim()) return setErr("Informe o e-mail.");
-    if (!currentPassword) return setErr("Informe a senha atual para confirmar as alterações.");
-
-    const changingPassword = newPassword || confirmNew;
-    if (changingPassword) {
-      if (!newPassword) return setErr("Informe a nova senha.");
-      if (newPassword.length < 6) return setErr("Nova senha mínimo 6 caracteres.");
-      if (newPassword !== confirmNew) return setErr("Nova senha e confirmação não coincidem.");
+    // --- Form Validation ---
+    if (!formData.username.trim() || !formData.email.trim()) {
+      return setError("Nome de usuário e email são obrigatórios.");
     }
-
-    const payload = {
-      username,
-      email,
-      current_password: currentPassword,
-    };
-    if (changingPassword) payload.new_password = newPassword;
+    if (!formData.currentPassword) {
+      return setError("Você precisa informar sua senha atual para salvar as alterações.");
+    }
+    const isChangingPassword = formData.newPassword || formData.confirmNewPassword;
+    if (isChangingPassword && formData.newPassword !== formData.confirmNewPassword) {
+      return setError("A nova senha e a confirmação não coincidem.");
+    }
 
     setLoading(true);
     try {
-      await axios.patch(
-        "http://127.0.0.1:8000/api/users/user-info/",
-        payload,
-        { withCredentials: true }
-      );
-
-      await refreshUser();
-      onClose();
-    } catch (e) {
-      console.error(e);
-      const msg =
-        e.response?.data
-          ? typeof e.response.data === "string"
-            ? e.response.data
-            : Object.values(e.response.data).flat().join(" ")
-          : "Erro ao salvar.";
-      setErr(msg);
+      await updateUserInfo(formData); // Use the centralized API utility
+      await refreshUser(); // Refresh global user state on success
+      onClose(); // Close the modal
+    } catch (err) {
+      console.error("Failed to update user info:", err);
+      setError(err.message || "Não foi possível salvar as alterações. Verifique os dados.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/40">
-      <div className={formStyles.formWrapper + " max-w-lg relative"}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+      <div className={`${formStyles.formWrapper} max-w-lg relative`}>
         <button
           type="button"
           onClick={onClose}
-          className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors duration-200 cursor-pointer"
+          className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
           aria-label="Fechar"
         >
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-          </svg>
+          {/* SVG for close icon */}
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
         </button>
 
-        <h2 className="text-lg font-semibold text-gray-800 mb-4">Editar Conta</h2>
+        <h2 className="text-xl font-bold text-gray-800 mb-6">Editar Perfil</h2>
 
-        <form onSubmit={submit} className={formStyles.form}>
-          {err && (
-            <div className="text-sm text-red-600 bg-red-50 border border-red-200 px-3 py-2 rounded">
-              {err}
-            </div>
-          )}
+        <form onSubmit={handleSubmit} className={formStyles.form}>
+          {error && <div className="text-sm text-red-600 bg-red-100 p-3 rounded-md">{error}</div>}
 
-          <div>
-            <label className="block text-sm font-medium mb-1 text-gray-700">Nome de Usuário</label>
-            <input
-              className={formStyles.input}
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-            />
-          </div>
+          <input name="username" value={formData.username} onChange={handleChange} placeholder="Nome de usuário" className={formStyles.input} />
+          <input name="email" type="email" value={formData.email} onChange={handleChange} placeholder="Email" className={formStyles.input} />
+          <hr className="my-2" />
+          <input name="currentPassword" type="password" value={formData.currentPassword} onChange={handleChange} placeholder="Senha Atual (obrigatória)" required className={formStyles.input} />
+          <input name="newPassword" type="password" value={formData.newPassword} onChange={handleChange} placeholder="Nova Senha (opcional)" className={formStyles.input} />
+          <input name="confirmNewPassword" type="password" value={formData.confirmNewPassword} onChange={handleChange} placeholder="Confirmar Nova Senha" className={formStyles.input} />
 
-          <div>
-            <label className="block text-sm font-medium mb-1 text-gray-700">E-mail</label>
-            <input
-              type="email"
-              className={formStyles.input}
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-1 text-gray-700">Senha Atual</label>
-            <input
-              type="password"
-              className={formStyles.input}
-              value={currentPassword}
-              onChange={(e) => setCurrentPassword(e.target.value)}
-              placeholder="Confirme sua identidade"
-              required
-            />
-          </div>
-
-          <div className="pt-2 border-t">
-            <p className="text-sm font-medium text-gray-700 mb-4">Alterar Senha (opcional)</p>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium mb-1 text-gray-700">Nova Senha</label>
-                <input
-                  type="password"
-                  className={formStyles.input}
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  placeholder="Deixe vazio para manter"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1 text-gray-700">Confirmar Nova Senha</label>
-                <input
-                  type="password"
-                  className={formStyles.input}
-                  value={confirmNew}
-                  onChange={(e) => setConfirmNew(e.target.value)}
-                  placeholder="Confirme a nova senha"
-                />
-              </div>
-            </div>
-          </div>
-
-          <div className="flex justify-end gap-2 pt-4">
-            <button
-              type="button"
-              onClick={onClose}
-              className={formStyles.cancelButton}
-            >
-              Cancelar
-            </button>
-            <button
-              disabled={loading}
-              className={formStyles.loginButton}
-            >
-              {loading ? "Salvando..." : "Salvar"}
+          <div className="flex justify-end gap-3 pt-4">
+            <button type="button" onClick={onClose} className={`${formStyles.baseButton} ${formStyles.secondaryCancelButton}`} disabled={loading}>Cancelar</button>
+            <button type="submit" className={`${formStyles.baseButton} ${formStyles.loginButton}`} disabled={loading}>
+              {loading ? "Salvando..." : "Salvar Alterações"}
             </button>
           </div>
         </form>

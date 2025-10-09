@@ -3,73 +3,70 @@ import { useState, useRef, useEffect } from "react";
 import { formStyles } from "@/utils/variables";
 import { useAuth } from "@/context/AuthContext";
 import EditAccountModal from "./editAccountModal";
+import DeleteAccountModal from "./deleteAccountModal"; // Import Delete modal
 
-export default function UserMenu({ onDelete }) { // ⬅️ remove onEdit prop
+// REFACTOR: This component now fully manages its own state, including the visibility
+// of the edit and delete modals, removing the need for props like `onEdit` or `onDelete`.
+export default function UserMenu() {
   const { user, logout } = useAuth();
-  const [open, setOpen] = useState(false);
-  const [showEdit, setShowEdit] = useState(false); // ✅ new state for modal
+  const [isOpen, setIsOpen] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const menuRef = useRef(null);
 
-  // Close dropdown when clicking outside
+  // Effect to close the dropdown when clicking outside of it.
   useEffect(() => {
-    const handler = (e) => {
-      if (menuRef.current && !menuRef.current.contains(e.target)) {
-        setOpen(false);
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setIsOpen(false);
       }
     };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // REFACTOR: The logout process is simplified. The `logout` function from `useAuth`
+  // already handles server-side invalidation, client-side cookie clearing, state reset,
+  // and redirection. No need for alerts or complex logic here.
   const handleLogout = async () => {
-    setOpen(false);
-    try {
-      await logout();
-      alert("Você se desconectou com sucesso.");
-    } catch (error) {
-      console.error("Logout failed:", error);
-      alert("Erro ao sair. Tente novamente.");
-    }
+    setIsOpen(false);
+    await logout();
   };
 
-  if (!user) return null;
+  if (!user) {
+    return null;
+  }
 
   return (
     <>
       <div className="relative" ref={menuRef}>
         <button
-          onClick={() => setOpen((o) => !o)}
-          className="text-white text-sm sm:text-base font-medium px-3 py-2 rounded-lg bg-green-700 bg-opacity-50 hover:bg-opacity-70 transition cursor-pointer"
+          onClick={() => setIsOpen(prev => !prev)}
+          className="text-white text-sm sm:text-base font-medium px-3 py-2 rounded-lg bg-green-700 bg-opacity-50 hover:bg-opacity-70 transition cursor-pointer flex items-center"
           aria-haspopup="true"
-          aria-expanded={open}
+          aria-expanded={isOpen}
         >
-          {user.email}
+          {user.username || user.email}
         </button>
 
-        {open && (
+        {isOpen && (
           <div
-            className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg border border-gray-200 z-30 animate-fade"
+            className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg border border-gray-200 z-30 animate-fade-in-down"
             role="menu"
           >
             <button
-              onClick={() => {
-                setOpen(false);
-                setShowEdit(true); // ✅ open modal
-              }}
+              onClick={() => { setIsOpen(false); setShowEditModal(true); }}
               className={formStyles.menuItem}
               role="menuitem"
             >
-              Editar conta
+              Editar Conta
             </button>
             <button
-              onClick={() => {
-                setOpen(false);
-                onDelete();
-              }}
+              onClick={() => { setIsOpen(false); setShowDeleteModal(true); }}
               className={formStyles.menuItemDanger}
               role="menuitem"
             >
-              Excluir conta
+              Excluir Conta
             </button>
             <hr className="my-1 border-gray-200" />
             <button
@@ -83,11 +80,12 @@ export default function UserMenu({ onDelete }) { // ⬅️ remove onEdit prop
         )}
       </div>
 
-      {/* ✅ show modal when triggered */}
-      {showEdit && (
-        <EditAccountModal
-          onClose={() => setShowEdit(false)} // close modal
-        />
+      {/* Modals are now rendered here, controlled by this component's state */}
+      {showEditModal && (
+        <EditAccountModal onClose={() => setShowEditModal(false)} />
+      )}
+      {showDeleteModal && (
+        <DeleteAccountModal onClose={() => setShowDeleteModal(false)} />
       )}
     </>
   );

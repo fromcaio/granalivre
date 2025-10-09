@@ -1,19 +1,13 @@
 'use client';
-import { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import Link from 'next/link';
 import UserMenu from './userMenu';
-import EditAccountModal from './editAccountModal';
-import DeleteAccountModal from './deleteAccountModal';
 
+// REFACTOR: The TopBar is now a much simpler component. It no longer needs to manage
+// the state for modals (`showEdit`, `showDelete`) or handle update events. Its only
+// responsibility is to display the correct UI based on the authentication state.
 export default function TopBar() {
-  const { user, refreshUser } = useAuth();
-  const [showEdit, setShowEdit] = useState(false);
-  const [showDelete, setShowDelete] = useState(false);
-
-  const handleUserUpdated = async () => {
-    await refreshUser();
-  };
+  const { user } = useAuth();
 
   return (
     <nav className="bg-gradient-to-r from-green-600 to-emerald-600 shadow-lg">
@@ -27,11 +21,10 @@ export default function TopBar() {
 
           <div className="flex items-center space-x-2 sm:space-x-4">
             {user ? (
-              <UserMenu
-                onEdit={() => setShowEdit(true)}
-                onDelete={() => setShowDelete(true)}
-              />
+              // The UserMenu component is now self-contained. No props are needed.
+              <UserMenu />
             ) : (
+              // Fallback for logged-out users.
               <>
                 <Link
                   href="/cadastrar"
@@ -50,17 +43,7 @@ export default function TopBar() {
           </div>
         </div>
       </div>
-
-      {showEdit && (
-        <EditAccountModal
-          user={user}
-          onClose={() => setShowEdit(false)}
-          onUpdated={handleUserUpdated}
-        />
-      )}
-      {showDelete && (
-        <DeleteAccountModal onClose={() => setShowDelete(false)} />
-      )}
+      {/* All modal logic has been moved out of TopBar and into UserMenu. */}
     </nav>
   );
 }

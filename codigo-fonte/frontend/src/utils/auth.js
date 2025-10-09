@@ -2,65 +2,112 @@ import axiosInstance from "./axiosInstance";
 
 const API_URL = "/users/";
 
+export const clearAuthCookies = () => {
+    if (typeof document === 'undefined') return;
+    const expire = 'expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; Max-Age=0;';
+    document.cookie = `access_token=; ${expire}`;
+    document.cookie = `refresh_token=; ${expire}`;
+};
+
+const formatRegistrationError = (errorData) => {
+    if (!errorData) return "Ocorreu um erro desconhecido.";
+    let messages = [];
+    for (const key in errorData) {
+        if (Array.isArray(errorData[key])) {
+            messages.push(`${key}: ${errorData[key].join(' ')}`);
+        }
+    }
+    return messages.length > 0 ? `Erro de validação:\n- ${messages.join('\n- ')}` : "Não foi possível processar o cadastro.";
+};
+
 export const registerUser = async (email, username, password) => {
     try {
-        // remove login and refresh cookies if they exist
-        document.cookie = 'login=; Max-Age=0; path=/';
-        document.cookie = 'refresh=; Max-Age=0; path=/';
-        const response = await axiosInstance.post(`${API_URL}register/`, {email, username, password})
-        return response.data
+        clearAuthCookies();
+        const response = await axiosInstance.post(`${API_URL}register/`, { email, username, password });
+        return response.data;
+    } catch (e) {
+        if (e.response?.data) throw new Error(formatRegistrationError(e.response.data));
+        throw new Error("Falha na conexão com o servidor de registro.");
     }
-    catch (e) {
-        // return the error message from the server if available
-        if (e.response && e.response.data) {
-            console.log(e.response.data);
-            let convertedMessage = "\n";
-            for (const key in e.response.data) {
-                convertedMessage += `${key}: ${e.response.data[key]}\n`;
-            }
-            throw new Error(convertedMessage);
-        }
-        throw new Error("Erro ao registrar usuário, sem detalhes");
-    }
-}
+};
 
 export const loginUser = async (email, password) => {
     try {
-        const response = await axiosInstance.post(`${API_URL}login/`, {email, password})
-        return response.data
+        const response = await axiosInstance.post(`${API_URL}login/`, { email, password });
+        return response.data;
+    } catch (e) {
+        if (e.response?.status === 401) throw new Error("Credenciais inválidas. Verifique seu email e senha.");
+        throw new Error("Não foi possível fazer login. Tente novamente.");
     }
-    catch (e) {
-        throw new Error("Login failed");
-    }
-}
+};
 
 export const logoutUser = async () => {
     try {
-        const response = await axiosInstance.post(`${API_URL}logout/`)
-        return response.data
+        await axiosInstance.post(`${API_URL}logout/`);
+    } catch (e) {
+        console.warn("Server-side logout failed, but client-side cleanup will proceed.", e);
     }
-    catch (e) {
-        console.log(e);
-        throw new Error("Logout failed");
-    }
-}
+};
 
 export const getUserInfo = async () => {
     try {
-        const response = await axiosInstance.get(`${API_URL}user-info/`)
-        return response.data
+        const response = await axiosInstance.get(`${API_URL}user-info/`);
+        return response.data;
+    } catch (e) {
+        throw new Error("Sua sessão pode ter expirado. Falha ao buscar dados do usuário.");
     }
-    catch (e) {
-        throw new Error("Fetching user info failed");
-    }
-}
+};
 
-export const refreshToken = async () => {
+
+// --- NEW UTILITY FUNCTIONS ---
+
+/**
+ * NEW: Updates user information (username, email, password).
+ * This function centralizes the API call for editing user details.
+ * @param {object} formData - The user data from the form.
+ */
+export const updateUserInfo = async (formData) => {
+    const payload = {
+        username: formData.username,
+        email: formData.email,
+        current_password: formData.currentPassword,
+    };
+    // Only include the new_password if the user is actually changing it.
+    if (formData.newPassword) {
+        payload.new_password = formData.newPassword;
+    }
+
     try {
-        const response = await axiosInstance.post(`${API_URL}refresh/`)
-        return response.data
+        await axiosInstance.patch(`${API_URL}user-info/`, payload);
+    } catch (e) {
+        // Provide a more specific error message from the backend if available.
+        if (e.response?.data?.current_password) {
+            throw new Error('A senha atual está incorreta.');
+        }
+        if (e.response?.data) {
+             // Generic fallback for other validation errors (e.g., email already exists)
+             const messages = Object.values(e.response.data).flat().join(' ');
+             throw new Error(messages);
+        }
+        throw new Error('Erro ao salvar as alterações.');
     }
-    catch (e) {
-        throw new Error("Token refresh failed");
+};
+
+/**
+ * NEW: Deletes the authenticated user's account.
+ * This function centralizes the API call for account deletion.
+ * @param {string} currentPassword - The user's current password for confirmation.
+ */
+export const deleteUserAccount = async (currentPassword) => {
+    try {
+        // The password must be sent in the `data` property for a DELETE request with axios.
+        await axiosInstance.delete(`${API_URL}user-info/`, {
+            data: { current_password: currentPassword },
+        });
+    } catch (e) {
+        if (e.response?.status === 403 || e.response?.status === 400) {
+            throw new Error('A senha informada está incorreta.');
+        }
+        throw new Error('Não foi possível excluir a conta. Tente novamente.');
     }
-}
+};
