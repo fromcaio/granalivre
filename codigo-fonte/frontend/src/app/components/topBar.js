@@ -1,32 +1,18 @@
-'use client'
-import { useState, useEffect } from "react";
-import { getUserInfo } from "@/utils/auth";
-import Link from "next/link";
-import UserMenu from "./userMenu";
-import EditAccountModal from "./editAccountModal";
-import DeleteAccountModal from "./deleteAccountModal";
+'use client';
+import { useState } from 'react';
+import { useAuth } from '@/context/AuthContext';
+import Link from 'next/link';
+import UserMenu from './userMenu';
+import EditAccountModal from './editAccountModal';
+import DeleteAccountModal from './deleteAccountModal';
 
 export default function TopBar() {
-  const [user, setUser] = useState(null);
+  const { user, refreshUser } = useAuth();
   const [showEdit, setShowEdit] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
 
-  useEffect(() => {
-    const getUser = async () => {
-      try {
-        const userDetails = await getUserInfo();
-        if (userDetails) setUser(userDetails);
-      } catch {}
-    };
-    getUser();
-  }, []);
-
-  // Function to refresh user info after editing
   const handleUserUpdated = async () => {
-    try {
-      const updatedUser = await getUserInfo();
-      setUser(updatedUser);
-    } catch {}
+    await refreshUser();
   };
 
   return (
@@ -42,14 +28,13 @@ export default function TopBar() {
           <div className="flex items-center space-x-2 sm:space-x-4">
             {user ? (
               <UserMenu
-                user={user}
                 onEdit={() => setShowEdit(true)}
                 onDelete={() => setShowDelete(true)}
               />
             ) : (
               <>
                 <Link
-                  href="/registrar"
+                  href="/cadastrar"
                   className="text-white text-sm sm:text-base font-semibold px-3 sm:px-4 py-2 rounded-lg hover:bg-green-700 transition"
                 >
                   Cadastrar

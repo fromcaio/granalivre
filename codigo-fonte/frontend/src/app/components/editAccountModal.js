@@ -1,9 +1,11 @@
-'use client'
+'use client';
 import { useState } from "react";
 import axios from "axios";
 import { formStyles } from "@/utils/variables";
+import { useAuth } from "@/context/AuthContext"; // ✅ global context
 
-export default function EditAccountModal({ user, onClose, onUpdated }) {
+export default function EditAccountModal({ onClose }) {
+  const { user, refreshUser } = useAuth(); // ✅ get current user + method to reload user
   const [username, setUsername] = useState(user?.username || "");
   const [email, setEmail] = useState(user?.email || "");
   const [currentPassword, setCurrentPassword] = useState("");
@@ -30,13 +32,11 @@ export default function EditAccountModal({ user, onClose, onUpdated }) {
     }
 
     const payload = {
-      username: username,
+      username,
       email,
-      current_password: currentPassword
+      current_password: currentPassword,
     };
-    if (changingPassword) {
-      payload.new_password = newPassword;
-    }
+    if (changingPassword) payload.new_password = newPassword;
 
     setLoading(true);
     try {
@@ -45,18 +45,18 @@ export default function EditAccountModal({ user, onClose, onUpdated }) {
         payload,
         { withCredentials: true }
       );
-      if (onUpdated) onUpdated();
+
+      await refreshUser();
       onClose();
     } catch (e) {
       console.error(e);
-      if (e.response?.data) {
-        const msg = typeof e.response.data === 'string'
-          ? e.response.data
-          : Object.values(e.response.data).flat().join(' ');
-        setErr(msg || "Erro ao salvar.");
-      } else {
-        setErr("Erro ao salvar.");
-      }
+      const msg =
+        e.response?.data
+          ? typeof e.response.data === "string"
+            ? e.response.data
+            : Object.values(e.response.data).flat().join(" ")
+          : "Erro ao salvar.";
+      setErr(msg);
     } finally {
       setLoading(false);
     }
@@ -75,7 +75,9 @@ export default function EditAccountModal({ user, onClose, onUpdated }) {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
+
         <h2 className="text-lg font-semibold text-gray-800 mb-4">Editar Conta</h2>
+
         <form onSubmit={submit} className={formStyles.form}>
           {err && (
             <div className="text-sm text-red-600 bg-red-50 border border-red-200 px-3 py-2 rounded">
@@ -88,7 +90,7 @@ export default function EditAccountModal({ user, onClose, onUpdated }) {
             <input
               className={formStyles.input}
               value={username}
-              onChange={(e)=>setUsername(e.target.value)}
+              onChange={(e) => setUsername(e.target.value)}
             />
           </div>
 
@@ -98,7 +100,7 @@ export default function EditAccountModal({ user, onClose, onUpdated }) {
               type="email"
               className={formStyles.input}
               value={email}
-              onChange={(e)=>setEmail(e.target.value)}
+              onChange={(e) => setEmail(e.target.value)}
             />
           </div>
 
@@ -108,7 +110,7 @@ export default function EditAccountModal({ user, onClose, onUpdated }) {
               type="password"
               className={formStyles.input}
               value={currentPassword}
-              onChange={(e)=>setCurrentPassword(e.target.value)}
+              onChange={(e) => setCurrentPassword(e.target.value)}
               placeholder="Confirme sua identidade"
               required
             />
@@ -123,7 +125,7 @@ export default function EditAccountModal({ user, onClose, onUpdated }) {
                   type="password"
                   className={formStyles.input}
                   value={newPassword}
-                  onChange={(e)=>setNewPassword(e.target.value)}
+                  onChange={(e) => setNewPassword(e.target.value)}
                   placeholder="Deixe vazio para manter"
                 />
               </div>
@@ -133,7 +135,7 @@ export default function EditAccountModal({ user, onClose, onUpdated }) {
                   type="password"
                   className={formStyles.input}
                   value={confirmNew}
-                  onChange={(e)=>setConfirmNew(e.target.value)}
+                  onChange={(e) => setConfirmNew(e.target.value)}
                   placeholder="Confirme a nova senha"
                 />
               </div>

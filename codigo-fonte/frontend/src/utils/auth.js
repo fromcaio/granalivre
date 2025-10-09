@@ -1,14 +1,26 @@
-import axiosInstance from './axiosInstance';
+import axiosInstance from "./axiosInstance";
 
 const API_URL = "/users/";
 
 export const registerUser = async (email, username, password) => {
     try {
+        // remove login and refresh cookies if they exist
+        document.cookie = 'login=; Max-Age=0; path=/';
+        document.cookie = 'refresh=; Max-Age=0; path=/';
         const response = await axiosInstance.post(`${API_URL}register/`, {email, username, password})
         return response.data
     }
     catch (e) {
-        throw new Error("Registration failed");
+        // return the error message from the server if available
+        if (e.response && e.response.data) {
+            console.log(e.response.data);
+            let convertedMessage = "\n";
+            for (const key in e.response.data) {
+                convertedMessage += `${key}: ${e.response.data[key]}\n`;
+            }
+            throw new Error(convertedMessage);
+        }
+        throw new Error("Erro ao registrar usuário, sem detalhes");
     }
 }
 
@@ -28,6 +40,7 @@ export const logoutUser = async () => {
         return response.data
     }
     catch (e) {
+        console.log(e);
         throw new Error("Logout failed");
     }
 }
