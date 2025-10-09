@@ -22,16 +22,17 @@ export default function registerPage() {
     }
     try {
       await registerUser(email, userName, password);
-      alert("Usuário registrado com sucesso!");
-      // Auto-login after registration
-      await loginUser(email, password);
+      alert("Usuário cadastrado com sucesso!");
+
+      const loggedInUser = await loginUser(email, password);
+      setUser(loggedInUser);
+
+      console.log("Usuário logado com sucesso!");
       router.push(redirectPath);
     }
     catch (error) {
-      console.log(error);
-      alert("Erro ao registrar usuário\n" + error.message);
+      alert("Erro ao cadastrar usuário\n" + error.message);
     }
-    
   }
 
   return (
@@ -41,7 +42,7 @@ export default function registerPage() {
         <form onSubmit={handleSubmit} className={formStyles.form}>
           <input
             type="text"
-            placeholder="Username"
+            placeholder="Nome de usuário"
             value={userName}
             required
             onChange={(e) => setUserName(e.target.value)}
@@ -57,7 +58,7 @@ export default function registerPage() {
           />
           <input
             type="password"
-            placeholder="Password"
+            placeholder="Senha"
             value={password}
             required
             onChange={(e) => setPassword(e.target.value)}

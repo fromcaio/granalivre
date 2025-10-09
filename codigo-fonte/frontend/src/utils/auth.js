@@ -1,9 +1,12 @@
-import axiosInstance from './axiosInstance';
+import axiosInstance from "./axiosInstance";
 
 const API_URL = "/users/";
 
 export const registerUser = async (email, username, password) => {
     try {
+        // remove login and refresh cookies if they exist
+        document.cookie = 'login=; Max-Age=0; path=/';
+        document.cookie = 'refresh=; Max-Age=0; path=/';
         const response = await axiosInstance.post(`${API_URL}register/`, {email, username, password})
         return response.data
     }
@@ -37,6 +40,7 @@ export const logoutUser = async () => {
         return response.data
     }
     catch (e) {
+        console.log(e);
         throw new Error("Logout failed");
     }
 }

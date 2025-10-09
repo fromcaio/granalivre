@@ -20,7 +20,7 @@ const processQueue = (error, token = null) => {
 };
 
 // Helper function to clear auth cookies
-const clearAuthCookies = () => {
+export const clearAuthCookies = () => {
   if (typeof document !== 'undefined') {
     // Clear access_token cookie
     document.cookie = 'access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
@@ -34,15 +34,21 @@ axiosInstance.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
+    // 🚫 Do not attempt refresh if calling logout or refresh endpoints
+    if (
+      originalRequest.url.includes('logout/') ||
+      originalRequest.url.includes('refresh/')
+    ) {
+      return Promise.reject(error);
+    }
+
     if (error.response?.status === 401 && !originalRequest._retry) {
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject });
-        }).then(() => {
-          return axiosInstance(originalRequest);
-        }).catch(err => {
-          return Promise.reject(err);
-        });
+        })
+          .then(() => axiosInstance(originalRequest))
+          .catch((err) => Promise.reject(err));
       }
 
       originalRequest._retry = true;
@@ -56,13 +62,9 @@ axiosInstance.interceptors.response.use(
       } catch (refreshError) {
         processQueue(refreshError, null);
         isRefreshing = false;
-        
-        // Clear invalid cookies before redirecting
+
         clearAuthCookies();
-        
-        if (typeof window !== 'undefined') {
-          window.location.href = '/entrar';
-        }
+        alert("Sua sessão expirou. Faça login novamente.");
         return Promise.reject(refreshError);
       }
     }

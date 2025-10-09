@@ -8,6 +8,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework_simplejwt.views import TokenRefreshView
 from rest_framework_simplejwt.exceptions import InvalidToken
+from rest_framework import permissions
 
 # Create your views here.
 class UserInfoView(RetrieveUpdateAPIView):
@@ -62,10 +63,17 @@ class UserInfoView(RetrieveUpdateAPIView):
         response.delete_cookie('refresh_token')
         return response
 
+
 class UserRegistrationView(CreateAPIView):
     serializer_class = RegisterUserSerializer
+    authentication_classes = []
+    permission_classes = [permissions.AllowAny]
 
 class LoginView(APIView):
+
+    authentication_classes = []
+    permission_classes = [permissions.AllowAny]
+
     def post(self, request):
         serializer = LoginUserSerializer(data=request.data)
         
@@ -92,6 +100,8 @@ class LoginView(APIView):
     
 class LogoutView(APIView):
 
+    permission_classes = [permissions.AllowAny]
+
     def post(self, request):
         refresh_token = request.COOKIES.get('refresh_token')
         if refresh_token:
@@ -99,7 +109,7 @@ class LogoutView(APIView):
                 refresh = RefreshToken(refresh_token)
                 refresh.blacklist()
             except Exception as e:
-                return Response({"error": "invalidating token" + str(e)}, status=status.HTTP_400_BAD_REQUEST)
+                pass #token is invalid or already blacklisted
         response = Response({"message": "Logged out successfully"}, status=status.HTTP_200_OK)
         response.delete_cookie('access_token')
         response.delete_cookie('refresh_token')
