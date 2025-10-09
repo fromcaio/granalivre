@@ -29,8 +29,9 @@ export default function registerPage() {
     }
     catch (error) {
       console.log(error);
-      alert("Erro ao registrar usuário");
+      alert("Erro ao registrar usuário\n" + error.message);
     }
+    
   }
 
   return (

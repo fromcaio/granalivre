@@ -8,7 +8,16 @@ export const registerUser = async (email, username, password) => {
         return response.data
     }
     catch (e) {
-        throw new Error("Registration failed");
+        // return the error message from the server if available
+        if (e.response && e.response.data) {
+            console.log(e.response.data);
+            let convertedMessage = "\n";
+            for (const key in e.response.data) {
+                convertedMessage += `${key}: ${e.response.data[key]}\n`;
+            }
+            throw new Error(convertedMessage);
+        }
+        throw new Error("Erro ao registrar usuário, sem detalhes");
     }
 }
 
