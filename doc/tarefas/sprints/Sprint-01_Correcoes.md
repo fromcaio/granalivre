@@ -4,25 +4,27 @@
 
 - [ ] Telas
 	- [x] Tela de Resumo (Caio Reis)
-	- [x] Tela de Entradas (Caio Reis)
-	- [x] Tela de Saidas (Gabriel Vaz)
+	- [ ] Tela de Entradas (Caio Reis)
+		- [ ] informar qual conta corrente vai receber a entrada
+	- [ ] Tela de Saidas (Gabriel Vaz)
+		- [ ] informar de qual conta esta sendo feita a saida
 	- [ ] Tela de Conta Corrente
+		- [ ] adicionar saldo para facilitar a experiencia do usuario
+		- [ ] mostrar extrato individual da conta
 	- [ ] Revisar tela Investimento
+		- [ ] informando de qual conta ta sendo retirado o dinheiro do aporte
+		- [ ] informando para qual conta vai o resgate
+		- [ ] informar também quantos %, ou qual valor vai para taxa de impostos/transacao (?)
 	- [ ] Revisar tela patrimonio
+		- [ ] Ao liquidar informar para qual corrente vai
+		- [ ] Ao adquirir informar de qual conta veio, ou se não veio de nenhuma
+			- [ ] nenhuma pode ser um presente
 - [ ] Diagrama de casos de uso
-	- [x] Substituir "conta" por "usuario" (Caio Reis)
-	- [x] Se certificar de que todos os elementos tenham verbos e sejam bem descritivos (Caio Reis)
-	- [ ] Adiicionar operações especificas, como liquidar, realizar aporte, etc. (Não estão inclusas em gerenciar)
-		- [x] Gerenciar Usuario (Caio Reis)
-		- [x] Gerenciar Entradas (Caio Reis)
-		- [x] Gerenciar Saídas (Caio Reis)
-		- [ ] Gerenciar Conta Corrente
-		- [ ] Gerenciar Investimentos
-		- [ ] Gerenciar Patrimônio
-	- [x] Remover Include (Caio Reis)
-	- [x] Adicionar Gerenciar Usuario (Caio Reis)
+
 - [ ] Diagrama Banco de Dados
-	- [ ] Refatorar diagrama de banco de dados. Tanto os investimentos, quanto as entradas e saidas recorrentes, assim como o patrimonio, são transações dado que são adicionados ao banco.
+	- [ ] Refatorar diagrama de banco de dados.
+		- [ ] Utilizar classe mãe transação
+		- [ ] Não diferenciar entradas e saidas
 - [ ] Documentação
 	- [x] Alterar documentação, usar SQLite ao invés de Postgress (Caio Reis)
-	- [ ] Alterar prototipos do sistema
+	- [ ] Atualizar telas na documentação
