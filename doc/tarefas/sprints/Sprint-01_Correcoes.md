@@ -9,17 +9,17 @@
 	- [x] Tela de Saidas (Gabriel Vaz)
 		- [x] informar de qual conta esta sendo feita a saida
 	- [x] Tela Automações (Gabriel Vaz)
-	- [ ] Tela de Conta Corrente
-		- [ ] adicionar saldo para facilitar a experiencia do usuario
-		- [ ] mostrar extrato individual da conta
-	- [ ] Revisar tela Investimento
-		- [ ] informando de qual conta ta sendo retirado o dinheiro do aporte
-		- [ ] informando para qual conta vai o resgate
+	- [x] Tela de Conta Corrente (Felipe)
+		- [x] adicionar saldo para facilitar a experiencia do usuario
+		- [x] mostrar extrato individual da conta
+	- [x] Revisar tela Investimento (Felipe )
+		- [x] informando de qual conta ta sendo retirado o dinheiro do aporte
+		- [x] informando para qual conta vai o resgate
 		- [ ] informar também quantos %, ou qual valor vai para taxa de impostos/transacao (?)
-	- [ ] Revisar tela patrimonio
-		- [ ] Ao liquidar informar para qual corrente vai
-		- [ ] Ao adquirir informar de qual conta veio, ou se não veio de nenhuma
-			- [ ] nenhuma pode ser um presente
+	- [x] Revisar tela patrimonio(Gabriel Vaz)
+		- [x] Ao liquidar informar para qual corrente vai
+		- [x] Ao adquirir informar de qual conta veio, ou se não veio de nenhuma
+			- [x] nenhuma pode ser um presente
 - [ ] Diagrama de casos de uso
 
 - [ ] Diagrama Banco de Dados
