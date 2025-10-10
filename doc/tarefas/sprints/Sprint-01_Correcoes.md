@@ -4,10 +4,11 @@
 
 - [ ] Telas
 	- [x] Tela de Resumo (Caio Reis)
-	- [ ] Tela de Entradas (Caio Reis)
-		- [ ] informar qual conta corrente vai receber a entrada
-	- [ ] Tela de Saidas (Gabriel Vaz)
-		- [ ] informar de qual conta esta sendo feita a saida
+	- [x] Tela de Entradas (Gabriel Vaz)
+		- [x] informar qual conta corrente vai receber a entrada
+	- [x] Tela de Saidas (Gabriel Vaz)
+		- [x] informar de qual conta esta sendo feita a saida
+	- [x] Tela Automações (Gabriel Vaz)
 	- [ ] Tela de Conta Corrente
 		- [ ] adicionar saldo para facilitar a experiencia do usuario
 		- [ ] mostrar extrato individual da conta
