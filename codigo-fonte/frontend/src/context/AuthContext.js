@@ -1,143 +1,106 @@
-import axiosInstance from "./axiosInstance";
+'use client';
+import { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
+// REFACTOR: Centralized auth utilities import.
+import { getUserInfo, logoutUser, clearAuthCookies } from '@/utils/auth'; 
+import { setOnTokenInvalid } from '@/utils/axiosInstance';
 
-const API_URL = "/users/";
+const AuthContext = createContext(null);
 
-/**
- * REFACTOR: Attempts to clear client-side JWT cookies from the browser.
- *
- * --- CRITICAL NOTE ON HttpOnly COOKIES ---
- * This function can only clear cookies that are NOT flagged as `HttpOnly`.
- * It is a security best practice for backends (like Django) to set refresh tokens
- * in `HttpOnly` cookies. This prevents client-side JavaScript from accessing them,
- * mitigating XSS attacks.
- *
- * If the refresh token is `HttpOnly`, this JavaScript function WILL FAIL SILENTLY
- * to clear it. The browser will persist the cookie. When the user refreshes the page,
- * the `axiosInstance` interceptor will find the old refresh token, use it to get a
- * new access token, and log the user back in automatically.
- *
- * THE ONLY RELIABLE FIX is for the backend's logout endpoint (`/users/logout/`)
- * to respond with a `Set-Cookie` header that explicitly expires the cookie.
- */
-export const clearAuthCookies = () => {
-    if (typeof document === 'undefined') return;
-    console.log("Attempting to clear client-side cookies...");
-    const expire = 'expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; Max-Age=0;';
-    // This will clear the access token if it's not HttpOnly.
-    document.cookie = `access_token=; ${expire}`;
-    // This will likely FAIL for the refresh token if it is HttpOnly.
-    document.cookie = `refresh_token=; ${expire}`;
-};
+export const AuthProvider = ({ children }) => {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true); // Represents the initial auth check
+  const router = useRouter(); 
 
-const formatRegistrationError = (errorData) => {
-    if (!errorData) return "Ocorreu um erro desconhecido.";
-    let messages = [];
-    for (const key in errorData) {
-        if (Array.isArray(errorData[key])) {
-            messages.push(`${key}: ${errorData[key].join(' ')}`);
-        }
-    }
-    return messages.length > 0 ? `Erro de validação:\n- ${messages.join('\n- ')}` : "Não foi possível processar o cadastro.";
-};
+  /**
+   * REFACTOR: Centralized session invalidation logic.
+   * This function is the single point of truth for handling a dead session,
+   * ensuring cookies are cleared, state is reset, and the user is redirected.
+   */
+  const handleSessionInvalidation = useCallback(() => {
+    console.warn("AuthContext: Session has been invalidated. Cleaning up and redirecting to login.");
+    clearAuthCookies();
+    setUser(null);
+    setLoading(false); // Ensure loading is finalized
+    router.push('/entrar');
+  }, [router]);
 
-export const registerUser = async (email, username, password) => {
+  /**
+   * Fetches user data from the backend to verify and update the session state.
+   * This is the core function for initializing and refreshing the user's logged-in status.
+   */
+  const refreshUser = useCallback(async () => {
+    // No need to set loading to true here, as it's for the *initial* load.
     try {
-        clearAuthCookies();
-        const response = await axiosInstance.post(`${API_URL}register/`, { email, username, password });
-        return response.data;
-    } catch (e) {
-        if (e.response?.data) throw new Error(formatRegistrationError(e.response.data));
-        throw new Error("Falha na conexão com o servidor de registro.");
+      const userDetails = await getUserInfo();
+      setUser(userDetails || null);
+    } catch (error) {
+      // If getUserInfo fails, it implies no valid session exists.
+      console.log('AuthContext: User info could not be fetched (likely not logged in).');
+      setUser(null);
+    } finally {
+      // This marks the end of the initial authentication check.
+      setLoading(false);
     }
+  }, []); 
+
+  /**
+   * Logs the user out, cleaning up both server and client states.
+   */
+  const logout = useCallback(async () => {
+    try {
+      // Attempt to invalidate the token on the server first.
+      await logoutUser();
+    } catch (e) {
+      console.error('AuthContext: Server-side logout failed. Proceeding with client-side cleanup anyway.', e);
+    } finally {
+      // Regardless of server outcome, always invalidate the session on the client.
+      handleSessionInvalidation();
+    }
+  }, [handleSessionInvalidation]);
+
+  // This effect runs only once on initial mount.
+  useEffect(() => {
+    // 1. Link the low-level axios interceptor with our high-level session invalidation handler.
+    // This is crucial for reacting globally when the refresh token fails.
+    setOnTokenInvalid(handleSessionInvalidation);
+
+    // 2. Perform the initial check to see if a user session already exists.
+    refreshUser();
+
+  }, [refreshUser, handleSessionInvalidation]);
+
+
+  // Memoize the context value to prevent unnecessary re-renders for consuming components.
+  const contextValue = useMemo(() => ({
+    user,
+    isAuthenticated: !!user,
+    loading,
+    refreshUser,
+    logout,
+  }), [user, loading, refreshUser, logout]);
+
+
+  return (
+    <AuthContext.Provider value={contextValue}>
+      {/* REFACTOR: Show a global loading indicator ONLY during the initial auth check. */}
+      {/* This prevents layout shifts and content flashing while verifying the session. */}
+      {loading ? (
+        <div className="min-h-screen flex items-center justify-center bg-gray-50">
+          <p className="text-lg text-gray-600">Verificando sessão...</p>
+        </div>
+      ) : (
+        children
+      )}
+    </AuthContext.Provider>
+  );
 };
 
-export const loginUser = async (email, password) => {
-    try {
-        const response = await axiosInstance.post(`${API_URL}login/`, { email, password });
-        return response.data;
-    } catch (e) {
-        if (e.response?.status === 401) throw new Error("Credenciais inválidas. Verifique seu email e senha.");
-        throw new Error("Não foi possível fazer login. Tente novamente.");
-    }
-};
-
-/**
- * REFACTOR: Sends a request to the server to invalidate the session.
- *
- * The backend must be configured to do two things upon receiving this request:
- * 1. Blacklist the refresh token to prevent it from being used again.
- * 2. Respond with a `Set-Cookie` header to clear the `HttpOnly` refresh token cookie from the browser.
- */
-export const logoutUser = async () => {
-    try {
-        await axiosInstance.post(`${API_URL}logout/`);
-    } catch (e) {
-        // This warning is important. Even if the server call fails, the front-end
-        // will proceed with its cleanup, but the session might not be truly invalidated
-        // if the HttpOnly cookie persists.
-        console.warn("Server-side logout failed, but client-side cleanup will proceed.", e);
-    }
-};
-
-export const getUserInfo = async () => {
-    try {
-        const response = await axiosInstance.get(`${API_URL}user-info/`);
-        return response.data;
-    } catch (e) {
-        throw new Error("Sua sessão pode ter expirado. Falha ao buscar dados do usuário.");
-    }
-};
-
-
-// --- NEW UTILITY FUNCTIONS ---
-
-/**
- * NEW: Updates user information (username, email, password).
- * This function centralizes the API call for editing user details.
- * @param {object} formData - The user data from the form.
- */
-export const updateUserInfo = async (formData) => {
-    const payload = {
-        username: formData.username,
-        email: formData.email,
-        current_password: formData.currentPassword,
-    };
-    // Only include the new_password if the user is actually changing it.
-    if (formData.newPassword) {
-        payload.new_password = formData.newPassword;
-    }
-
-    try {
-        await axiosInstance.patch(`${API_URL}user-info/`, payload);
-    } catch (e) {
-        // Provide a more specific error message from the backend if available.
-        if (e.response?.data?.current_password) {
-            throw new Error('A senha atual está incorreta.');
-        }
-        if (e.response?.data) {
-             // Generic fallback for other validation errors (e.g., email already exists)
-             const messages = Object.values(e.response.data).flat().join(' ');
-             throw new Error(messages);
-        }
-        throw new Error('Erro ao salvar as alterações.');
-    }
-};
-
-/**
- * NEW: Deletes the authenticated user's account.
- * This function centralizes the API call for account deletion.
- * @param {string} currentPassword - The user's current password for confirmation.
- */
-export const deleteUserAccount = async (currentPassword) => {
-    try {
-        // The password must be sent in the `data` property for a DELETE request with axios.
-        await axiosInstance.delete(`${API_URL}user-info/`, {
-            data: { current_password: currentPassword },
-        });
-    } catch (e) {
-        if (e.response?.status === 403 || e.response?.status === 400) {
-            throw new Error('A senha informada está incorreta.');
-        }
-        throw new Error('Não foi possível excluir a conta. Tente novamente.');
-    }
+// Custom hook for easy consumption of the auth context.
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (context === null) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
 };

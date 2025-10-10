@@ -2,10 +2,30 @@ import axiosInstance from "./axiosInstance";
 
 const API_URL = "/users/";
 
+/**
+ * REFACTOR: Attempts to clear client-side JWT cookies from the browser.
+ *
+ * --- CRITICAL NOTE ON HttpOnly COOKIES ---
+ * This function can only clear cookies that are NOT flagged as `HttpOnly`.
+ * It is a security best practice for backends (like Django) to set refresh tokens
+ * in `HttpOnly` cookies. This prevents client-side JavaScript from accessing them,
+ * mitigating XSS attacks.
+ *
+ * If the refresh token is `HttpOnly`, this JavaScript function WILL FAIL SILENTLY
+ * to clear it. The browser will persist the cookie. When the user refreshes the page,
+ * the `axiosInstance` interceptor will find the old refresh token, use it to get a
+ * new access token, and log the user back in automatically.
+ *
+ * THE ONLY RELIABLE FIX is for the backend's logout endpoint (`/users/logout/`)
+ * to respond with a `Set-Cookie` header that explicitly expires the cookie.
+ */
 export const clearAuthCookies = () => {
     if (typeof document === 'undefined') return;
+    console.log("Attempting to clear client-side cookies...");
     const expire = 'expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; Max-Age=0;';
+    // This will clear the access token if it's not HttpOnly.
     document.cookie = `access_token=; ${expire}`;
+    // This will likely FAIL for the refresh token if it is HttpOnly.
     document.cookie = `refresh_token=; ${expire}`;
 };
 
@@ -41,10 +61,20 @@ export const loginUser = async (email, password) => {
     }
 };
 
+/**
+ * REFACTOR: Sends a request to the server to invalidate the session.
+ *
+ * The backend must be configured to do two things upon receiving this request:
+ * 1. Blacklist the refresh token to prevent it from being used again.
+ * 2. Respond with a `Set-Cookie` header to clear the `HttpOnly` refresh token cookie from the browser.
+ */
 export const logoutUser = async () => {
     try {
         await axiosInstance.post(`${API_URL}logout/`);
     } catch (e) {
+        // This warning is important. Even if the server call fails, the front-end
+        // will proceed with its cleanup, but the session might not be truly invalidated
+        // if the HttpOnly cookie persists.
         console.warn("Server-side logout failed, but client-side cleanup will proceed.", e);
     }
 };
