@@ -22,7 +22,7 @@ export const AuthProvider = ({ children }) => {
     clearAuthCookies();
     setUser(null);
     setLoading(false); // Ensure loading is finalized
-    router.push('/entrar');
+    // router.push('/entrar');
   }, [router]);
 
   /**
