@@ -28,4 +28,5 @@
 		- [ ] Não diferenciar entradas e saidas
 - [ ] Documentação
 	- [x] Alterar documentação, usar SQLite ao invés de Postgress (Caio Reis)
+	- [ ] Atualizar no Cronograma telas que serão entregues
 	- [ ] Atualizar telas na documentação
