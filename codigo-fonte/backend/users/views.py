@@ -1,7 +1,12 @@
-from django.shortcuts import render
 from rest_framework.generics import RetrieveUpdateAPIView, CreateAPIView
 from rest_framework.permissions import IsAuthenticated
-from .serializers import CustomUserSerializer, RegisterUserSerializer, LoginUserSerializer
+from .serializers import (
+    CustomUserSerializer, 
+    RegisterUserSerializer, 
+    LoginUserSerializer, 
+    UserUpdateSerializer,
+    UserDeleteSerializer
+)
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.response import Response
@@ -12,56 +17,42 @@ from rest_framework import permissions
 
 # Create your views here.
 class UserInfoView(RetrieveUpdateAPIView):
+    """
+    Handles retrieving, updating, and deleting the authenticated user's information.
+    """
     permission_classes = (IsAuthenticated,)
-    serializer_class = CustomUserSerializer
+
+    def get_serializer_class(self):
+        """
+        Dynamically selects the serializer based on the request method.
+        - CustomUserSerializer for GET (retrieve) requests.
+        - UserUpdateSerializer for PUT/PATCH (update) requests.
+        """
+        if self.request.method in ['PUT', 'PATCH']:
+            return UserUpdateSerializer
+        return CustomUserSerializer
 
     def get_object(self):
+        """
+        Returns the currently authenticated user.
+        """
         return self.request.user
     
-    def update(self, request, *args, **kwargs):
-        user = self.get_object()
-        data = request.data
-
-        current_password = data.get("current_password")
-        if not current_password:
-            return Response({"current_password": "Senha atual obrigatória."}, status=status.HTTP_400_BAD_REQUEST)
-        if not user.check_password(current_password):
-            return Response({"current_password": "Senha atual incorreta."}, status=status.HTTP_400_BAD_REQUEST)
-
-        # Update username and email
-        username = data.get("username")
-        email = data.get("email")
-        if username:
-            user.username = username
-        if email:
-            user.email = email
-
-        # Handle password change
-        new_password = data.get("new_password")
-        if new_password:
-            user.set_password(new_password)
-
-        user.save()
-        return Response(self.get_serializer(user).data, status=status.HTTP_200_OK)
-
-    def patch(self, request, *args, **kwargs):
-        return self.update(request, *args, **kwargs)
-
-    def put(self, request, *args, **kwargs):
-        return self.update(request, *args, **kwargs)
-    
     def delete(self, request, *args, **kwargs):
+        """
+        Handles account deletion after validating the current password.
+        """
         user = self.get_object()
-        current_password = request.data.get("current_password")
-        if not current_password:
-            return Response({"current_password": "Senha atual obrigatória."}, status=status.HTTP_400_BAD_REQUEST)
-        if not user.check_password(current_password):
-            return Response({"current_password": "Senha atual incorreta."}, status=status.HTTP_400_BAD_REQUEST)
-        user.delete()
-        response = Response({"message": "Conta excluída com sucesso."}, status=status.HTTP_200_OK)
-        response.delete_cookie('access_token')
-        response.delete_cookie('refresh_token')
-        return response
+        serializer = UserDeleteSerializer(data=request.data, context={'request': request})
+        
+        if serializer.is_valid():
+            user.delete()
+            response = Response({"message": "Conta excluída com sucesso."}, status=status.HTTP_204_NO_CONTENT)
+            response.delete_cookie('access_token')
+            response.delete_cookie('refresh_token')
+            return response
+            
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class UserRegistrationView(CreateAPIView):
@@ -99,20 +90,44 @@ class LoginView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 class LogoutView(APIView):
-
+    """
+    Handles user logout by blacklisting the refresh token and clearing cookies.
+    """
     permission_classes = [permissions.AllowAny]
 
     def post(self, request):
-        refresh_token = request.COOKIES.get('refresh_token')
-        if refresh_token:
-            try:
-                refresh = RefreshToken(refresh_token)
-                refresh.blacklist()
-            except Exception as e:
-                pass #token is invalid or already blacklisted
-        response = Response({"message": "Logged out successfully"}, status=status.HTTP_200_OK)
-        response.delete_cookie('access_token')
-        response.delete_cookie('refresh_token')
+        try:
+            refresh_token = request.COOKIES.get('refresh_token')
+            if refresh_token:
+                token = RefreshToken(refresh_token)
+                token.blacklist()
+        except (TokenError, AttributeError):
+            # Token is invalid, already blacklisted, or doesn't exist.
+            # We proceed with cleanup regardless.
+            pass
+
+        response = Response({"message": "Logout successful."}, status=status.HTTP_200_OK)
+        
+        # FIX: Explicitly overwrite and expire cookies for robust deletion.
+        # This sends the necessary `Set-Cookie` headers to the browser.
+        response.set_cookie(
+            key="access_token",
+            value="",
+            httponly=True,
+            expires="Thu, 01 Jan 1970 00:00:00 GMT", # Set to a past date
+            max_age=0,
+            secure=True,
+            samesite="None"
+        )
+        response.set_cookie(
+            key="refresh_token",
+            value="",
+            httponly=True,
+            expires="Thu, 01 Jan 1970 00:00:00 GMT", # Set to a past date
+            max_age=0,
+            secure=True,
+            samesite="None"
+        )
         return response
 
 class CookieTokenRefreshView(TokenRefreshView):

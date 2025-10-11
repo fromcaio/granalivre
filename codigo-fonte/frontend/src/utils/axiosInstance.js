@@ -1,5 +1,4 @@
 import axios from 'axios';
-// FIX: Import clearAuthCookies from the core auth utilities file
 import { clearAuthCookies } from './auth'; 
 
 const axiosInstance = axios.create({
@@ -9,16 +8,8 @@ const axiosInstance = axios.create({
 
 let isRefreshing = false;
 let failedQueue = [];
+let onTokenInvalidCallback = () => {};
 
-// This function will be set by AuthContext to notify of a fatal session end
-let onTokenInvalidCallback = () => {
-    console.warn("Session invalidated in axios interceptor, but no callback was set to handle the event (e.g., redirecting the user).");
-};
-
-/**
- * Public function to set the callback for when the refresh token fails.
- * This links the axios interceptor (low level) to the AuthContext (high level).
- */
 export const setOnTokenInvalid = (callback) => {
     onTokenInvalidCallback = callback;
 };
@@ -40,18 +31,18 @@ axiosInstance.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    // 🚫 Do not attempt refresh if calling logout or refresh endpoints
-    if (
-      originalRequest.url &&
-      (originalRequest.url.includes('logout/') || originalRequest.url.includes('refresh/'))
-    ) {
+    if (originalRequest.url && (originalRequest.url.includes('logout/') || originalRequest.url.includes('refresh/'))) {
       return Promise.reject(error);
     }
 
-    // Check for 401 Unauthorized response and ensure we haven't already tried to retry this request
     if (error.response?.status === 401 && !originalRequest._retry) {
+      
+      // FIX: If this is the initial auth check, do not try to refresh or redirect.
+      // Simply fail the request and let the calling function (in AuthContext) handle it.
+      if (originalRequest._initialAuthCheck) {
+        return Promise.reject(error);
+      }
 
-      // 1. If a refresh is already in progress, queue the current failed request
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject });
@@ -60,27 +51,21 @@ axiosInstance.interceptors.response.use(
           .catch((err) => Promise.reject(err));
       }
 
-      // 2. Start the refresh process
       originalRequest._retry = true;
       isRefreshing = true;
 
       try {
-        // Attempt to get a new access token using the refresh endpoint
         await axiosInstance.post('/users/refresh/', null);
-        // If successful, process the queue and retry the original request
         processQueue(null);
         isRefreshing = false;
         return axiosInstance(originalRequest);
       } catch (refreshError) {
-        // 3. If refresh fails (refresh token expired/invalid), process queue with error
         processQueue(refreshError, null);
         isRefreshing = false;
 
-        // Clear cookies and notify high-level context of session invalidation
-        clearAuthCookies();
-        onTokenInvalidCallback(); // Crucial step for AuthContext synchronization
+        // This is a true session failure for an active user. Trigger the global handler.
+        onTokenInvalidCallback();
 
-        // Reject the original request promise
         return Promise.reject(refreshError);
       }
     }

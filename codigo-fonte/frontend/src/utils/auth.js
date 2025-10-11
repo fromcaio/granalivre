@@ -81,7 +81,9 @@ export const logoutUser = async () => {
 
 export const getUserInfo = async () => {
     try {
-        const response = await axiosInstance.get(`${API_URL}user-info/`);
+        const response = await axiosInstance.get(`${API_URL}user-info/`, {
+            _initialAuthCheck: true 
+        });
         return response.data;
     } catch (e) {
         throw new Error("Sua sessão pode ter expirado. Falha ao buscar dados do usuário.");

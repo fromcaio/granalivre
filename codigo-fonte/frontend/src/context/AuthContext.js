@@ -1,7 +1,6 @@
 'use client';
 import { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
-// REFACTOR: Centralized auth utilities import.
+import { useRouter, usePathname } from 'next/navigation'; // Import usePathname
 import { getUserInfo, logoutUser, clearAuthCookies } from '@/utils/auth'; 
 import { setOnTokenInvalid } from '@/utils/axiosInstance';
 
@@ -9,69 +8,63 @@ const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true); // Represents the initial auth check
-  const router = useRouter(); 
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
+  const pathname = usePathname(); // Get the current path
 
   /**
-   * REFACTOR: Centralized session invalidation logic.
-   * This function is the single point of truth for handling a dead session,
-   * ensuring cookies are cleared, state is reset, and the user is redirected.
+   * REFACTOR: Centralized session invalidation with controlled redirection.
+   * @param {object} options - Options for invalidation.
+   * @param {boolean} options.redirect - If true, redirect to the login page.
    */
-  const handleSessionInvalidation = useCallback(() => {
-    console.warn("AuthContext: Session has been invalidated. Cleaning up and redirecting to login.");
+  const handleSessionInvalidation = useCallback((options = {}) => {
+    console.warn(`AuthContext: Session invalidated. Redirect: ${!!options.redirect}`);
     clearAuthCookies();
     setUser(null);
     setLoading(false); // Ensure loading is finalized
-    // router.push('/entrar');
-  }, [router]);
+    
+    if (options.redirect) {
+      // Redirect to login, but also pass the current path as a query param
+      // so the user can be redirected back after logging in.
+      router.push(`/entrar?next=${encodeURIComponent(pathname)}`);
+    }
+  }, [router, pathname]);
 
-  /**
-   * Fetches user data from the backend to verify and update the session state.
-   * This is the core function for initializing and refreshing the user's logged-in status.
-   */
   const refreshUser = useCallback(async () => {
-    // No need to set loading to true here, as it's for the *initial* load.
     try {
       const userDetails = await getUserInfo();
       setUser(userDetails || null);
     } catch (error) {
-      // If getUserInfo fails, it implies no valid session exists.
-      console.log('AuthContext: User info could not be fetched (likely not logged in).');
+      // This catch block is now the primary path for a failed *initial* auth check.
+      // The axios interceptor will not interfere. We simply set the user to null.
+      console.log('AuthContext: Initial user info fetch failed. User is not logged in.');
       setUser(null);
     } finally {
-      // This marks the end of the initial authentication check.
       setLoading(false);
     }
   }, []); 
 
   /**
-   * Logs the user out, cleaning up both server and client states.
+   * Logs the user out explicitly, ALWAYS triggering a redirect.
    */
   const logout = useCallback(async () => {
     try {
-      // Attempt to invalidate the token on the server first.
       await logoutUser();
     } catch (e) {
-      console.error('AuthContext: Server-side logout failed. Proceeding with client-side cleanup anyway.', e);
+      console.error('AuthContext: Server-side logout failed.', e);
     } finally {
-      // Regardless of server outcome, always invalidate the session on the client.
-      handleSessionInvalidation();
+      // An explicit logout should always redirect the user.
+      handleSessionInvalidation({ redirect: true });
     }
   }, [handleSessionInvalidation]);
 
-  // This effect runs only once on initial mount.
   useEffect(() => {
-    // 1. Link the low-level axios interceptor with our high-level session invalidation handler.
-    // This is crucial for reacting globally when the refresh token fails.
-    setOnTokenInvalid(handleSessionInvalidation);
-
-    // 2. Perform the initial check to see if a user session already exists.
+    // When an active session dies (token refresh fails), invalidate and redirect.
+    setOnTokenInvalid(() => handleSessionInvalidation({ redirect: true }));
+    // Perform the initial, silent check to see if a session exists.
     refreshUser();
-
   }, [refreshUser, handleSessionInvalidation]);
 
-
-  // Memoize the context value to prevent unnecessary re-renders for consuming components.
   const contextValue = useMemo(() => ({
     user,
     isAuthenticated: !!user,
@@ -83,8 +76,6 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider value={contextValue}>
-      {/* REFACTOR: Show a global loading indicator ONLY during the initial auth check. */}
-      {/* This prevents layout shifts and content flashing while verifying the session. */}
       {loading ? (
         <div className="min-h-screen flex items-center justify-center bg-gray-50">
           <p className="text-lg text-gray-600">Verificando sessão...</p>
@@ -96,7 +87,6 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
-// Custom hook for easy consumption of the auth context.
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === null) {
