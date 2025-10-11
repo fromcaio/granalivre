@@ -1,32 +1,25 @@
-'use client';
-import { useAuth } from '@/context/AuthContext';
-import TopBar from './components/topBar';
+import TopBar from '@/components/topBar';
+import { validateSession } from '@/utils/serverAuth';
+import HomePageClient from '@/components/home/HomePageClient';
 
-export default function HomePage() {
-  const { user, loading } = useAuth();
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p>Carregando...</p>
-      </div>
-    );
-  }
+/**
+ * This is the main server-side entry point for the home page ('/').
+ * It's now an async component, allowing it to await the session validation.
+ */
+export default async function HomePage() {
+  // Await the result of our robust, server-side session check.
+  // `initialUser` will be the user object or null.
+  const initialUser = await validateSession();
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <TopBar /> {/* ✅ No need to pass user; context handles it */}
-      <main className="p-6 text-center">
-        {user ? (
-          <h1 className="text-2xl font-semibold text-green-700">
-            Olá, {user.username} 👋
-          </h1>
-        ) : (
-          <h1 className="text-2xl font-semibold text-gray-700">
-            Bem-vindo ao GranaLivre!
-          </h1>
-        )}
-      </main>
-    </div>
+    <main className="min-h-screen bg-gray-50">
+      <TopBar />
+      <div className="py-8 px-4 sm:px-6 lg:px-8">
+        {/* Pass the server-validated user data down to a Client Component.
+          This component will handle the actual rendering logic.
+        */}
+        <HomePageClient initialUser={initialUser} />
+      </div>
+    </main>
   );
 }
