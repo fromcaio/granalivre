@@ -19,6 +19,10 @@
 	    - [x] inicio do desenvolvimento (Caio Reis)
 	    - [x] adicionar popup editar (Caio Reis)
 	    - [x] adicionar popup excluir (Caio Reis)
+- [x] landing-page
+    - [x] configurar logica que vai mudar o conteudo da landing page de acordo com o estado de login do usuario (resumo ou landing-page)
+    - [x] configurar estrutura de arquivos separando texto e componentes
+    - [x] configurar permissões de imagem
 - [x] configuração docker
     - [x] front-end
     - [x] back-end
@@ -28,3 +32,6 @@
 	- [x] tutorial execucao back-end (Caio Reis)
 	- [x] tutorial git-e-github (Caio Reis)
     - [x] update no readme e tutorial de build do docker (Caio Reis)
+- [x] testes
+    - [x] teste de redirecionamento
+    - [x] sessões
