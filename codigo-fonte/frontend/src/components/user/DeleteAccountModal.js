@@ -1,15 +1,12 @@
 'use client';
 import { useState } from "react";
-import { formStyles } from "@/utils/variables";
+import { formStyles } from "@/config/styles";
 import { useAuth } from "@/context/AuthContext";
-import { deleteUserAccount } from "@/utils/auth"; // REFACTOR: Import new utility function.
+import { deleteUserAccount } from "@/lib/api"; // REFACTOR: Import new utility function.
 
-// REFACTOR: This component is now safer and more integrated.
-// - It uses a centralized `deleteUserAccount` function with proper auth handling.
-// - On success, it calls the global `logout` function, which correctly cleans up the
-//   session state and redirects the user, instead of using a hard page reload.
 export default function DeleteAccountModal({ onClose }) {
-  const { logout } = useAuth();
+  // Obter a nova função específica para exclusão de conta.
+  const { handleAccountDeletion } = useAuth();
   const [loading, setLoading] = useState(false);
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
@@ -22,12 +19,10 @@ export default function DeleteAccountModal({ onClose }) {
     setLoading(true);
     try {
       await deleteUserAccount(password);
-      // On successful deletion, trigger the global logout process.
-      // This will handle cookie clearing, state updates, and redirection.
-      await logout();
-      // No need to call onClose() as the user will be redirected away.
+      // Após a exclusão bem-sucedida, chama a função que redireciona para a home.
+      handleAccountDeletion();
     } catch (err) {
-      console.error("Failed to delete account:", err);
+      console.error("Falha ao excluir a conta:", err);
       setError(err.message || "Senha incorreta ou erro ao excluir a conta.");
     } finally {
       setLoading(false);
@@ -54,13 +49,13 @@ export default function DeleteAccountModal({ onClose }) {
         
         <input
           type="password"
-          className={`${formStyles.input} mb-4`}
+          className={formStyles.input}
           placeholder="Sua senha"
           value={password}
           onChange={(e) => { setPassword(e.target.value); setError(null); }}
           disabled={loading}
         />
-        <div className="flex justify-end gap-3">
+        <div className="flex justify-end gap-3 mt-4">
           <button onClick={onClose} className={`${formStyles.baseButton} ${formStyles.secondaryCancelButton}`} disabled={loading}>
             Cancelar
           </button>

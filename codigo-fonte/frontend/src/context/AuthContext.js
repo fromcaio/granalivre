@@ -1,67 +1,64 @@
 'use client';
-import { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react';
-import { useRouter, usePathname } from 'next/navigation'; // Import usePathname
-import { getUserInfo, logoutUser, clearAuthCookies } from '@/utils/auth'; 
-import { setOnTokenInvalid } from '@/utils/axiosInstance';
 
-const AuthContext = createContext(null);
+import { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
+import { getUserInfo, logoutUser, clearAuthCookies } from '@/lib/api';
+import { setOnTokenInvalid } from '@/lib/axiosInstance';
+
+export const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
-  const pathname = usePathname(); // Get the current path
+  const pathname = usePathname();
 
-  /**
-   * REFACTOR: Centralized session invalidation with controlled redirection.
-   * @param {object} options - Options for invalidation.
-   * @param {boolean} options.redirect - If true, redirect to the login page.
-   */
   const handleSessionInvalidation = useCallback((options = {}) => {
-    console.warn(`AuthContext: Session invalidated. Redirect: ${!!options.redirect}`);
-    clearAuthCookies();
-    setUser(null);
-    setLoading(false); // Ensure loading is finalized
+    console.warn(`AuthContext: Sessão invalidada. Redirecionar: ${!!options.redirect}`);
     
     if (options.redirect) {
-      // Redirect to login, but also pass the current path as a query param
-      // so the user can be redirected back after logging in.
-      router.push(`/entrar?next=${encodeURIComponent(pathname)}`);
+      const redirectUrl = `/entrar?redirect=${encodeURIComponent(pathname)}`;
+      window.location.href = redirectUrl;
+    } else {
+      clearAuthCookies();
+      setUser(null);
+      setLoading(false);
     }
-  }, [router, pathname]);
+  }, [pathname]);
 
   const refreshUser = useCallback(async () => {
     try {
       const userDetails = await getUserInfo();
       setUser(userDetails || null);
     } catch (error) {
-      // This catch block is now the primary path for a failed *initial* auth check.
-      // The axios interceptor will not interfere. We simply set the user to null.
-      console.log('AuthContext: Initial user info fetch failed. User is not logged in.');
+      console.log('AuthContext: Não foi possível buscar os dados do usuário no cliente.');
       setUser(null);
     } finally {
       setLoading(false);
     }
-  }, []); 
+  }, []);
 
-  /**
-   * Logs the user out explicitly, ALWAYS triggering a redirect.
-   */
   const logout = useCallback(async () => {
     try {
       await logoutUser();
     } catch (e) {
-      console.error('AuthContext: Server-side logout failed.', e);
+      console.error('AuthContext: Falha no logout do lado do servidor.', e);
     } finally {
-      // An explicit logout should always redirect the user.
       handleSessionInvalidation({ redirect: true });
     }
   }, [handleSessionInvalidation]);
 
+  /**
+   * NOVA FUNÇÃO: Lida com a limpeza da sessão e redirecionamento após a exclusão da conta.
+   * Força um recarregamento para a página inicial.
+   */
+  const handleAccountDeletion = useCallback(() => {
+    clearAuthCookies();
+    window.location.href = '/';
+  }, []);
+
   useEffect(() => {
-    // When an active session dies (token refresh fails), invalidate and redirect.
     setOnTokenInvalid(() => handleSessionInvalidation({ redirect: true }));
-    // Perform the initial, silent check to see if a session exists.
     refreshUser();
   }, [refreshUser, handleSessionInvalidation]);
 
@@ -71,8 +68,8 @@ export const AuthProvider = ({ children }) => {
     loading,
     refreshUser,
     logout,
-  }), [user, loading, refreshUser, logout]);
-
+    handleAccountDeletion, // Expor a nova função no contexto
+  }), [user, loading, refreshUser, logout, handleAccountDeletion]);
 
   return (
     <AuthContext.Provider value={contextValue}>
@@ -90,7 +87,7 @@ export const AuthProvider = ({ children }) => {
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === null) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error('useAuth deve ser usado dentro de um AuthProvider');
   }
   return context;
 };

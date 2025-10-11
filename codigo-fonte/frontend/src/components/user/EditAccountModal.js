@@ -1,8 +1,8 @@
 'use client';
 import { useState } from "react";
-import { formStyles } from "@/utils/variables";
+import { formStyles } from "@/config/styles";
 import { useAuth } from "@/context/AuthContext";
-import { updateUserInfo } from "@/utils/auth"; // REFACTOR: Import new utility function.
+import { updateUserInfo } from "@/lib/api"; // REFACTOR: Import new utility function.
 
 // REFACTOR: This component is now more robust. It uses the centralized `updateUserInfo`
 // function, which leverages `axiosInstance` for proper token handling. It also provides

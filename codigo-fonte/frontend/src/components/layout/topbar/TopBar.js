@@ -1,7 +1,7 @@
 'use client';
 import { useAuth } from '@/context/AuthContext';
 import Link from 'next/link';
-import UserMenu from './userMenu';
+import UserMenu from './UserMenu';
 
 // REFACTOR: The TopBar is now a much simpler component. It no longer needs to manage
 // the state for modals (`showEdit`, `showDelete`) or handle update events. Its only

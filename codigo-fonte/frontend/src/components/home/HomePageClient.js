@@ -3,7 +3,7 @@
 import { useAuth } from '@/context/AuthContext';
 import Link from 'next/link';
 import Image from 'next/image';
-import { landingPageContent } from '@/utils/variables'; // Importar o conteúdo centralizado
+import { landingPageContent } from '@/config/content'; // Importar o conteúdo centralizado
 
 // Componente para o Cabeçalho (Hero Section)
 const HeroSection = () => (
@@ -27,11 +27,11 @@ const HeroSection = () => (
 
 // Componente para a Seção "Sobre"
 const AboutSection = () => (
-  <section className="py-20 bg-white">
+  <section className="py-20 bg-white p-8 rounded-lg shadow-lg">
     <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
       <div className="order-2 md:order-1">
         <h2 className="text-3xl font-bold text-gray-800 mb-4">{landingPageContent.about.title}</h2>
-        <p className="text-gray-600 leading-relaxed">{landingPageContent.about.story}</p>
+        <p className="text-gray-600 leading-relaxed text-justify">{landingPageContent.about.story}</p>
       </div>
       <div className="order-1 md:order-2">
         <Image
@@ -67,6 +67,19 @@ const ContributorsSection = () => (
       </div>
     </div>
   </section>
+);
+
+// Novo Componente para o Rodapé da Landing Page
+const LandingFooter = () => (
+  // Classe de gradiente invertida: bg-gradient-to-l (esquerda) em vez de bg-gradient-to-r (direita)
+  // Mantém a altura h-17 e as cores do TopBar
+  <footer className="bg-gradient-to-l from-green-601 to-emerald-600 mt-auto">
+    <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex justify-center items-center">
+      <p className="text-white text-sm">
+        &copy; {new Date().getFullYear()} GranaLivre. {landingPageContent.footer.copyright}
+      </p>
+    </div>
+  </footer>
 );
 
 

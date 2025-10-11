@@ -1,8 +1,8 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { loginUser } from '@/utils/auth';
-import { formStyles } from '@/utils/variables';
+import { loginUser } from '@/lib/api';
+import { formStyles } from '@/config/styles';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 

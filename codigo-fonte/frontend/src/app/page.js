@@ -1,6 +1,7 @@
-import TopBar from '@/components/topBar';
-import { validateSession } from '@/utils/serverAuth';
+import TopBar from '@/components/layout/topbar/TopBar';
+import { validateSession } from '@/lib/serverAuth';
 import HomePageClient from '@/components/home/HomePageClient';
+import Footer from '@/components/footer/Footer';
 
 /**
  * This is the main server-side entry point for the home page ('/').
@@ -20,6 +21,7 @@ export default async function HomePage() {
         */}
         <HomePageClient initialUser={initialUser} />
       </div>
+      <Footer />
     </main>
   );
 }

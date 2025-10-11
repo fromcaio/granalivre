@@ -1,9 +1,9 @@
 'use client';
 import { useState, useRef, useEffect } from "react";
-import { formStyles } from "@/utils/variables";
+import { formStyles } from "@/config/styles";
 import { useAuth } from "@/context/AuthContext";
-import EditAccountModal from "./editAccountModal";
-import DeleteAccountModal from "./deleteAccountModal"; // Import Delete modal
+import EditAccountModal from "@/components/user/EditAccountModal";
+import DeleteAccountModal from "@/components/user/DeleteAccountModal"; // Import Delete modal
 
 // REFACTOR: This component now fully manages its own state, including the visibility
 // of the edit and delete modals, removing the need for props like `onEdit` or `onDelete`.

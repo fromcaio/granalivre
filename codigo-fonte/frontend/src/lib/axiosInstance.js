@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { clearAuthCookies } from './auth'; 
+import { clearAuthCookies } from './api'; 
 
 const axiosInstance = axios.create({
   baseURL: 'http://127.0.0.1:8000/api',
