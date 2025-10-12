@@ -33,6 +33,9 @@ yarn-error.log*
 # env files (can opt-in for committing if needed)
 .env*
 
+# lets allow .env.local for local development, since it's in gitignore by default
+!.env.local
+
 # vercel
 .vercel
 
