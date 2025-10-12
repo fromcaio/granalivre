@@ -1,24 +1,8 @@
 import axiosInstance from "./axiosInstance";
 
-const API_URL = "/users/";
+const API_URL = "users/";
+// Ao chamar o axiosInstance, ele já usará a variável de ambiente NEXT_PUBLIC_API_URL
 
-/**
- * REFACTOR: Attempts to clear client-side JWT cookies from the browser.
- *
- * --- CRITICAL NOTE ON HttpOnly COOKIES ---
- * This function can only clear cookies that are NOT flagged as `HttpOnly`.
- * It is a security best practice for backends (like Django) to set refresh tokens
- * in `HttpOnly` cookies. This prevents client-side JavaScript from accessing them,
- * mitigating XSS attacks.
- *
- * If the refresh token is `HttpOnly`, this JavaScript function WILL FAIL SILENTLY
- * to clear it. The browser will persist the cookie. When the user refreshes the page,
- * the `axiosInstance` interceptor will find the old refresh token, use it to get a
- * new access token, and log the user back in automatically.
- *
- * THE ONLY RELIABLE FIX is for the backend's logout endpoint (`/users/logout/`)
- * to respond with a `Set-Cookie` header that explicitly expires the cookie.
- */
 export const clearAuthCookies = () => {
     if (typeof document === 'undefined') return;
     console.log("Attempting to clear client-side cookies...");
@@ -107,6 +91,7 @@ export const updateUserInfo = async (formData) => {
     // Only include the new_password if the user is actually changing it.
     if (formData.newPassword) {
         payload.new_password = formData.newPassword;
+        payload.password_confirmation = formData.confirmNewPassword;
     }
 
     try {

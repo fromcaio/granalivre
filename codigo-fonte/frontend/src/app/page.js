@@ -19,7 +19,7 @@ export default async function HomePage() {
         {/* Pass the server-validated user data down to a Client Component.
           This component will handle the actual rendering logic.
         */}
-        <HomePageClient initialUser={initialUser} />
+        <HomePageClient />
       </div>
       <Footer />
     </main>

@@ -7,26 +7,44 @@ import { setOnTokenInvalid } from '@/lib/axiosInstance';
 
 export const AuthContext = createContext(null);
 
-export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+/**
+ * AuthProvider gerencia o estado de autenticação global do lado do cliente.
+ * Ele é "alimentado" com os dados iniciais do usuário validados pelo servidor.
+ */
+export const AuthProvider = ({ children, initialUser }) => {
+  // O estado do usuário é inicializado com os dados do servidor.
+  const [user, setUser] = useState(initialUser);
+  // O estado de carregamento inicial não é mais necessário, pois o servidor já fez o trabalho.
+  const [loading, setLoading] = useState(false);
+  
+  // Hooks do Next.js para navegação e obtenção do caminho atual.
   const router = useRouter();
   const pathname = usePathname();
 
+  /**
+   * Função centralizada para lidar com a invalidação da sessão.
+   * Usa o router do Next.js para uma navegação mais fluida.
+   */
   const handleSessionInvalidation = useCallback((options = {}) => {
     console.warn(`AuthContext: Sessão invalidada. Redirecionar: ${!!options.redirect}`);
     
     if (options.redirect) {
       const redirectUrl = `/entrar?redirect=${encodeURIComponent(pathname)}`;
-      window.location.href = redirectUrl;
+      // MELHORIA: Usa router.replace() para não adicionar a página de login ao histórico do navegador.
+      router.replace(redirectUrl);
     } else {
       clearAuthCookies();
       setUser(null);
       setLoading(false);
     }
-  }, [pathname]);
+  }, [pathname, router]);
 
+  /**
+   * Atualiza manualmente as informações do usuário no estado global.
+   * Útil após ações como a edição do perfil.
+   */
   const refreshUser = useCallback(async () => {
+    setLoading(true);
     try {
       const userDetails = await getUserInfo();
       setUser(userDetails || null);
@@ -38,52 +56,57 @@ export const AuthProvider = ({ children }) => {
     }
   }, []);
 
+  /**
+   * Lida com o processo de logout do usuário.
+   */
   const logout = useCallback(async () => {
     try {
       await logoutUser();
     } catch (e) {
       console.error('AuthContext: Falha no logout do lado do servidor.', e);
     } finally {
+      // Garante que o usuário seja deslogado no cliente e redirecionado.
       handleSessionInvalidation({ redirect: true });
     }
   }, [handleSessionInvalidation]);
-
+  
   /**
-   * NOVA FUNÇÃO: Lida com a limpeza da sessão e redirecionamento após a exclusão da conta.
-   * Força um recarregamento para a página inicial.
+   * Lida com a limpeza da sessão após a exclusão da conta.
    */
   const handleAccountDeletion = useCallback(() => {
     clearAuthCookies();
-    window.location.href = '/';
-  }, []);
+    // MELHORIA: Usa router.replace() para uma transição mais suave para a página inicial.
+    router.replace('/');
+  }, [router]);
 
+  /**
+   * Configura o interceptor do Axios para lidar com tokens expirados
+   * durante a vida útil da sessão no cliente.
+   */
   useEffect(() => {
     setOnTokenInvalid(() => handleSessionInvalidation({ redirect: true }));
-    refreshUser();
-  }, [refreshUser, handleSessionInvalidation]);
+  }, [handleSessionInvalidation]);
 
+  // Memoriza o valor do contexto para evitar renderizações desnecessárias.
   const contextValue = useMemo(() => ({
     user,
     isAuthenticated: !!user,
     loading,
     refreshUser,
     logout,
-    handleAccountDeletion, // Expor a nova função no contexto
+    handleAccountDeletion,
   }), [user, loading, refreshUser, logout, handleAccountDeletion]);
 
   return (
     <AuthContext.Provider value={contextValue}>
-      {loading ? (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50">
-          <p className="text-lg text-gray-600">Verificando sessão...</p>
-        </div>
-      ) : (
-        children
-      )}
+      {children}
     </AuthContext.Provider>
   );
 };
 
+/**
+ * Hook customizado para acessar facilmente o AuthContext.
+ */
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === null) {

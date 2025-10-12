@@ -1,13 +1,16 @@
-'use client';
-import { useAuth } from '@/context/AuthContext';
 import Link from 'next/link';
-import UserMenu from './UserMenu';
+import { validateSession } from '@/lib/serverAuth';
+import UserMenu from './UserMenu'; // O menu do usuário continua sendo um Componente de Cliente
 
-// REFACTOR: The TopBar is now a much simpler component. It no longer needs to manage
-// the state for modals (`showEdit`, `showDelete`) or handle update events. Its only
-// responsibility is to display the correct UI based on the authentication state.
-export default function TopBar() {
-  const { user } = useAuth();
+/**
+ * A TopBar agora é um Componente de Servidor assíncrono.
+ * 1. Ela busca a sessão do usuário no servidor.
+ * 2. Renderiza o UserMenu (para usuários logados) ou os links de Login/Cadastro.
+ * 3. Passa os dados do usuário (`user`) como uma prop para o UserMenu.
+ */
+export default async function TopBar() {
+  // A chamada é "gratuita" graças ao React.cache em validateSession
+  const user = await validateSession();
 
   return (
     <nav className="bg-gradient-to-r from-green-600 to-emerald-600 shadow-lg">
@@ -21,10 +24,10 @@ export default function TopBar() {
 
           <div className="flex items-center space-x-2 sm:space-x-4">
             {user ? (
-              // The UserMenu component is now self-contained. No props are needed.
-              <UserMenu />
+              // Passamos o usuário validado no servidor como prop para o componente de cliente
+              <UserMenu user={user} />
             ) : (
-              // Fallback for logged-out users.
+              // Conteúdo para usuários deslogados
               <>
                 <Link
                   href="/cadastrar"
@@ -43,7 +46,6 @@ export default function TopBar() {
           </div>
         </div>
       </div>
-      {/* All modal logic has been moved out of TopBar and into UserMenu. */}
     </nav>
   );
 }

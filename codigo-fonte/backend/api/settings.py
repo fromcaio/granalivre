@@ -26,7 +26,7 @@ SECRET_KEY = "django-insecure-#^e$12*r)q7fvbh&bwe5p%n+zc(pb7-h#4-%ka)534tp%=q^kb
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['backend', '127.0.0.1', 'localhost']
 
 
 # Application definition
@@ -140,7 +140,13 @@ SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
     'ROTATE_REFRESH_TOKENS': False,
-    'BLACKLIST_AFTER_ROTATION': False
+    'BLACKLIST_AFTER_ROTATION': False,
+    'AUTH_COOKIE_SECURE': False, # True in production, False in development
+# For development (same domain)
+    'AUTH_COOKIE_SAMESITE': 'Lax',
+# For production (different domains)
+#     'AUTH_COOKIE_SAMESITE': 'None',
+#     'AUTH_COOKIE_SECURE': True,
 }
 
 CORS_ALLOW_ALL_ORIGINS = True

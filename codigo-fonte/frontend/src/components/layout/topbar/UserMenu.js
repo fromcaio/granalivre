@@ -1,20 +1,28 @@
 'use client';
+
 import { useState, useRef, useEffect } from "react";
 import { formStyles } from "@/config/styles";
 import { useAuth } from "@/context/AuthContext";
 import EditAccountModal from "@/components/user/EditAccountModal";
-import DeleteAccountModal from "@/components/user/DeleteAccountModal"; // Import Delete modal
+import DeleteAccountModal from "@/components/user/DeleteAccountModal";
 
-// REFACTOR: This component now fully manages its own state, including the visibility
-// of the edit and delete modals, removing the need for props like `onEdit` or `onDelete`.
-export default function UserMenu() {
-  const { user, logout } = useAuth();
+/**
+ * O UserMenu é um Componente de Cliente que lida com toda a interatividade do usuário.
+ * 1. Recebe o objeto `user` como uma prop do seu pai (TopBar, um Componente de Servidor).
+ * Isso garante que a renderização inicial seja instantânea e correta.
+ * 2. Ainda usa o hook `useAuth()` para acessar funções globais como `logout`.
+ */
+export default function UserMenu({ user }) {
+  // Acessamos o contexto APENAS para obter as funções de que precisamos.
+  const { logout } = useAuth();
+
+  // Todos os estados relacionados à UI (dropdown, modais) são gerenciados aqui.
   const [isOpen, setIsOpen] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const menuRef = useRef(null);
 
-  // Effect to close the dropdown when clicking outside of it.
+  // Efeito para fechar o dropdown ao clicar fora dele.
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
@@ -25,17 +33,13 @@ export default function UserMenu() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // REFACTOR: The logout process is simplified. The `logout` function from `useAuth`
-  // already handles server-side invalidation, client-side cookie clearing, state reset,
-  // and redirection. No need for alerts or complex logic here.
   const handleLogout = async () => {
     setIsOpen(false);
     await logout();
   };
 
-  if (!user) {
-    return null;
-  }
+  // A verificação `if (!user)` não é mais necessária aqui, pois o TopBar
+  // (Componente de Servidor) só renderizará este componente se o usuário existir.
 
   return (
     <>
@@ -46,6 +50,7 @@ export default function UserMenu() {
           aria-haspopup="true"
           aria-expanded={isOpen}
         >
+          {/* O nome de usuário para exibição vem diretamente da prop! */}
           {user.username || user.email}
         </button>
 
@@ -80,9 +85,9 @@ export default function UserMenu() {
         )}
       </div>
 
-      {/* Modals are now rendered here, controlled by this component's state */}
+      {/* Os modais são renderizados aqui, controlados pelo estado deste componente */}
       {showEditModal && (
-        <EditAccountModal onClose={() => setShowEditModal(false)} />
+        <EditAccountModal user={user} onClose={() => setShowEditModal(false)} />
       )}
       {showDeleteModal && (
         <DeleteAccountModal onClose={() => setShowDeleteModal(false)} />

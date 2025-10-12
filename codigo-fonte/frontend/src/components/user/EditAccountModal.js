@@ -2,13 +2,17 @@
 import { useState } from "react";
 import { formStyles } from "@/config/styles";
 import { useAuth } from "@/context/AuthContext";
-import { updateUserInfo } from "@/lib/api"; // REFACTOR: Import new utility function.
+import { updateUserInfo } from "@/lib/api";
 
-// REFACTOR: This component is now more robust. It uses the centralized `updateUserInfo`
-// function, which leverages `axiosInstance` for proper token handling. It also provides
-// more specific user feedback instead of generic errors.
-export default function EditAccountModal({ onClose }) {
-  const { user, refreshUser } = useAuth();
+/**
+ * Este modal é um Componente de Cliente.
+ * 1. Recebe o objeto `user` como uma prop para preencher o formulário inicialmente.
+ * 2. Usa o `useAuth()` para acessar a função `refreshUser` e atualizar o estado global após o sucesso.
+ */
+export default function EditAccountModal({ user, onClose }) {
+  // O `useAuth` é usado aqui para a *função* de atualização, não para os dados iniciais.
+  const { refreshUser } = useAuth();
+  
   const [formData, setFormData] = useState({
     username: user?.username || "",
     email: user?.email || "",
@@ -28,7 +32,6 @@ export default function EditAccountModal({ onClose }) {
     e.preventDefault();
     setError(null);
 
-    // --- Form Validation ---
     if (!formData.username.trim() || !formData.email.trim()) {
       return setError("Nome de usuário e email são obrigatórios.");
     }
@@ -42,9 +45,9 @@ export default function EditAccountModal({ onClose }) {
 
     setLoading(true);
     try {
-      await updateUserInfo(formData); // Use the centralized API utility
-      await refreshUser(); // Refresh global user state on success
-      onClose(); // Close the modal
+      await updateUserInfo(formData);
+      await refreshUser(); // Atualiza o estado global
+      onClose(); // Fecha o modal
     } catch (err) {
       console.error("Failed to update user info:", err);
       setError(err.message || "Não foi possível salvar as alterações. Verifique os dados.");
@@ -62,7 +65,6 @@ export default function EditAccountModal({ onClose }) {
           className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
           aria-label="Fechar"
         >
-          {/* SVG for close icon */}
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
         </button>
 

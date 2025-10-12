@@ -1,11 +1,10 @@
-'use client';
-
-import { useAuth } from '@/context/AuthContext';
 import Link from 'next/link';
 import Image from 'next/image';
-import { landingPageContent } from '@/config/content'; // Importar o conteúdo centralizado
+import { landingPageContent } from '@/config/content';
+import { validateSession } from '@/lib/serverAuth'; // Importa a função de validação
 
-// Componente para o Cabeçalho (Hero Section)
+// --- Componentes de UI (HeroSection, AboutSection, etc. permanecem os mesmos) ---
+
 const HeroSection = () => (
   <section className="text-center py-20">
     <h1 className="text-4xl sm:text-5xl font-bold text-gray-800 mb-4 animate-fade-in-down">
@@ -25,7 +24,6 @@ const HeroSection = () => (
   </section>
 );
 
-// Componente para a Seção "Sobre"
 const AboutSection = () => (
   <section className="py-20 bg-white p-8 rounded-lg shadow-lg">
     <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
@@ -46,7 +44,6 @@ const AboutSection = () => (
   </section>
 );
 
-// Componente para a Seção de Contribuidores
 const ContributorsSection = () => (
   <section className="py-20">
     <div className="text-center max-w-4xl mx-auto">
@@ -69,21 +66,6 @@ const ContributorsSection = () => (
   </section>
 );
 
-// Novo Componente para o Rodapé da Landing Page
-const LandingFooter = () => (
-  // Classe de gradiente invertida: bg-gradient-to-l (esquerda) em vez de bg-gradient-to-r (direita)
-  // Mantém a altura h-17 e as cores do TopBar
-  <footer className="bg-gradient-to-l from-green-601 to-emerald-600 mt-auto">
-    <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex justify-center items-center">
-      <p className="text-white text-sm">
-        &copy; {new Date().getFullYear()} GranaLivre. {landingPageContent.footer.copyright}
-      </p>
-    </div>
-  </footer>
-);
-
-
-// Conteúdo completo da Landing Page
 const LandingContent = () => (
   <div>
     <HeroSection />
@@ -92,9 +74,8 @@ const LandingContent = () => (
   </div>
 );
 
-// Conteúdo do Dashboard (permanece o mesmo)
 const DashboardContent = ({ user }) => (
-   <div>
+    <div>
       <h1 className="text-3xl font-bold text-gray-800 mb-2">
         Bem-vindo de volta, {user.username}!
       </h1>
@@ -108,13 +89,18 @@ const DashboardContent = ({ user }) => (
     </div>
 );
 
+/**
+ * Este agora é um Componente de Servidor assíncrono.
+ * Ele busca seus próprios dados de sessão e renderiza a UI apropriada.
+ */
+export default async function HomePageContent() {
+  // A chamada é "gratuita" graças ao React.cache em validateSession
+  const user = await validateSession();
 
-export default function HomePageClient({ initialUser }) {
-  const { user, loading } = useAuth();
-
-  if (loading) {
-    return initialUser ? <DashboardContent user={initialUser} /> : <LandingContent />;
+  // A lógica de renderização se baseia no resultado da validação da sessão.
+  if (user) {
+    return <DashboardContent user={user} />;
   }
 
-  return user ? <DashboardContent user={user} /> : <LandingContent />;
+  return <LandingContent />;
 }

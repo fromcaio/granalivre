@@ -7,31 +7,29 @@ services:
   # Serviço do Backend (Django)
   backend:
     build:
-      context: ./backend  # Caminho para o Dockerfile do backend
+      context: ./backend
     ports:
-      - "8000:8000"  # Mapeia a porta 8000 do contêiner para a porta 8000 da sua máquina
+      - "8000:8000"
     volumes:
-      # Monta o código local dentro do contêiner para live reload.
-      # Qualquer alteração no seu código local será refletida instantaneamente.
       - ./backend:/app
     command: >
       sh -c "python manage.py migrate &&
              python manage.py runserver 0.0.0.0:8000"
-    # O comando acima executa as migrações do banco de dados e depois
-    # inicia o servidor, escutando em todas as interfaces (0.0.0.0)
-    # para ser acessível a partir de outros contêineres e da sua máquina.
 
   # Serviço do Frontend (Next.js)
   frontend:
     build:
-      context: ./frontend  # Caminho para o Dockerfile do frontend
+      context: ./frontend
     ports:
-      - "3000:3000"  # Mapeia a porta 3000 do contêiner para a 3000 da sua máquina
+      - "3000:3000"
     volumes:
-      # Monta o código local para live reload
       - ./frontend:/app
-      # Adiciona um volume anônimo para node_modules para evitar conflitos
-      # com o node_modules do seu sistema operacional local.
       - /app/node_modules
     depends_on:
-      - backend  # Garante que o backend seja iniciado antes do frontend
+      - backend
+    # --- A MELHOR PRÁTICA APLICADA ---
+    # A diretiva 'env_file' instrui o Docker Compose a carregar as variáveis
+    # de ambiente diretamente do arquivo .env.local em tempo de execução.
+    # Isso mantém a configuração desacoplada da definição do serviço.
+    env_file:
+      - ./frontend/.env.local
