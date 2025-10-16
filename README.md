@@ -70,9 +70,9 @@ Para executar o projeto localmente, recomendamos o uso de Docker, que simplifica
 
 Antes de começar, garanta que você tenha as seguintes ferramentas instaladas:
 
-- [Git](https://git-scm.com/)
-- [Docker](https://www.docker.com/products/docker-desktop/)
-- [Docker Compose](https://docs.docker.com/compose/install/)
+- Git
+- Docker
+- Docker Compose
 
 ### Instalação
 
@@ -88,7 +88,7 @@ Antes de começar, garanta que você tenha as seguintes ferramentas instaladas:
    O projeto é containerizado para facilitar a execução.
 
    ```sh
-   docker-compose up --build
+   docker compose up --build
    ```
 
    Este comando irá construir as imagens do frontend e do backend e iniciar os serviços.
