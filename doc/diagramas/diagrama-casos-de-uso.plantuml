@@ -1,5 +1,4 @@
 @startuml GranaLivreUseCases
-
 left to right direction
 
 skinparam packageBorderColor transparent
@@ -30,6 +29,7 @@ rectangle "GranaLivre" {
         usecase "Adicionar Entrada" as UC_AdicionarEntrada
         usecase "Adicionar Saída" as UC_AdicionarSaida
 
+        ' relações internas
         UC_Resumo ..> UC_GraficoResumo : <<includes>>
         UC_Resumo ..> UC_TransacoesRecentes : <<includes>>
         UC_Resumo ..> UC_DespesasVencer : <<includes>>
@@ -43,22 +43,42 @@ rectangle "GranaLivre" {
     ' ----------------------
     rectangle {
         usecase "Gerenciar Entradas" as UC_Entradas
-        usecase "Gerenciar Entradas Recorrentes" as UC_EntradasRecorrentes
         usecase "Gerenciar Saídas" as UC_Saidas
-        usecase "Gerenciar Saídas Recorrentes" as UC_SaidasRecorrentes
+        usecase "Gerenciar Automações" as UC_Automacoes
 
-        UC_Entradas ..> UC_EntradasRecorrentes : <<extends>>
-        UC_Saidas ..> UC_SaidasRecorrentes : <<extends>>
+        ' Relações entre movimentações e contas
+        usecase "Selecionar Conta Corrente" as UC_SelecionarConta
+
+        UC_Entradas ..> UC_SelecionarConta : <<includes>>
+        UC_Saidas ..> UC_SelecionarConta : <<includes>>
+        UC_Automacoes ..> UC_SelecionarConta : <<includes>>
+
+        ' Quando a automação executa, pode gerar uma entrada ou saída
+        usecase "Executar Automação" as UC_ExecutarAutomacao
+        UC_Automacoes ..> UC_ExecutarAutomacao : <<includes>>
+        UC_ExecutarAutomacao ..> UC_AdicionarEntrada : <<extends>>
+        UC_ExecutarAutomacao ..> UC_AdicionarSaida : <<extends>>
     }
 
     ' ----------------------
-    ' Bloco: Outros
+    ' Bloco: Conta Corrente, Investimentos e Patrimônio
     ' ----------------------
     rectangle {
         usecase "Gerenciar Conta Corrente" as UC_ContaCorrente
         usecase "Gerenciar Investimentos" as UC_Investimentos
         usecase "Gerenciar Patrimônio" as UC_Patrimonio
-        usecase "Sair" as UC_Sair
+        usecase "Logout" as UC_Sair
+
+        ' Relações entre esses módulos
+        UC_Investimentos ..> UC_SelecionarConta : <<includes>>
+        UC_Patrimonio ..> UC_SelecionarConta : <<includes>>
+
+        ' Patrimônio ligado à conta de compra e à conta de liquidação
+        usecase "Selecionar Conta de Compra" as UC_ContaCompra
+        usecase "Selecionar Conta de Liquidação" as UC_ContaLiquidacao
+
+        UC_Patrimonio ..> UC_ContaCompra : <<includes>>
+        UC_Patrimonio ..> UC_ContaLiquidacao : <<includes>>
     }
 }
 
@@ -69,6 +89,7 @@ User --> UC_GerenciarUsuario
 User --> UC_Resumo
 User --> UC_Entradas
 User --> UC_Saidas
+User --> UC_Automacoes
 User --> UC_ContaCorrente
 User --> UC_Investimentos
 User --> UC_Patrimonio
