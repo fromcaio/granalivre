@@ -50,8 +50,10 @@ export default async function ExtratoPage() {
   const user = await validateSession();
 
   // 2. Se não houver usuário, redireciona para a página de login.
+  // ** ATENÇÃO **
+  // SUBSTITUIR NOME_DA_NOVA_PAGINA
   if (!user) {
-    redirect('/entrar?redirect=/extrato');
+    redirect('/entrar?redirect=/{MOME_DA_NOVA_PAGINA}');
   }
 
   // 3. Se a sessão for válida, renderiza o conteúdo.
@@ -95,16 +97,21 @@ export default async function PerfilPage() {
   const user = await validateSession();
 
   // 2. Protege a rota.
+  // ** ATENÇÃO **
+  // SUBSTITUIR NOME_DA_NOVA_PAGINA
+  
   if (!user) {
-    redirect('/entrar?redirect=/perfil');
+    redirect('/entrar?redirect=/NOME_DA_NOVA_PAGINA');
   }
 
-  // 3. Renderiza o componente de cliente, passando os dados do usuário como prop.
+  // 3. Renderiza o componente de cliente, passando os dados como prop
   return (
     <main className="min-h-screen bg-gray-50">
       <TopBar />
       <div className="py-8 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         {/* Os dados validados no servidor são "injetados" no cliente */}
+        {/* Se utilizarmos uma consulta do servidor do front-end ao back-end
+        também teremos que passar esse valor como uma propriedade */}
         <ProfileClient user={user} />
       </div>
     </main>
