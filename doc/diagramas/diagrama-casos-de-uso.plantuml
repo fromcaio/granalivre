@@ -5,6 +5,7 @@ skinparam packageBorderColor transparent
 skinparam packageBackgroundColor transparent
 
 actor "Usuário" as User
+actor "BackEnd" as Sistema
 
 rectangle "GranaLivre" {
 
@@ -35,7 +36,7 @@ rectangle "GranaLivre" {
         UC_Resumo ..> UC_DespesasVencer : <<includes>>
         UC_Resumo ..> UC_PatrimonioTotal : <<includes>>
         UC_Resumo ..> UC_AdicionarEntrada : <<extends>>
-        UC_Resumo ..> UC_AdicionarSaida : <<extends>>
+        UC_Resumo ..> UC_AdicionarSaida : <<extends >>
     }
 
     ' ----------------------
@@ -46,16 +47,11 @@ rectangle "GranaLivre" {
         usecase "Gerenciar Saídas" as UC_Saidas
         usecase "Gerenciar Automações" as UC_Automacoes
 
-        ' Relações entre movimentações e contas
-        usecase "Selecionar Conta Corrente" as UC_SelecionarConta
-
-        UC_Entradas ..> UC_SelecionarConta : <<includes>>
-        UC_Saidas ..> UC_SelecionarConta : <<includes>>
-        UC_Automacoes ..> UC_SelecionarConta : <<includes>>
+        UC_Automacoes ..> UC_AdicionarEntrada : <<extends>>
+        UC_Automacoes ..> UC_AdicionarSaida : <<extends>>
 
         ' Quando a automação executa, pode gerar uma entrada ou saída
         usecase "Executar Automação" as UC_ExecutarAutomacao
-        UC_Automacoes ..> UC_ExecutarAutomacao : <<includes>>
         UC_ExecutarAutomacao ..> UC_AdicionarEntrada : <<extends>>
         UC_ExecutarAutomacao ..> UC_AdicionarSaida : <<extends>>
     }
@@ -69,22 +65,20 @@ rectangle "GranaLivre" {
         usecase "Gerenciar Patrimônio" as UC_Patrimonio
         usecase "Logout" as UC_Sair
 
-        ' Relações entre esses módulos
-        UC_Investimentos ..> UC_SelecionarConta : <<includes>>
-        UC_Patrimonio ..> UC_SelecionarConta : <<includes>>
-
-        ' Patrimônio ligado à conta de compra e à conta de liquidação
-        usecase "Selecionar Conta de Compra" as UC_ContaCompra
-        usecase "Selecionar Conta de Liquidação" as UC_ContaLiquidacao
-
-        UC_Patrimonio ..> UC_ContaCompra : <<includes>>
-        UC_Patrimonio ..> UC_ContaLiquidacao : <<includes>>
+        
+        UC_Patrimonio ..> UC_AdicionarEntrada : <<extends>>
+        UC_Patrimonio ..> UC_AdicionarSaida : <<extends>>
+        
+        UC_Investimentos ..> UC_AdicionarEntrada : <<extends>>
+        UC_Investimentos ..> UC_AdicionarSaida : <<extends>>
     }
 }
 
 ' ----------------------
 ' Ligações com o ator
 ' ----------------------
+
+Sistema --> UC_ExecutarAutomacao
 User --> UC_GerenciarUsuario
 User --> UC_Resumo
 User --> UC_Entradas
