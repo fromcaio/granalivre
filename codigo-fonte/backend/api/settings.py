@@ -26,16 +26,19 @@ SECRET_KEY = "django-insecure-#^e$12*r)q7fvbh&bwe5p%n+zc(pb7-h#4-%ka)534tp%=q^kb
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['backend', '127.0.0.1', 'localhost']
+ALLOWED_HOSTS = ['backend', '127.0.0.1', 'localhost', '0.0.0.0']
 
 
 # Application definition
 
 INSTALLED_APPS = [
     "corsheaders",
-    'rest_framework_simplejwt.token_blacklist',
-    'rest_framework_simplejwt',
+    "drf_spectacular",
+    "rest_framework_simplejwt.token_blacklist",
+    "rest_framework_simplejwt",
     "rest_framework",
+    "accounts",
+    "transactions",
     "users",
     "django.contrib.admin",
     "django.contrib.auth",
@@ -131,9 +134,20 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 AUTH_USER_MODEL = 'users.CustomUser'
 
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'users.authentication.CookieJWTAuthentication',
-    )
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "users.authentication.CookieJWTAuthentication",
+    ),
+    "DEFAULT_PERMISSION_CLASSES": (
+        "rest_framework.permissions.IsAuthenticated",
+    ),
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+    "DEFAULT_RENDERER_CLASSES": (
+        "rest_framework.renderers.JSONRenderer",
+    ),
+    "DEFAULT_PARSER_CLASSES": (
+        "rest_framework.parsers.JSONParser",
+    ),
+    "COERCE_DECIMAL_TO_STRING": False,
 }
 
 SIMPLE_JWT = {
@@ -151,3 +165,13 @@ SIMPLE_JWT = {
 
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "GranaLivre API",
+    "DESCRIPTION": "API documentation for the GranaLivre personal finance system.",
+    "VERSION": "1.0.0",
+    "SCHEMA_PATH_PREFIX": r"/api",
+    "SECURITY": [
+        {"cookieAuth": []},
+    ],
+}

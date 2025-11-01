@@ -6,3 +6,4 @@ djangorestframework_simplejwt==5.5.1
 PyJWT==2.10.1
 sqlparse==0.5.3
 typing_extensions==4.15.0
+drf-spectacular>=0.27.0

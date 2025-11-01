@@ -1,13 +1,7 @@
 from django.conf import settings
 from rest_framework.generics import RetrieveUpdateAPIView, CreateAPIView
 from rest_framework.permissions import IsAuthenticated
-from .serializers import (
-    CustomUserSerializer,
-    RegisterUserSerializer,
-    LoginUserSerializer,
-    UserUpdateSerializer,
-    UserDeleteSerializer
-)
+from drf_spectacular.utils import OpenApiResponse, extend_schema
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 from rest_framework.response import Response
@@ -15,6 +9,16 @@ from rest_framework import status
 from rest_framework_simplejwt.views import TokenRefreshView
 from rest_framework_simplejwt.exceptions import InvalidToken
 from rest_framework import permissions
+
+from .serializers import (
+    CustomUserSerializer,
+    RegisterUserSerializer,
+    LoginUserSerializer,
+    UserUpdateSerializer,
+    UserDeleteSerializer,
+    LoginResponseSerializer,
+    LogoutResponseSerializer,
+)
 
 # Read the cookie settings from your project's settings.py.
 SIMPLEJWT_SETTINGS = getattr(settings, 'SIMPLE_JWT', {})
@@ -52,6 +56,14 @@ class LoginView(APIView):
     authentication_classes = []
     permission_classes = [permissions.AllowAny]
 
+    @extend_schema(
+        request=LoginUserSerializer,
+        responses={
+            200: LoginResponseSerializer,
+            400: OpenApiResponse(description="Invalid credentials"),
+        },
+        tags=["Authentication"],
+    )
     def post(self, request):
         serializer = LoginUserSerializer(data=request.data)
         if serializer.is_valid():
@@ -80,6 +92,13 @@ class LoginView(APIView):
 class LogoutView(APIView):
     permission_classes = [permissions.AllowAny]
 
+    @extend_schema(
+        request=None,
+        responses={
+            200: LogoutResponseSerializer,
+        },
+        tags=["Authentication"],
+    )
     def post(self, request):
         try:
             refresh_token = request.COOKIES.get('refresh_token')

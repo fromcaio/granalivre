@@ -101,3 +101,11 @@ class LoginUserSerializer(Serializer):
         if user and user.is_active:
             return user
         raise serializers.ValidationError("Invalid credentials")
+
+
+class LoginResponseSerializer(serializers.Serializer):
+    user = CustomUserSerializer()
+
+
+class LogoutResponseSerializer(serializers.Serializer):
+    message = serializers.CharField()
