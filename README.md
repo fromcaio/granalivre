@@ -5,6 +5,8 @@
 
 **Uma plataforma open source de gerenciamento de finanças pessoais, desenvolvida por brasileiros e para brasileiros.**
 
+![Demonstration Gif](./doc/demo.gif)
+
 ---
 
 ## 📖 Tabela de Conteúdos
