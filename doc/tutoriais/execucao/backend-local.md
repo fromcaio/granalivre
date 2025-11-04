@@ -14,7 +14,7 @@ Certifique-se de que as seguintes ferramentas estão instaladas em sua máquina:
     Abra o seu terminal e vá para o diretório do backend:
 
     ```bash
-    cd codigo/backend
+    cd codigo-fonte/backend
     ```
 
 2.  **Crie um ambiente virtual:**

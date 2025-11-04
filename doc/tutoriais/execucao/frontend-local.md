@@ -14,7 +14,7 @@ Certifique-se de que as seguintes ferramentas estão instaladas em sua máquina:
     Abra o seu terminal e vá para o diretório do frontend:
 
     ```bash
-    cd codigo/frontend
+    cd codigo-fonte/frontend
     ```
 
 2.  **Instale as dependências do projeto:**

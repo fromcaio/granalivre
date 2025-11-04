@@ -28,6 +28,15 @@ O **Grana Livre** nasceu da necessidade de uma ferramenta de controle financeiro
 
 Nosso objetivo é criar uma plataforma **gratuita, de código aberto e totalmente documentada em português**, que não apenas ajude os usuários a organizar suas finanças, mas que também sirva como um **ambiente de aprendizado e colaboração** para desenvolvedores do Brasil.
 
+### Por onde começar na documentação
+
+Um bom ponto de partida é o arquivo [`doc/documentation.pdf`](doc/documentation.pdf), que reúne o Termo de Abertura do Projeto. Ele apresenta de forma resumida os objetivos do Grana Livre:
+
+> O GranaLivre é uma plataforma open source de finanças pessoais que tem como objetivo auxiliar usuários no controle de receitas, despesas, investimentos e patrimônio. A aplicação busca oferecer uma experiência simples e intuitiva para o gerenciamento financeiro, permitindo a visualização clara do saldo disponível, acompanhamento de contas recorrentes, assinaturas, bens e metas financeiras.  
+> Palavras-chave: open source; finanças; planejamento financeiro; controle financeiro; aplicação web.
+
+Ainda dentro da pasta `doc/`, você encontra materiais de apoio para execução e desenvolvimento. Os guias foram separados em duas categorias `doc/tutoriais/execucao/` (passo a passo para rodar os serviços localmente) e `doc/tutoriais/desenvolvimento/` (fluxos de contribuição e padrões de código). Ali estão, por exemplo, o tutorial de desenvolvimento do frontend e o guia de execução local do backend.
+
 ### Por que o Grana Livre?
 
 - **Gratuito e Acessível:** Controle total sobre suas finanças sem custos ou limitações.
@@ -104,8 +113,8 @@ Antes de começar, garanta que você tenha as seguintes ferramentas instaladas:
 
 Para guias mais detalhados sobre como executar cada parte separadamente, consulte nossos tutoriais:
 
-- [Guia de Execução do Backend](doc/tutoriais/backend.md)
-- [Guia de Execução do Frontend](doc/tutoriais/frontend.md)
+- [Execução local do backend (Django)](doc/tutoriais/execucao/backend-local.md)
+- [Execução local do frontend (Next.js)](doc/tutoriais/execucao/frontend-local.md)
 
 ---
 
@@ -119,10 +128,15 @@ granalivre/
 ├── codigo-fonte/         # Código principal da aplicação
 │   ├── backend/          # Aplicação Django (Python)
 │   └── frontend/         # Aplicação Next.js
-├── doc/                  # Documentação completa do projeto
-│   ├── diagramas/        # Diagramas de arquitetura, casos de uso, etc.
-│   ├── telas/            # Protótipos de baixa e alta fidelidade
-│   └── tutoriais/        # Guias de configuração e execução
+├── doc/                      # Documentação completa do projeto
+│   ├── documentation.pdf     # Termo de Abertura com visão geral do Grana Livre
+│   ├── latex/                # Código-fonte em LaTeX que gera a documentação oficial
+│   ├── tutoriais/            # Tutoriais organizados por Execução e Desenvolvimento
+│   │   ├── execucao/         # Guias passo a passo para subir backend/frontend localmente
+│   │   └── desenvolvimento/  # Padrões de contribuição, fluxos e guias de código
+│   ├── diagramas/            # Diagramas de casos de uso e banco de dados
+│   ├── telas/                # Protótipos de baixa fidelidade
+│   └── tarefas/              # Materiais de planejamento e acompanhamento de atividades
 └── README.md             # Este arquivo que você está lendo :)
 ```
 

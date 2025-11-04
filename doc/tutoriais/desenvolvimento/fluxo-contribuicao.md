@@ -1,4 +1,4 @@
-## Como Contribuir
+# Fluxo de Contribuição
 
 1. **Clonar o repositório**
 ```bash
@@ -34,7 +34,7 @@ git push origin minha-atividade
 
 - Criar ou editar arquivos em telas/excalidraw/ ou doc/diagramas/.
 - Exportar versões PDF/PNG para /doc/latex/imgs
-- Referenciar esses arquivos no LaTeX (doc/latex/chapters/development.tex).
+- Referenciar esses arquivos no LaTeX (`doc/latex/chapters/04_development.tex`).
 
 ## Tarefas e Organização
 
