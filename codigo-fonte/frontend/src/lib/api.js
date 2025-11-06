@@ -74,6 +74,66 @@ export const getUserInfo = async () => {
     }
 };
 
+export const getTransactions = async (filters = {}) => {
+    try {
+        const response = await axiosInstance.get('transactions/', {
+            params: filters,
+        });
+        return response.data;
+    } catch (e) {
+        throw new Error("Não foi possível buscar as transações.");
+    }
+};
+
+export const getAccounts = async () => {
+    try {
+        const response = await axiosInstance.get('accounts/');
+        return response.data;
+    } catch (e) {
+        throw new Error("Não foi possível buscar as contas.");
+    }
+};
+
+export const createTransaction = async (payload) => {
+    try {
+        const response = await axiosInstance.post('transactions/', payload);
+        return response.data;
+    } catch (e) {
+        if (e.response?.data) {
+            const messages = Object.values(e.response.data)
+                .flat()
+                .join(' ');
+            throw new Error(messages || "Não foi possível criar a transação.");
+        }
+        throw new Error("Não foi possível criar a transação.");
+    }
+};
+
+export const updateTransaction = async (payload) => {
+    try {
+        const response = await axiosInstance.patch('transactions/', payload);
+        return response.data;
+    } catch (e) {
+        if (e.response?.data) {
+            const messages = Object.values(e.response.data)
+                .flat()
+                .join(' ');
+            throw new Error(messages || "Não foi possível atualizar a transação.");
+        }
+        throw new Error("Não foi possível atualizar a transação.");
+    }
+};
+
+export const deleteTransaction = async (id) => {
+    try {
+        await axiosInstance.delete('transactions/', {
+            data: { id },
+        });
+    } catch (e) {
+        throw new Error("Não foi possível excluir a transação.");
+    }
+};
+
 
 // --- NEW UTILITY FUNCTIONS ---
 

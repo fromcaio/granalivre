@@ -24,8 +24,22 @@ export default async function TopBar() {
 
           <div className="flex items-center space-x-2 sm:space-x-4">
             {user ? (
-              // Passamos o usuário validado no servidor como prop para o componente de cliente
-              <UserMenu user={user} />
+              <>
+                <Link
+                  href="/entradas"
+                  className="hidden sm:inline-flex items-center rounded-lg bg-white/10 px-3 py-2 text-sm font-medium text-white transition hover:bg-white/20"
+                >
+                  Entradas
+                </Link>
+                <Link
+                  href="/entradas"
+                  className="sm:hidden inline-flex items-center rounded-lg bg-white px-3 py-2 text-sm font-semibold text-green-600 transition hover:bg-green-50"
+                >
+                  Entradas
+                </Link>
+                {/* Passamos o usuário validado no servidor como prop para o componente de cliente */}
+                <UserMenu user={user} />
+              </>
             ) : (
               // Conteúdo para usuários deslogados
               <>
