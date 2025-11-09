@@ -10,18 +10,19 @@ import Footer from '@/components/footer/Footer';
 export default async function HomePage() {
   // Await the result of our robust, server-side session check.
   // `initialUser` will be the user object or null.
-  const initialUser = await validateSession();
+  const initialUser = await validateSession();  
+  //const [isMenuOpen, setIsMenuOpen] = useState(false);
+
 
   return (
     <main className="min-h-screen bg-gray-50">
-      <TopBar />
-      <div className="py-8 px-4 sm:px-6 lg:px-8">
-        {/* Pass the server-validated user data down to a Client Component.
-          This component will handle the actual rendering logic.
-        */}
-        <HomePageClient />
+      <div className="flex-1 flex flex-col min-h-screen">
+        <TopBar />
+        <div className="page-content py-8 px-4 sm:px-6 lg:px-8 transition-transform duration-300">
+          <HomePageClient />
+        </div>
+        <Footer />
       </div>
-      <Footer />
     </main>
   );
 }

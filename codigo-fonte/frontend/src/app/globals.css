@@ -24,3 +24,9 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Quando o menu lateral está aberto, empurra o conteúdo principal */
+body.menu-open main .page-content {
+  transform: translateX(16rem); /* 64 Tailwind = 16rem */
+  transition: transform 0.3s ease-in-out;
+}
