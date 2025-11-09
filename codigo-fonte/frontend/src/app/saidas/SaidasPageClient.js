@@ -35,7 +35,6 @@ export default function SaidasPageClient() {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
 
-  // --- Carrega as saídas ---
   const loadExpenses = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -66,10 +65,14 @@ export default function SaidasPageClient() {
         const name = exp.name?.toLowerCase() || "";
         const description = exp.description?.toLowerCase() || "";
         const accountName = exp.account_info?.name?.toLowerCase() || "";
+        const category = exp.category?.toLowerCase() || "";
+        const paymentType = exp.payment_type?.toLowerCase() || "";
         return (
           name.includes(term) ||
           description.includes(term) ||
-          accountName.includes(term)
+          accountName.includes(term) ||
+          category.includes(term) ||
+          paymentType.includes(term)
         );
       });
     }
@@ -102,7 +105,7 @@ export default function SaidasPageClient() {
     if (loading)
       return (
         <tr>
-          <td colSpan={6} className="py-6 text-center text-gray-500">
+          <td colSpan={8} className="py-6 text-center text-gray-500">
             Carregando saídas...
           </td>
         </tr>
@@ -111,7 +114,7 @@ export default function SaidasPageClient() {
     if (error)
       return (
         <tr>
-          <td colSpan={6} className="py-6 text-center text-red-600">
+          <td colSpan={8} className="py-6 text-center text-red-600">
             {error}
           </td>
         </tr>
@@ -120,7 +123,7 @@ export default function SaidasPageClient() {
     if (filterErrorMessage)
       return (
         <tr>
-          <td colSpan={6} className="py-6 text-center text-red-600">
+          <td colSpan={8} className="py-6 text-center text-red-600">
             {filterErrorMessage}
           </td>
         </tr>
@@ -129,7 +132,7 @@ export default function SaidasPageClient() {
     if (!expenses.length)
       return (
         <tr>
-          <td colSpan={6} className="py-6 text-center text-gray-500">
+          <td colSpan={8} className="py-6 text-center text-gray-500">
             Nenhuma saída registrada ainda.
           </td>
         </tr>
@@ -138,7 +141,7 @@ export default function SaidasPageClient() {
     if (!filteredExpenses.length)
       return (
         <tr>
-          <td colSpan={6} className="py-6 text-center text-gray-500">
+          <td colSpan={8} className="py-6 text-center text-gray-500">
             Nenhuma saída encontrada para os filtros atuais.
           </td>
         </tr>
@@ -146,20 +149,22 @@ export default function SaidasPageClient() {
 
     return filteredExpenses.map((exp) => (
       <tr key={exp.id} className="border-b border-gray-200 last:border-0">
-        <td className="px-4 py-3 text-sm text-gray-700">{exp.name}</td>
-        <td className="px-4 py-3 text-sm text-gray-700">
+        <td className="px-6 py-3 text-sm text-gray-700">{exp.name}</td>
+        <td className="px-6 py-3 text-sm text-gray-700">
           {exp.account_info?.name || "—"}
         </td>
-        <td className="px-4 py-3 text-sm text-red-600 font-semibold">
+        <td className="px-6 py-3 text-sm text-gray-700">{exp.category || "—"}</td>
+        <td className="px-6 py-3 text-sm text-gray-700">{exp.payment_method || "—"}</td>
+        <td className="px-6 py-3 text-sm text-red-600 font-semibold">
           {formatValue(exp.value)}
         </td>
-        <td className="px-4 py-3 text-sm text-gray-700">
+        <td className="px-6 py-3 text-sm text-gray-700">
           {formatDateTime(exp.datetime)}
         </td>
-        <td className="px-4 py-3 text-sm text-gray-500">
+        <td className="px-6 py-3 text-sm text-gray-500">
           {exp.description || "—"}
         </td>
-        <td className="px-4 py-3 text-sm text-right">
+        <td className="px-6 py-3 text-sm text-right">
           <div className="flex justify-end gap-2">
             <button
               type="button"
@@ -180,16 +185,15 @@ export default function SaidasPageClient() {
               className="rounded-md border border-red-200 px-3 py-1 text-xs font-semibold text-red-600 transition hover:bg-red-50"
             >
               Excluir
-            </button>
+            </button>   
           </div>
         </td>
       </tr>
     ));
   }, [expenses, filteredExpenses, error, loading, filterErrorMessage]);
 
-  // --- Render principal ---
   return (
-    <section className="bg-white shadow-sm rounded-xl border border-gray-200">
+    <section className="bg-white shadow-sm rounded-xl border border-gray-200 w-full max-w-[1800px] mx-auto">
       <header className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between px-6 py-4 border-b border-gray-200">
         <div>
           <h1 className="text-2xl font-semibold text-gray-800">Saídas</h1>
@@ -197,20 +201,33 @@ export default function SaidasPageClient() {
             Visualize, filtre e gerencie suas transações de saída.
           </p>
         </div>
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+    
+        <div className="flex flex-wrap gap-3 sm:flex-nowrap sm:items-center sm:gap-4">
+          <input
+            type="date"
+            value={startDate}
+            onChange={(e) => setStartDate(e.target.value)}
+            className="flex-shrink-0 rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-700 shadow-sm transition focus:border-red-500 focus:ring-2 focus:ring-red-200"
+          />
+          <input
+            type="date"
+            value={endDate}
+            onChange={(e) => setEndDate(e.target.value)}
+            className="flex-shrink-0 rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-700 shadow-sm transition focus:border-red-500 focus:ring-2 focus:ring-red-200"
+          />
           <input
             type="search"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Buscar por nome, conta ou descrição"
-            className="rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-700 shadow-sm transition focus:border-red-500 focus:ring-2 focus:ring-red-200"
+            placeholder="Buscar por nome, conta, categoria ou tipo"
+            className="flex-1 min-w-[150px] rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-700 shadow-sm transition focus:border-red-500 focus:ring-2 focus:ring-red-200"
           />
           <button
             onClick={() => {
               setSelectedExpense(null);
               setShowModal(true);
             }}
-            className="inline-flex items-center justify-center rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-red-700"
+            className="flex-shrink-0 min-w-[140px] inline-flex items-center justify-center rounded-lg bg-red-600 px-6 py-2 text-sm font-semibold text-white transition hover:bg-red-700"
           >
             Adicionar saída
           </button>
@@ -224,27 +241,17 @@ export default function SaidasPageClient() {
       )}
 
       <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200">
+        <table className="w-full divide-y divide-gray-200 min-w-[1000px]">
           <thead className="bg-gray-50">
             <tr>
-              <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                Nome
-              </th>
-              <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                Conta
-              </th>
-              <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                Valor
-              </th>
-              <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                Data
-              </th>
-              <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                Descrição
-              </th>
-              <th className="px-4 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500">
-                Ações
-              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Nome</th>
+              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Conta</th>
+              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Categoria</th>
+              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Tipo de Pagamento</th>
+              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Valor</th>
+              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Data</th>
+              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Descrição</th>
+              <th className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500">Ações</th>
             </tr>
           </thead>
           <tbody>{tableContent}</tbody>

@@ -14,9 +14,6 @@ const getInitialState = (transaction) => ({
   description: transaction?.description || "",
   category: transaction?.category || "",
   payment_method: transaction?.payment_method || "",
-  datetime: transaction?.datetime
-    ? new Date(transaction.datetime).toISOString().slice(0, 16)
-    : "",
 });
 
 export default function AddExpenseModal({ onClose, onSubmitted, transaction }) {
@@ -73,11 +70,10 @@ export default function AddExpenseModal({ onClose, onSubmitted, transaction }) {
       return;
     }
 
-    const datetimeValue = formData.datetime ? new Date(formData.datetime) : null;
-    if (datetimeValue && Number.isNaN(datetimeValue.getTime())) {
-      setError("Informe uma data e hora válidas.");
-      return;
-    }
+    const finalCategory =
+    formData.category === "Outros"
+      ? formData.custom_category?.trim() || "Outros"
+      : formData.category;
 
     setSubmitting(true);
     try {
@@ -87,10 +83,9 @@ export default function AddExpenseModal({ onClose, onSubmitted, transaction }) {
         value: numericValue.toFixed(2),
         description: formData.description || "",
         account: Number(formData.account),
-        category: formData.category || "",
+        category: finalCategory || "",
         payment_method: formData.payment_method || "",
-        datetime: datetimeValue ? datetimeValue.toISOString() : undefined,
-        type: "expense", // 🔹 Identifica esta transação como SAÍDA
+        type: "expense",
       };
 
       if (isEdit) {
@@ -210,45 +205,58 @@ export default function AddExpenseModal({ onClose, onSubmitted, transaction }) {
               <label className="mb-1 block text-sm font-medium text-gray-700" htmlFor="category">
                 Categoria
               </label>
-              <input
+              <select
                 id="category"
                 name="category"
-                type="text"
                 className={formStyles.input}
-                placeholder="Ex.: Alimentação, Transporte..."
                 value={formData.category}
                 onChange={handleChange}
-              />
+              >
+                <option value="">Selecione uma categoria</option>
+                <option value="Alimentação">Alimentação</option>
+                <option value="Transporte">Transporte</option>
+                <option value="Lazer">Lazer</option>
+                <option value="Educação">Educação</option>
+                <option value="Saúde">Saúde</option>
+                <option value="Outros">Outros</option>
+              </select>
+
+              {formData.category === "Outros" && (
+                <input
+                  type="text"
+                  name="custom_category"
+                  placeholder="Digite a categoria personalizada"
+                  className={`${formStyles.input} mt-2`}
+                  value={formData.custom_category || ""}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      custom_category: e.target.value,
+                    }))
+                  }
+                />
+              )}
             </div>
 
             <div>
               <label className="mb-1 block text-sm font-medium text-gray-700" htmlFor="payment_method">
                 Método de pagamento
               </label>
-              <input
+              <select
                 id="payment_method"
                 name="payment_method"
-                type="text"
                 className={formStyles.input}
-                placeholder="Ex.: Cartão, Pix, Dinheiro..."
                 value={formData.payment_method}
                 onChange={handleChange}
-              />
+              >
+                <option value="">Selecione o método</option>
+                <option value="Dinheiro">Dinheiro</option>
+                <option value="Cartão de Crédito">Cartão de Crédito</option>
+                <option value="Cartão de Débito">Cartão de Débito</option>
+                <option value="Pix">Pix</option>
+                <option value="Transferência">Transferência</option>
+              </select>
             </div>
-          </div>
-
-          <div>
-            <label className="mb-1 block text-sm font-medium text-gray-700" htmlFor="datetime">
-              Data e hora
-            </label>
-            <input
-              id="datetime"
-              name="datetime"
-              type="datetime-local"
-              className={formStyles.input}
-              value={formData.datetime}
-              onChange={handleChange}
-            />
           </div>
 
           <div>
