@@ -1,6 +1,8 @@
-import Link from 'next/link';
-import { validateSession } from '@/lib/serverAuth';
-import UserMenu from './UserMenu'; // O menu do usuário continua sendo um Componente de Cliente
+import Link from "next/link";
+import { validateSession } from "@/lib/serverAuth";
+import UserMenu from "./UserMenu";
+import SideMenuToggle from "./SideMenuToggle"; 
+
 
 /**
  * A TopBar agora é um Componente de Servidor assíncrono.
@@ -8,7 +10,8 @@ import UserMenu from './UserMenu'; // O menu do usuário continua sendo um Compo
  * 2. Renderiza o UserMenu (para usuários logados) ou os links de Login/Cadastro.
  * 3. Passa os dados do usuário (`user`) como uma prop para o UserMenu.
  */
-export default async function TopBar() {
+
+export default async function TopBar({ onToggle }) {
   // A chamada é "gratuita" graças ao React.cache em validateSession
   const user = await validateSession();
 
@@ -16,25 +19,19 @@ export default async function TopBar() {
     <nav className="bg-gradient-to-r from-green-600 to-emerald-600 shadow-lg">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          <Link href="/" className="flex items-center">
-            <span className="text-white text-xl sm:text-2xl font-bold hover:text-green-100 transition">
-              GranaLivre
-            </span>
-          </Link>
+          <div className="flex items-center space-x-2">
+            <SideMenuToggle /*onToggle={onToggle} */  /> {/* Botão para abrir o menu lateral */}
+            <Link href="/" className="flex items-center">
+              <span className="text-white text-xl sm:text-2xl font-bold hover:text-green-100 transition">
+                GranaLivre
+              </span>
+            </Link>
+          </div>
 
           <div className="flex items-center space-x-2 sm:space-x-4">
             {user ? (
-              <>
-                <Link
-                  href="/saidas"
-                  className="hidden sm:inline-flex items-center rounded-lg bg-white/10 px-3 py-2 text-sm font-medium text-white transition hover:bg-white/20"
-                >
-                  Saídas
-                </Link>
-
-              {/* Passamos o usuário validado no servidor como prop para o componente de cliente */}
+              // Passamos o usuário validado no servidor como prop para o componente de cliente
               <UserMenu user={user} />
-              </>
             ) : (
               // Conteúdo para usuários deslogados
               <>

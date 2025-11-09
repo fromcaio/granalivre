@@ -3,8 +3,6 @@ import Image from 'next/image';
 import { landingPageContent } from '@/config/content';
 import { validateSession } from '@/lib/serverAuth'; // Importa a função de validação
 
-// --- Componentes de UI (HeroSection, AboutSection, etc. permanecem os mesmos) ---
-
 const HeroSection = () => (
   <section className="text-center py-20">
     <h1 className="text-4xl sm:text-5xl font-bold text-gray-800 mb-4 animate-fade-in-down">
