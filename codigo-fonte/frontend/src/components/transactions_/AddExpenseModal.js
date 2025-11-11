@@ -80,7 +80,7 @@ export default function AddExpenseModal({ onClose, onSubmitted, transaction }) {
       const payload = {
         id: transaction?.id,
         name: formData.name.trim(),
-        value: numericValue.toFixed(2),
+        value: (-Math.abs(numericValue)).toFixed(2),
         description: formData.description || "",
         account: Number(formData.account),
         category: finalCategory || "",

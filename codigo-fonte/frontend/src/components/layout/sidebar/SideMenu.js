@@ -7,7 +7,7 @@ const menuItems = [
   { name: "Resumo", href: "/" },
   { name: "Entradas", href: "/entradas" },
   { name: "Saídas", href: "/saidas" },
-  { name: "Conta Corrente", href: "/" },
+  { name: "Conta Corrente", href: "/contas" },
   { name: "Automações", href: "/" },
   { name: "Patrimônios", href: "/" },
   { name: "Investimentos", href: "/" },
