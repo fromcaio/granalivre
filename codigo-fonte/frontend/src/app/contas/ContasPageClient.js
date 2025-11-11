@@ -6,6 +6,7 @@ import {
   createAccount,
   updateAccount,
   deleteAccount,
+  getAccountBalance, // *** 1. IMPORTAR NOVA FUNÇÃO ***
 } from '@/lib/api';
 import { Plus, Pencil, Trash2, Loader2, AlertCircle } from 'lucide-react';
 import AccountFormModal from '@/components/accounts/AccountFormModal';
@@ -40,10 +41,41 @@ export default function ContasPageClient({ user }) {
     try {
       setLoading(true);
       setError(null);
-      const data = await getAccounts();
-      setAccounts(data);
+
+      // *** 2. LÓGICA DE BUSCA ATUALIZADA ***
+
+      // 2.1. Busca a lista de contas (com 'name', 'agency', 'account_number')
+      const basicAccounts = await getAccounts();
+
+      if (basicAccounts.length > 0) {
+        // 2.2. Busca os saldos para cada conta em paralelo
+        const balancePromises = basicAccounts.map((acc) =>
+          getAccountBalance(acc.id)
+        );
+        const balanceResults = await Promise.all(balancePromises);
+
+        // 2.3. Cria um mapa para facilitar a fusão (id -> current_balance)
+        const balanceMap = new Map(
+          balanceResults.map((balance) => [
+            balance.account_id,
+            balance.current_balance,
+          ])
+        );
+
+        // 2.4. Funde os dados: adiciona 'current_balance' aos dados básicos
+        const fullAccountData = basicAccounts.map((account) => ({
+          ...account,
+          // Pega o current_balance do mapa; se falhar, usa o initial_balance como fallback
+          current_balance:
+            balanceMap.get(account.id) ?? account.initial_balance,
+        }));
+
+        setAccounts(fullAccountData);
+      } else {
+        setAccounts([]); // Nenhuma conta encontrada
+      }
     } catch (err) {
-      setError(err.message || 'Erro ao buscar contas.');
+      setError(err.message || 'Erro ao buscar contas ou saldos.');
     } finally {
       setLoading(false);
     }
@@ -87,7 +119,7 @@ export default function ContasPageClient({ user }) {
         await createAccount(formData);
       }
       setIsFormModalOpen(false);
-      fetchAccounts(); // Atualiza a lista
+      fetchAccounts(); // Atualiza a lista (agora com saldos corretos)
     } catch (err) {
       console.error(err);
       alert(err.message || 'Falha ao salvar a conta.'); // Simples, como solicitado
@@ -178,7 +210,7 @@ export default function ContasPageClient({ user }) {
                   scope="col"
                   className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
                 >
-                  Ações
+    _               Ações
                 </th>
               </tr>
             </thead>
@@ -195,12 +227,12 @@ export default function ContasPageClient({ user }) {
                     {account.account_number}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                    {/* Usando o initial_balance conforme API */}
-                    {formatCurrency(account.initial_balance)}
+                    {/* *** 3. MUDANÇA NA RENDERIZAÇÃO *** */}
+                    {formatCurrency(account.current_balance)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
                     <button
-                      onClick={() => handleOpenEditModal(account)}
+            _           onClick={() => handleOpenEditModal(account)}
                       className="text-blue-600 hover:text-blue-800 p-1 rounded-md hover:bg-blue-100 transition"
                       title="Editar"
                     >
@@ -210,7 +242,7 @@ export default function ContasPageClient({ user }) {
                       onClick={() => handleOpenDeleteModal(account)}
                       className="text-red-600 hover:text-red-800 p-1 rounded-md hover:bg-red-100 transition"
                       title="Remover"
-                    >
+                  _ >
                       <Trash2 size={18} />
                     </button>
                   </td>

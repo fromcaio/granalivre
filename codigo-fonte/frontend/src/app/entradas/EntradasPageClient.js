@@ -39,14 +39,13 @@ export default function EntradasPageClient() {
     setLoading(true);
     setError(null);
     try {
-      const data = await getTransactions();
-      const onlyIncome = (data || []).filter((t) => {
-        if (typeof t.value === "number") return t.value > 0;
-        const num = Number(t.value);
-        if (!Number.isNaN(num)) return num > 0;
-        return t.type === "income";
-      });
-      setEntries(onlyIncome);
+      // *** MUDANÇA AQUI ***
+      // Passa o filtro 'type: "income"' para a API
+      const data = await getTransactions({ type: "income" });
+
+      // *** MUDANÇA AQUI ***
+      // Remove o filtro complexo do frontend, pois o backend já filtrou
+      setEntries(data || []);
     } catch (err) {
       setError(err.message || "Erro ao carregar entradas.");
     } finally {

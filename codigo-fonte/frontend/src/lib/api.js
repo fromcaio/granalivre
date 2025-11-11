@@ -233,3 +233,23 @@ export const deleteAccount = async (id) => {
         throw new Error("Não foi possível excluir a conta.");
     }
 };
+
+/**
+ * ***NOVA FUNÇÃO***
+ * Busca o saldo detalhado de UMA conta.
+ * @param {number} id - O ID da conta.
+ * @returns {object} - { account_id, account_name, initial_balance, transactions_total, current_balance }
+ */
+export const getAccountBalance = async (id) => {
+    try {
+        // Conforme a view do Django, é um POST para /accounts/balance/
+        // com o 'id' no corpo (data)
+        const response = await axiosInstance.post('accounts/balance/', { id });
+        return response.data;
+    } catch (e) {
+        if (e.response?.status === 404) {
+            throw new Error(`Saldo não encontrado (Conta ID: ${id}).`);
+        }
+        throw new Error(`Não foi possível buscar o saldo da conta ${id}.`);
+    }
+};

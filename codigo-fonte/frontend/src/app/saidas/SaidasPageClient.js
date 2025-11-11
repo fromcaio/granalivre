@@ -39,11 +39,13 @@ export default function SaidasPageClient() {
     setLoading(true);
     setError(null);
     try {
-      const data = await getTransactions();
-      const onlyExpenses = (data || []).filter(
-        (t) => t.type === "expense" || !t.type
-      );
-      setExpenses(onlyExpenses);
+      // *** MUDANÇA AQUI ***
+      // Passa o filtro 'type: "expense"' para a API
+      const data = await getTransactions({ type: "expense" });
+      
+      // *** MUDANÇA AQUI ***
+      // Remove o filtro do frontend, pois o backend já filtrou
+      setExpenses(data || []);
     } catch (err) {
       setError(err.message || "Erro ao carregar saídas.");
     } finally {
