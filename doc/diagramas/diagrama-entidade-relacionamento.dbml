@@ -1,17 +1,17 @@
-////////////////////////////////////////////////////////
+// ////////////////////////////////////////////////////////
 // BANCO DE DADOS - GESTÃO FINANCEIRA (VERSÃO FINAL EM PORTUGUÊS)
-////////////////////////////////////////////////////////
+// ////////////////////////////////////////////////////////
 
 Table usuarios {
   id integer [primary key, increment]
   email varchar [unique, not null]
   senha_hash varchar [not null]
-  criado_em timestamp [default: `now()`]
+  criado_em timestamp [default: 'now()']
 }
 
-////////////////////////////////////////////////////////
+// ////////////////////////////////////////////////////////
 // CONTAS BANCÁRIAS
-////////////////////////////////////////////////////////
+// ////////////////////////////////////////////////////////
 Table contas {
   id integer [primary key, increment]
   usuario_id integer [not null]
@@ -19,12 +19,12 @@ Table contas {
   //saldo decimal(12,2) [default: 0.00]
   agencia varchar [not null]
   numero varchar [not null] 
-  criado_em timestamp [default: `now()`]
+  criado_em timestamp [default: 'now()']
 }
 
-////////////////////////////////////////////////////////
+// ////////////////////////////////////////////////////////
 // TRANSAÇÕES UNIFICADAS (ENTRADAS, SAÍDAS, TRANSFERÊNCIAS, ETC.)
-////////////////////////////////////////////////////////
+// ////////////////////////////////////////////////////////
 Table transacoes {
   id integer [primary key, increment]
   nome varchar [not null]
@@ -36,12 +36,12 @@ Table transacoes {
   //categoria varchar [note: 'Ex: Mercado, Salário, Lazer']
   //metodo_pagamento varchar [note: 'PIX, Débito, Crédito, etc.']
   data date [not null]
-  criado_em timestamp [default: `now()`] 
+  criado_em timestamp [default: 'now()'] 
 }
 
-////////////////////////////////////////////////////////
+// ////////////////////////////////////////////////////////
 // AUTOMAÇÕES (REGRAS DE TRANSAÇÕES RECORRENTES)
-////////////////////////////////////////////////////////
+// ////////////////////////////////////////////////////////
 Table automacoes {
   id integer [primary key, increment]
   usuario_id integer [not null]
@@ -54,12 +54,12 @@ Table automacoes {
   categoria varchar
   descricao text
   ativo boolean [default: true]
-  criado_em timestamp [default: `now()`]
+  criado_em timestamp [default: 'now()']
 }
 
-////////////////////////////////////////////////////////
+// ////////////////////////////////////////////////////////
 // INVESTIMENTOS
-////////////////////////////////////////////////////////
+// ////////////////////////////////////////////////////////
 Table investimentos {
   id integer [primary key, increment]
   valor_original decimal(10,2)
@@ -72,12 +72,12 @@ Table investimentos {
   data_vencimento date
   tipo_de_rentabilidade varchar [not null, note: 'Ex: Variável, Prefixado']
   status varchar [default: 'ativo', note: 'ativo | vendido | encerrado']
-  criado_em timestamp [default: `now()`]
+  criado_em timestamp [default: 'now()']
 }
 
-////////////////////////////////////////////////////////
+// ////////////////////////////////////////////////////////
 // PATRIMÔNIOS
-////////////////////////////////////////////////////////
+// ////////////////////////////////////////////////////////
 Table patrimonios {
   id integer [primary key, increment]
   usuario_id integer [not null]
@@ -88,12 +88,12 @@ Table patrimonios {
   tipo varchar [note: 'Ex: casa, carro, apartamento']
   manutencao_mensal decimal(10,2)
   descricao text
-  criado_em timestamp [default: `now()`]
+  criado_em timestamp [default: 'now()']
 }
 
-////////////////////////////////////////////////////////
+// ////////////////////////////////////////////////////////
 // RELAÇÕES ENTRE TABELAS
-////////////////////////////////////////////////////////
+// ////////////////////////////////////////////////////////
 Ref: contas.usuario_id > usuarios.id
 
 Ref: transacoes.usuario_id > usuarios.id
@@ -105,4 +105,3 @@ Ref: automacoes.conta_id > contas.id
 Ref: investimentos.usuario_id > usuarios.id
 
 Ref: patrimonios.usuario_id > usuarios.id
-     
