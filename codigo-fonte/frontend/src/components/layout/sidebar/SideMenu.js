@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 
 const menuItems = [
   { name: "Resumo", href: "/" },
-  { name: "Entradas", href: "/" },
+  { name: "Entradas", href: "/entradas" },
   { name: "Saídas", href: "/saidas" },
   { name: "Conta Corrente", href: "/" },
   { name: "Automações", href: "/" },

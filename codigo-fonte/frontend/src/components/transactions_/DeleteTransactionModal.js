@@ -4,7 +4,7 @@ import { useState } from "react";
 import { formStyles } from "@/config/styles";
 import { deleteTransaction } from "@/lib/api";
 
-export default function DeleteTransactionModal({ onClose, transaction, onDeleted }) {
+export default function DeleteTransactionModal({ onClose, transaction, onDeleted, title = "Excluir Transação" }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -39,7 +39,7 @@ export default function DeleteTransactionModal({ onClose, transaction, onDeleted
         </button>
 
         {/* Título */}
-        <h2 className="text-xl font-bold text-gray-800 mb-2">Excluir Saída</h2>
+        <h2 className="text-xl font-bold text-gray-800 mb-2">{title}</h2>
         <p className="text-sm text-gray-600 mb-4">
           Tem certeza que deseja excluir <strong>{transaction.name}</strong>?<br />
           Esta ação é <strong>permanente</strong> e não poderá ser desfeita.
