@@ -74,16 +74,6 @@ export const getUserInfo = async () => {
     }
 };
 
-export const getAccounts = async () => {
-    try {
-        const response = await axiosInstance.get('accounts/');
-        return response.data;
-    } catch (e) {
-        throw new Error("Não foi possível buscar as contas.");
-    }
-};
-
-
 // --- NEW UTILITY FUNCTIONS ---
 
 /**
@@ -187,5 +177,59 @@ export const deleteTransaction = async (id) => {
         });
     } catch (e) {
         throw new Error("Não foi possível excluir a transação.");
+    }
+};
+
+// --- Funções de Contas (Accounts) ---
+
+export const getAccounts = async () => {
+    try {
+        const response = await axiosInstance.get('accounts/');
+        return response.data;
+    } catch (e) {
+        throw new Error("Não foi possível buscar as contas.");
+    }
+};
+
+/**
+ * Cria uma nova conta.
+ * @param {object} accountData - { name, agency, account_number, initial_balance }
+ */
+export const createAccount = async (accountData) => {
+    try {
+        const response = await axiosInstance.post('accounts/', accountData);
+        return response.data;
+    } catch (e) {
+        const errorMsg = e.response?.data ? Object.values(e.response.data).flat().join(' ') : "Não foi possível criar a conta.";
+        throw new Error(errorMsg);
+    }
+};
+
+/**
+ * Atualiza uma conta existente.
+ * O backend exige PUT, então todos os campos são necessários.
+ * @param {object} accountData - { id, name, agency, account_number, initial_balance }
+ */
+export const updateAccount = async (accountData) => {
+    try {
+        const response = await axiosInstance.put('accounts/', accountData);
+        return response.data;
+    } catch (e) {
+        const errorMsg = e.response?.data ? Object.values(e.response.data).flat().join(' ') : "Não foi possível atualizar a conta.";
+        throw new Error(errorMsg);
+    }
+};
+
+/**
+ * Deleta uma conta.
+ * @param {number} id - O ID da conta a ser deletada.
+ */
+export const deleteAccount = async (id) => {
+    try {
+        await axiosInstance.delete('accounts/', {
+            data: { id },
+        });
+    } catch (e) {
+        throw new Error("Não foi possível excluir a conta.");
     }
 };
