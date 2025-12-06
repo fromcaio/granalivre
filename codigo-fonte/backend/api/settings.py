@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     "accounts",
     "transactions",
     "users",
+    "automations",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",

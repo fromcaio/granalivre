@@ -22,10 +22,12 @@ from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 from accounts.views import AccountViewSet
 from api.routers import BodyIdRouter
 from transactions.views import TransactionViewSet
+from automations.views import AutomationViewSet
 
 router = BodyIdRouter()
 router.register("accounts", AccountViewSet, basename="accounts")
 router.register("transactions", TransactionViewSet, basename="transactions")
+router.register("automations", AutomationViewSet, basename="automations")
 
 urlpatterns = [
     path("admin/", admin.site.urls),
