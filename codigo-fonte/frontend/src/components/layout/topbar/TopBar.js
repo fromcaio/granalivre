@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { validateSession } from "@/lib/serverAuth";
 import UserMenu from "./UserMenu";
-import SideMenuToggle from "./SideMenuToggle"; 
 
 
 /**
@@ -20,7 +19,6 @@ export default async function TopBar({ onToggle }) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center space-x-2">
-            <SideMenuToggle /*onToggle={onToggle} */  /> {/* Botão para abrir o menu lateral */}
             <Link href="/" className="flex items-center">
               <span className="text-white text-xl sm:text-2xl font-bold hover:text-green-100 transition">
                 GranaLivre

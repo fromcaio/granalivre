@@ -253,3 +253,187 @@ export const getAccountBalance = async (id) => {
         throw new Error(`Não foi possível buscar o saldo da conta ${id}.`);
     }
 };
+
+/**
+ * Client-side fetch for dashboard summary.
+ * TODO: Replace mock data with real API call: axiosInstance.get('dashboard/summary/')
+ */
+export const getDashboardSummary = async () => {
+    // Simulate network delay
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
+    // MOCK DATA (Placeholder)
+    return {
+        last30DaysBalance: 2500.00, // Slightly different to show change on refresh
+        billsToPay: 300.50,
+        currentBalance: 1150.00,
+        patrimonio: 265000.00,
+    };
+};
+
+/**
+ * Client-side fetch for dashboard chart data.
+ * TODO: Replace mock with real API call: axiosInstance.get('dashboard/chart/', { params: { days } })
+ */
+export const getDashboardChart = async (days = 30) => {
+    await new Promise(resolve => setTimeout(resolve, 500));
+
+    const today = new Date();
+    return Array.from({ length: days }, (_, idx) => {
+        const d = new Date(today);
+        d.setDate(d.getDate() - (days - idx - 1));
+        return {
+            label: `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}`,
+            total: 252000 + idx * 150,
+            spent: 1800 + (idx % 6) * 160,
+        };
+    });
+};
+
+export const getAutomations = async () => {
+    try {
+        const response = await axiosInstance.get('automations/');
+        return response.data;
+    } catch (e) {
+        // MOCK fallback for dev without backend
+        console.warn("API automations/ failed, returning mock.");
+        return [
+            { id: 1, name: 'Conta de Água', value: -80.00, day: 12, type: 'expense' },
+            { id: 2, name: 'Conta de Energia', value: -120.00, day: 15, type: 'expense' },
+            { id: 3, name: 'Salário Empresa', value: 4400.00, day: 20, type: 'income' },
+        ];
+    }
+};
+
+export const createAutomation = async (data) => {
+    try {
+        const response = await axiosInstance.post('automations/', data);
+        return response.data;
+    } catch (e) {
+        throw new Error("Não foi possível criar a automação.");
+    }
+};
+
+export const updateAutomation = async (data) => {
+    try {
+        const response = await axiosInstance.put(`automations/${data.id}/`, data);
+        return response.data;
+    } catch (e) {
+        throw new Error("Não foi possível atualizar a automação.");
+    }
+};
+
+export const deleteAutomation = async (id) => {
+    try {
+        await axiosInstance.delete(`automations/${id}/`);
+    } catch (e) {
+        throw new Error("Não foi possível excluir a automação.");
+    }
+};
+
+// ... (Existing imports and functions) ...
+
+// --- INVESTMENTS ---
+
+export const getInvestments = async () => {
+    try {
+        const response = await axiosInstance.get('investments/');
+        return response.data;
+    } catch (e) {
+        // Fallback for dev
+        return [];
+    }
+};
+
+export const createInvestment = async (data) => {
+    try {
+        const response = await axiosInstance.post('investments/', data);
+        return response.data;
+    } catch (e) {
+        throw new Error("Não foi possível criar o investimento.");
+    }
+};
+
+export const updateInvestment = async (data) => {
+    try {
+        const response = await axiosInstance.put(`investments/${data.id}/`, data);
+        return response.data;
+    } catch (e) {
+        throw new Error("Não foi possível atualizar o investimento.");
+    }
+};
+
+export const deleteInvestment = async (id) => {
+    try {
+        await axiosInstance.delete(`investments/${id}/`);
+    } catch (e) {
+        throw new Error("Não foi possível excluir o investimento.");
+    }
+};
+
+// --- INVESTMENT MOVEMENTS ---
+
+export const createInvestmentMovement = async (investmentId, data) => {
+    try {
+        // Assuming nested route or sending investment_id in body
+        const response = await axiosInstance.post(`investments/${investmentId}/movements/`, data);
+        return response.data;
+    } catch (e) {
+        throw new Error("Não foi possível registrar a movimentação.");
+    }
+};
+
+export const liquidateInvestment = async (investmentId, data) => {
+    try {
+        const response = await axiosInstance.post(`investments/${investmentId}/liquidate/`, data);
+        return response.data;
+    } catch (e) {
+        throw new Error("Não foi possível liquidar o investimento.");
+    }
+};
+
+// --- ASSETS (PATRIMÔNIO) ---
+
+export const getAssets = async (filters = {}) => {
+    try {
+        const response = await axiosInstance.get('assets/', { params: filters });
+        return response.data;
+    } catch (e) {
+        return [];
+    }
+};
+
+export const createAsset = async (data) => {
+    try {
+        const response = await axiosInstance.post('assets/', data);
+        return response.data;
+    } catch (e) {
+        throw new Error("Não foi possível adicionar o patrimônio.");
+    }
+};
+
+export const updateAsset = async (data) => {
+    try {
+        const response = await axiosInstance.put(`assets/${data.id}/`, data);
+        return response.data;
+    } catch (e) {
+        throw new Error("Não foi possível atualizar o patrimônio.");
+    }
+};
+
+export const deleteAsset = async (id) => {
+    try {
+        await axiosInstance.delete(`assets/${id}/`);
+    } catch (e) {
+        throw new Error("Não foi possível excluir o patrimônio.");
+    }
+};
+
+export const liquidateAsset = async (id, data) => {
+    try {
+        const response = await axiosInstance.post(`assets/${id}/liquidate/`, data);
+        return response.data;
+    } catch (e) {
+        throw new Error("Não foi possível liquidar o patrimônio.");
+    }
+};

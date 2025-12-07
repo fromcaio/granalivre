@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "accounts",
     "transactions",
+    "assets",
     "users",
     "automations",
     "django.contrib.admin",

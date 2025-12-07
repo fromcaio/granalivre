@@ -22,9 +22,9 @@ const formatDateTime = (value) =>
     minute: "2-digit",
   });
 
-export default function EntradasPageClient() {
-  const [entries, setEntries] = useState([]);
-  const [loading, setLoading] = useState(true);
+export default function EntradasPageClient({ initialEntries = [] }) {
+  const [entries, setEntries] = useState(initialEntries);
+  const [loading, setLoading] = useState(!initialEntries.length);
   const [error, setError] = useState(null);
   const [actionError, setActionError] = useState(null);
   const [showModal, setShowModal] = useState(false);
@@ -54,8 +54,10 @@ export default function EntradasPageClient() {
   }, []);
 
   useEffect(() => {
-    loadEntries();
-  }, [loadEntries]);
+    if (!initialEntries.length) {
+      loadEntries();
+    }
+  }, [initialEntries.length, loadEntries]);
 
   // Filtros e busca
   const { items: filteredEntries, filterErrorMessage } = useMemo(() => {
@@ -186,14 +188,14 @@ export default function EntradasPageClient() {
   }, [entries, filteredEntries, error, loading, filterErrorMessage]);
 
   return (
-    <section className="bg-white shadow-sm rounded-xl border border-gray-200 w-full max-w-[1800px] mx-auto">
-      <header className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between px-6 py-4 border-b border-gray-200">
+    <section className="bg-white shadow-sm rounded-xl border border-gray-200 w-full max-w-full min-w-0">
+      <header className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-start sm:justify-between px-6 py-4 border-b border-gray-200">
         <div>
           <h1 className="text-2xl font-semibold text-gray-800">Entradas</h1>
           <p className="text-sm text-gray-500">Visualize, filtre e gerencie suas transações de entrada.</p>
         </div>
 
-        <div className="flex flex-wrap gap-3 sm:flex-nowrap sm:items-center sm:gap-4">
+        <div className="flex flex-wrap gap-3 sm:items-center sm:gap-4 w-full">
           <input
             type="date"
             value={startDate}

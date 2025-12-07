@@ -1,93 +1,66 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import {
   getAccounts,
   createAccount,
   updateAccount,
   deleteAccount,
-  getAccountBalance, // *** 1. IMPORTAR NOVA FUNÇÃO ***
+  getAccountBalance,
 } from '@/lib/api';
 import { Plus, Pencil, Trash2, Loader2, AlertCircle } from 'lucide-react';
 import AccountFormModal from '@/components/accounts/AccountFormModal';
 import DeleteAccountModal from '@/components/accounts/DeleteAccountModal';
 
-// Função utilitária para formatar moeda
-const formatCurrency = (value) => {
-  const numericValue = Number(value);
-  if (isNaN(numericValue)) {
-    return 'R$ 0,00';
-  }
-  return numericValue.toLocaleString('pt-BR', {
+const formatCurrency = (value) =>
+  Number(value || 0).toLocaleString('pt-BR', {
     style: 'currency',
     currency: 'BRL',
   });
-};
 
-export default function ContasPageClient({ user }) {
-  const [accounts, setAccounts] = useState([]);
-  const [loading, setLoading] = useState(true);
+export default function ContasPageClient({ user, initialAccounts = [] }) {
+  const [accounts, setAccounts] = useState(initialAccounts);
+  const [loading, setLoading] = useState(!initialAccounts.length);
   const [error, setError] = useState(null);
-
-  // Estados para os modais
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-
-  // Estado para a conta selecionada (para edição ou exclusão)
   const [selectedAccount, setSelectedAccount] = useState(null);
 
-  // Busca as contas na montagem do componente
-  const fetchAccounts = async () => {
+  const fetchAccounts = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
-
-      // *** 2. LÓGICA DE BUSCA ATUALIZADA ***
-
-      // 2.1. Busca a lista de contas (com 'name', 'agency', 'account_number')
       const basicAccounts = await getAccounts();
-
-      if (basicAccounts.length > 0) {
-        // 2.2. Busca os saldos para cada conta em paralelo
-        const balancePromises = basicAccounts.map((acc) =>
-          getAccountBalance(acc.id)
+      if (basicAccounts.length) {
+        const balances = await Promise.all(
+          basicAccounts.map((acc) => getAccountBalance(acc.id))
         );
-        const balanceResults = await Promise.all(balancePromises);
-
-        // 2.3. Cria um mapa para facilitar a fusão (id -> current_balance)
         const balanceMap = new Map(
-          balanceResults.map((balance) => [
-            balance.account_id,
-            balance.current_balance,
-          ])
+          balances.map((b) => [b.account_id, b.current_balance])
         );
-
-        // 2.4. Funde os dados: adiciona 'current_balance' aos dados básicos
-        const fullAccountData = basicAccounts.map((account) => ({
+        const merged = basicAccounts.map((account) => ({
           ...account,
-          // Pega o current_balance do mapa; se falhar, usa o initial_balance como fallback
-          current_balance:
-            balanceMap.get(account.id) ?? account.initial_balance,
+          current_balance: balanceMap.get(account.id) ?? account.initial_balance,
         }));
-
-        setAccounts(fullAccountData);
+        setAccounts(merged);
       } else {
-        setAccounts([]); // Nenhuma conta encontrada
+        setAccounts([]);
       }
     } catch (err) {
       setError(err.message || 'Erro ao buscar contas ou saldos.');
     } finally {
       setLoading(false);
     }
-  };
-
-  useEffect(() => {
-    fetchAccounts();
   }, []);
 
-  // Handlers para abrir modais
+  useEffect(() => {
+    if (!initialAccounts.length) {
+      fetchAccounts();
+    }
+  }, [initialAccounts.length, fetchAccounts]);
+
   const handleOpenCreateModal = () => {
-    setSelectedAccount(null); // Garante que não há dados de edição
+    setSelectedAccount(null);
     setIsFormModalOpen(true);
   };
 
@@ -101,12 +74,9 @@ export default function ContasPageClient({ user }) {
     setIsDeleteModalOpen(true);
   };
 
-  // Handlers de submissão dos modais
   const handleFormSubmit = async (formData) => {
     try {
       if (selectedAccount) {
-        // Modo Edição (PUT)
-        // O backend espera o ID e todos os campos no PUT
         await updateAccount({
           id: selectedAccount.id,
           name: formData.name,
@@ -115,14 +85,12 @@ export default function ContasPageClient({ user }) {
           initial_balance: formData.initial_balance,
         });
       } else {
-        // Modo Criação (POST)
         await createAccount(formData);
       }
       setIsFormModalOpen(false);
-      fetchAccounts(); // Atualiza a lista (agora com saldos corretos)
+      fetchAccounts();
     } catch (err) {
-      console.error(err);
-      alert(err.message || 'Falha ao salvar a conta.'); // Simples, como solicitado
+      alert(err.message || 'Falha ao salvar a conta.');
     }
   };
 
@@ -131,28 +99,32 @@ export default function ContasPageClient({ user }) {
     try {
       await deleteAccount(selectedAccount.id);
       setIsDeleteModalOpen(false);
-      fetchAccounts(); // Atualiza a lista
+      fetchAccounts();
     } catch (err) {
-      console.error(err);
-      alert(err.message || 'Falha ao excluir a conta.'); // Simples, como solicitado
+      alert(err.message || 'Falha ao excluir a conta.');
     }
   };
 
   return (
-    <div className="space-y-6">
-      {/* 1. Título e Botão de Criar */}
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-gray-800">Contas</h1>
-        <button
-          onClick={handleOpenCreateModal}
-          className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-700 transition duration-200"
-        >
-          <Plus size={18} />
-          Criar Conta
-        </button>
-      </div>
+    <section className="bg-white shadow-sm rounded-xl border border-gray-200 w-full max-w-full min-w-0">
+      <header className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-start sm:justify-between px-6 py-4 border-b border-gray-200">
+        <div>
+          <h1 className="text-2xl font-semibold text-gray-800">Contas</h1>
+          <p className="text-sm text-gray-500">
+            Cadastre e gerencie suas contas bancárias.
+          </p>
+        </div>
+        <div className="flex flex-wrap gap-3 sm:items-center sm:gap-4">
+          <button
+            onClick={handleOpenCreateModal}
+            className="flex items-center gap-2 rounded-lg bg-green-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-green-700"
+          >
+            <Plus size={18} />
+            Criar Conta
+          </button>
+        </div>
+      </header>
 
-      {/* 2. Feedback de Estado (Loading, Erro, Vazio) */}
       {loading && (
         <div className="flex justify-center items-center py-10">
           <Loader2 className="animate-spin text-green-600" size={32} />
@@ -161,14 +133,14 @@ export default function ContasPageClient({ user }) {
       )}
 
       {!loading && error && (
-        <div className="flex justify-center items-center py-10 bg-red-50 border border-red-200 rounded-lg">
-          <AlertCircle className="text-red-600" size={32} />
-          <span className="ml-2 text-red-700">{error}</span>
+        <div className="mx-6 mt-4 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
+          <AlertCircle className="inline mr-2" size={18} />
+          {error}
         </div>
       )}
 
       {!loading && !error && accounts.length === 0 && (
-        <div className="text-center py-10 bg-gray-100 rounded-lg">
+        <div className="text-center py-10">
           <p className="text-gray-600">Nenhuma conta cadastrada ainda.</p>
           <p className="text-sm text-gray-500 mt-2">
             Clique em "Criar Conta" para começar.
@@ -176,41 +148,25 @@ export default function ContasPageClient({ user }) {
         </div>
       )}
 
-      {/* 3. Lista/Tabela de Contas */}
       {!loading && !error && accounts.length > 0 && (
-        <div className="bg-white shadow-lg rounded-lg overflow-hidden">
-          <table className="min-w-full divide-y divide-gray-200">
+        <div className="overflow-x-auto rounded-b-xl">
+          <table className="w-full min-w-[800px] divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
+                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                   Nome
                 </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
+                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                   Agência
                 </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
+                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                   Conta
                 </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
+                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                   Saldo
                 </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-    _               Ações
+                <th className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500">
+                  Ações
                 </th>
               </tr>
             </thead>
@@ -227,12 +183,11 @@ export default function ContasPageClient({ user }) {
                     {account.account_number}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                    {/* *** 3. MUDANÇA NA RENDERIZAÇÃO *** */}
                     {formatCurrency(account.current_balance)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
                     <button
-            _           onClick={() => handleOpenEditModal(account)}
+                      onClick={() => handleOpenEditModal(account)}
                       className="text-blue-600 hover:text-blue-800 p-1 rounded-md hover:bg-blue-100 transition"
                       title="Editar"
                     >
@@ -242,7 +197,7 @@ export default function ContasPageClient({ user }) {
                       onClick={() => handleOpenDeleteModal(account)}
                       className="text-red-600 hover:text-red-800 p-1 rounded-md hover:bg-red-100 transition"
                       title="Remover"
-                  _ >
+                    >
                       <Trash2 size={18} />
                     </button>
                   </td>
@@ -253,20 +208,18 @@ export default function ContasPageClient({ user }) {
         </div>
       )}
 
-      {/* 4. Modais */}
       <AccountFormModal
         isOpen={isFormModalOpen}
         onClose={() => setIsFormModalOpen(false)}
         onSubmit={handleFormSubmit}
-        initialData={selectedAccount} // Passa null para criar, ou a conta para editar
+        account={selectedAccount}
       />
-
       <DeleteAccountModal
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
         onConfirm={handleDeleteConfirm}
-        accountName={selectedAccount?.name}
+        account={selectedAccount}
       />
-    </div>
+    </section>
   );
 }
