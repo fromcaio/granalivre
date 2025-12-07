@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useMemo } from "react";
-import { getAssets } from "@/lib/api";
+import { useState, useMemo, useEffect } from "react";
+import { getAssets, getAssetPosition } from "@/lib/api";
 import AssetModal from "./modals/AssetModal";
 import DeleteAssetModal from "./modals/DeleteAssetModal";
 import LiquidateAssetModal from "./modals/LiquidateAssetModal";
@@ -9,7 +9,23 @@ import LiquidateAssetModal from "./modals/LiquidateAssetModal";
 const formatCurrency = (val) => Number(val).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 const formatDate = (dateStr) => {
     if (!dateStr) return "-";
-    return new Date(dateStr).toLocaleDateString('pt-BR');
+    const s = String(dateStr);
+    // If date in YYYY-MM-DD (common for date fields), format deterministically
+    const m = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+    if (m) {
+        const [, year, month, day] = m;
+        return `${day}/${month}/${year}`;
+    }
+    // Fallback: parse and use UTC components to avoid timezone shifts between server/client
+    try {
+        const d = new Date(s);
+        const day = String(d.getUTCDate()).padStart(2, '0');
+        const month = String(d.getUTCMonth() + 1).padStart(2, '0');
+        const year = d.getUTCFullYear();
+        return `${day}/${month}/${year}`;
+    } catch (e) {
+        return s;
+    }
 };
 
 export default function AssetsClient({ initialAssets }) {
@@ -20,18 +36,24 @@ export default function AssetsClient({ initialAssets }) {
   const [search, setSearch] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+    // filter: all / ativo / liquidado
+    const [statusFilter, setStatusFilter] = useState('all');
 
   // Modals
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
   const [deleteItem, setDeleteItem] = useState(null);
   const [liquidateItem, setLiquidateItem] = useState(null);
+    // Pagination
+    const [pageStart, setPageStart] = useState(0);
+    const pageSize = 10;
 
   const refreshList = async () => {
     setLoading(true);
     try {
-      const data = await getAssets(); 
-      setAssets(data || []);
+            const params = { start: pageStart, end: pageStart + pageSize };
+            const data = await getAssets(params);
+            setAssets(data || []);
     } catch (error) {
       console.error("Failed to refresh assets:", error);
     } finally {
@@ -39,8 +61,21 @@ export default function AssetsClient({ initialAssets }) {
     }
   };
 
+    // Sync when initialAssets changes (server-side render) or pageStart changes
+    useEffect(() => {
+        // If we're on the first page and initialAssets provided, use it to avoid refetch
+        if (pageStart === 0 && initialAssets) {
+            setAssets(initialAssets || []);
+            return;
+        }
+        refreshList();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [pageStart]);
+
   const filteredAssets = useMemo(() => {
     return assets.filter(item => {
+                if (statusFilter === 'ativo' && item.status === 'liquidado') return false;
+                if (statusFilter === 'liquidado' && item.status !== 'liquidado') return false;
         const matchesSearch = item.name.toLowerCase().includes(search.toLowerCase()) || 
                               item.type.toLowerCase().includes(search.toLowerCase());
         
@@ -49,8 +84,8 @@ export default function AssetsClient({ initialAssets }) {
         if (endDate && item.acquisition_date > endDate) matchesDate = false;
 
         return matchesSearch && matchesDate;
-    });
-  }, [assets, search, startDate, endDate]);
+        });
+    }, [assets, search, startDate, endDate, statusFilter]);
 
   const handleEdit = (item) => {
       setEditingItem(item);
@@ -62,6 +97,19 @@ export default function AssetsClient({ initialAssets }) {
       setIsModalOpen(true);
   };
 
+    const handlePrev = () => {
+        if (pageStart === 0) return;
+        const newStart = Math.max(0, pageStart - pageSize);
+        setPageStart(newStart);
+    };
+
+    const handleNext = () => {
+        // If current page has fewer than pageSize items, no next page
+        if (assets.length < pageSize) return;
+        const newStart = pageStart + pageSize;
+        setPageStart(newStart);
+    };
+
   return (
     <div className="max-w-7xl mx-auto space-y-6">
       
@@ -69,7 +117,17 @@ export default function AssetsClient({ initialAssets }) {
       <div className="flex flex-col md:flex-row justify-between items-end gap-4">
         <div className="w-full md:w-auto flex-1 gap-4 flex flex-col md:flex-row">
              {/* Search */}
-            <div className="relative w-full md:w-64">
+            <div className="flex items-end">
+                <div className="mr-4">
+                    <label className="text-xs font-bold text-gray-700 mb-1 block">Status</label>
+                    <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="px-2 py-2 rounded-lg border border-gray-300 text-sm text-gray-900 font-semibold">
+                        <option value="all">Todos</option>
+                        <option value="ativo">Ativos</option>
+                        <option value="liquidado">Liquidado</option>
+                    </select>
+                </div>
+                </div>
+                <div className="relative w-full md:w-64">
                 <label className="text-xs font-bold text-gray-700 mb-1 block">Buscar</label>
                 <input
                     type="text"
@@ -135,9 +193,13 @@ export default function AssetsClient({ initialAssets }) {
                         <tr><td colSpan="8" className="p-8 text-center text-gray-500">Nenhum patrimônio encontrado.</td></tr>
                     )}
                     {!loading && filteredAssets.map(item => (
-                        <tr key={item.id} className="hover:bg-gray-50 transition-colors">
+                        <tr key={item.id} className={`hover:bg-gray-50 transition-colors ${item.status === 'liquidado' ? 'opacity-60' : ''}`}>
                             <td className="p-4 text-gray-900">{formatDate(item.acquisition_date)}</td>
-                            <td className="p-4 font-bold text-gray-900">{item.name}</td>
+                            <td className="p-4 font-bold text-gray-900">{item.name}
+                                {item.status === 'liquidado' && (
+                                    <span className="ml-2 inline-block px-2 py-0.5 text-xs font-semibold bg-gray-200 text-gray-800 rounded">Liquidado</span>
+                                )}
+                            </td>
                             <td className="p-4 text-gray-900">{item.type}</td>
                             <td className="p-4 text-gray-900">{formatCurrency(item.original_value)}</td>
                             <td className={`p-4 font-semibold ${item.annual_change_rate >= 0 ? 'text-emerald-700' : 'text-red-700'}`}>
@@ -182,14 +244,97 @@ export default function AssetsClient({ initialAssets }) {
         </div>
       </div>
 
-      {/* Modals */}
-      {isModalOpen && (
-        <AssetModal 
-            asset={editingItem} 
-            onClose={() => setIsModalOpen(false)} 
-            onSuccess={refreshList} 
-        />
-      )}
+            {/* Pagination Controls */}
+            <div className="flex items-center justify-between mt-4">
+                <div className="text-sm text-gray-600">
+                    {assets.length > 0 ? `Exibindo ${pageStart + 1}–${pageStart + assets.length}` : 'Nenhum item exibido'}
+                </div>
+                <div className="flex items-center gap-2">
+                    <button
+                        onClick={handlePrev}
+                        disabled={pageStart === 0}
+                        className={`px-3 py-1 rounded border ${pageStart === 0 ? 'bg-gray-100 text-gray-400 border-gray-200' : 'bg-white text-gray-700 hover:bg-gray-50 border-gray-300'}`}
+                    >
+                        Anterior
+                    </button>
+                    <button
+                        onClick={handleNext}
+                        disabled={assets.length < pageSize}
+                        className={`px-3 py-1 rounded ${assets.length < pageSize ? 'bg-gray-100 text-gray-400' : 'bg-emerald-600 text-white hover:bg-emerald-700'}`}
+                    >
+                        Próxima
+                    </button>
+                </div>
+            </div>
+
+            {/* Modals */}
+              {isModalOpen && (
+                <AssetModal 
+                    asset={editingItem} 
+                    onClose={() => setIsModalOpen(false)} 
+                    onSuccess={async (saved) => {
+                        // If the modal returns the saved object, merge it into the list immediately
+                        // to avoid requiring an F5. Then refresh page 0 to ensure ordering is correct.
+                        try {
+                            if (saved) {
+                                // map backend naming to frontend shape (same as getAssets)
+                                const item = {
+                                    id: saved.id,
+                                    acquisition_date: saved.data_aquisicao || saved.acquisition_date,
+                                    name: saved.nome || saved.name,
+                                    type: saved.tipo || saved.type || '',
+                                    original_value: Number(saved.valor_original ?? saved.original_value ?? 0),
+                                    annual_change_rate: Number(saved.variacao_anual_percent ?? saved.annual_change_rate ?? 0),
+                                    monthly_maintenance: Number(saved.manutencao_mensal ?? saved.monthly_maintenance ?? 0),
+                                    current_value: Number(saved.valor_atual ?? saved.current_value ?? saved.valor_original ?? 0),
+                                    description: saved.descricao || saved.description || '',
+                                    status: saved.status,
+                                };
+
+                                setAssets(prev => {
+                                    const exists = prev.some(a => a.id === item.id);
+                                    if (exists) {
+                                        return prev.map(a => a.id === item.id ? item : a);
+                                    }
+                                    // prepend new item to the front
+                                    const next = [item, ...prev];
+                                    // keep page size
+                                    return next.slice(0, pageSize);
+                                });
+                            }
+                        } catch (err) {
+                            console.error('Failed to merge saved item into list:', err);
+                        }
+
+                        // Determine the server page that contains the saved item and load it.
+                        try {
+                            let startForLoad = 0;
+                            if (saved && saved.id) {
+                                const idx = await getAssetPosition(saved.id);
+                                if (typeof idx === 'number' && idx >= 0) {
+                                    const page = Math.floor(idx / pageSize);
+                                    startForLoad = page * pageSize;
+                                    setPageStart(startForLoad);
+                                }
+                            } else {
+                                // fallback to first page
+                                setPageStart(0);
+                                startForLoad = 0;
+                            }
+
+                            setLoading(true);
+                            const params = { start: startForLoad, end: startForLoad + pageSize };
+                            const data = await getAssets(params);
+                            setAssets(data || []);
+                        } catch (err) {
+                            console.error('Failed to refresh assets after save:', err);
+                        } finally {
+                            setLoading(false);
+                        }
+
+                    }}
+                />
+              )}
       {deleteItem && (
         <DeleteAssetModal 
             asset={deleteItem} 

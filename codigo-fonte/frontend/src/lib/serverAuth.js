@@ -280,10 +280,42 @@ export const fetchInvestmentsServer = async (cookieHeader) => {
  * Fetch Assets (Server Side)
  */
 export const fetchAssetsServer = async (cookieHeader) => {
-  const url = `${SERVER_SIDE_API_URL}assets/`;
+  const url = `${SERVER_SIDE_API_URL}patrimonios/`;
   try {
     const response = await fetchWithAuth(url, cookieHeader);
-    if (response?.ok) return await response.json();
+    if (response?.ok) {
+      const data = await response.json();
+      const list = Array.isArray(data) ? data : data.results || data;
+
+      const computeCurrentValue = (item) => {
+        // Prefer explicit valor_atual from backend if provided
+        if (item.valor_atual !== undefined && item.valor_atual !== null) {
+          return Number(item.valor_atual);
+        }
+        const orig = Number(item.valor_original ?? item.original_value ?? 0);
+        const rate = Number(item.variacao_anual_percent ?? item.annual_change_rate ?? 0);
+        const acquired = item.data_aquisicao || item.acquisition_date;
+        if (!acquired || !rate) return orig;
+        const acquiredDate = new Date(acquired);
+        const now = new Date();
+        const years = Math.max(0, (now - acquiredDate) / (1000 * 60 * 60 * 24 * 365));
+        const value = orig * Math.pow(1 + rate / 100, years);
+        return Number(Number.isFinite(value) ? value.toFixed(2) : orig);
+      };
+
+      return list.map((item) => ({
+        id: item.id,
+        acquisition_date: item.data_aquisicao || item.acquisition_date,
+        name: item.nome || item.name,
+        type: item.tipo || item.type || '',
+        original_value: Number(item.valor_original ?? item.original_value ?? 0),
+        annual_change_rate: Number(item.variacao_anual_percent ?? item.annual_change_rate ?? 0),
+        monthly_maintenance: Number(item.manutencao_mensal ?? item.monthly_maintenance ?? 0),
+        current_value: computeCurrentValue(item),
+        description: item.descricao || item.description || '',
+        status: item.status,
+      }));
+    }
   } catch (error) {
     console.error("Error fetching assets server-side:", error);
   }
@@ -295,24 +327,24 @@ export const fetchAssetsServer = async (cookieHeader) => {
       acquisition_date: '2023-06-10',
       name: 'Onix 2022',
       type: 'Carro',
-      original_value: 80000.00,
+      original_value: 80000.0,
       annual_change_rate: -5.4,
-      monthly_maintenance: 400.00,
-      current_value: 71360.00,
+      monthly_maintenance: 400.0,
+      current_value: 71360.0,
       description: 'Carro de uso diário',
-      status: 'active'
+      status: 'ativo',
     },
     {
       id: 2,
       acquisition_date: '2020-06-10',
       name: 'Casa de praia',
       type: 'Casa',
-      original_value: 1800000.00,
+      original_value: 1800000.0,
       annual_change_rate: 7.8,
-      monthly_maintenance: 1750.00,
-      current_value: 2620392.00,
+      monthly_maintenance: 1750.0,
+      current_value: 2620392.0,
       description: 'Casa de veraneio',
-      status: 'active'
-    }
+      status: 'ativo',
+    },
   ];
 };

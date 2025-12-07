@@ -141,17 +141,27 @@ class PatrimonioViewSet(
         serializer.is_valid(raise_exception=True)
         patrimonio_id = serializer.validated_data["patrimonio_id"]
         conta_id = serializer.validated_data["conta_id"]
+        valor_venda = serializer.validated_data.get("valor_venda")
 
         patrimonio = self._get_patrimonio(patrimonio_id)
 
         if patrimonio.status == "liquidado":
             raise ValidationError("Patrimônio já está liquidado.")
 
+        # Determine the amount to deposit: priority -> valor_venda (provided) -> patrimonio.valor_atual -> patrimonio.valor_original
+        amount = None
+        if valor_venda is not None:
+            amount = valor_venda
+        elif getattr(patrimonio, "valor_atual", None) is not None:
+            amount = patrimonio.valor_atual
+        else:
+            amount = patrimonio.valor_original
+
         # Cria a transação e marca patrimonio como liquidado dentro de uma transação DB
         with db_transaction.atomic():
             tx = Transaction.objects.create(
                 name=f"Liquidação - {patrimonio.nome}",
-                value=patrimonio.valor_original,  # entrada positiva
+                value=amount,  # entrada positiva
                 description=f"Liquidação do patrimônio #{patrimonio.id} - {patrimonio.nome}",
                 account_id=conta_id,
                 datetime=timezone.now(),
@@ -163,4 +173,28 @@ class PatrimonioViewSet(
         patr_serializer = PatrimonioSerializer(patrimonio, context=self.get_serializer_context())
         # devolve o patrimônio atualizado e referência mínima da transação
         return Response({"patrimonio": patr_serializer.data, "transacao_id": tx.id})
+
+    @action(detail=False, methods=["post"], url_path="position")
+    def position(self, request, *args, **kwargs):
+        """
+        Returns the zero-based index (position) of a patrimonio within the current
+        user's ordered patrimonio list. Useful for the frontend to compute which
+        page contains a given patrimonio.
+        Request body: { "patrimonio_id": <int> }
+        Response: { "index": <int> }
+        """
+        id_serializer = PatrimonioIdSerializer(data=request.data, context=self.get_serializer_context())
+        id_serializer.is_valid(raise_exception=True)
+        patrimonio_id = id_serializer.validated_data["id"]
+
+        # Reuse the same ordering used in get_queryset
+        qs = self.get_queryset().order_by("-data_aquisicao", "-id").values_list("id", flat=True)
+        try:
+            # convert to list to allow index() usage
+            ids = list(qs)
+            idx = ids.index(patrimonio_id)
+        except ValueError:
+            raise NotFound(detail="Patrimônio não encontrado na lista do usuário.")
+
+        return Response({"index": idx})
 

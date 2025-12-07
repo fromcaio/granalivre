@@ -24,7 +24,13 @@ export default function LiquidateAssetModal({ asset, onClose, onSuccess }) {
     e.preventDefault();
     setLoading(true);
     try {
-        await liquidateAsset(asset.id, formData);
+      const payload = {
+        destination_account_id: formData.destination_account_id,
+      };
+      if (formData.sale_value && String(formData.sale_value).trim() !== '') {
+        payload.sale_value = Number(formData.sale_value);
+      }
+      await liquidateAsset(asset.id, payload);
         onSuccess();
         onClose();
     } catch (e) {
@@ -51,12 +57,12 @@ export default function LiquidateAssetModal({ asset, onClose, onSuccess }) {
 
         <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-                <label className="block text-sm font-bold text-gray-900 mb-1">Valor da Venda (R$)</label>
-                <input required type="number" step="0.01" 
-                    className={formStyles.input} 
-                    value={formData.sale_value} 
-                    onChange={(e) => setFormData({...formData, sale_value: e.target.value})} 
-                />
+              <label className="block text-sm font-bold text-gray-900 mb-1">Valor da Venda (R$) <span className="text-xs font-normal text-gray-500">(opcional)</span></label>
+              <input type="number" step="0.01" placeholder="Deixe em branco para usar valor atual" 
+                className={formStyles.input} 
+                value={formData.sale_value} 
+                onChange={(e) => setFormData({...formData, sale_value: e.target.value})} 
+              />
             </div>
 
             <div>
