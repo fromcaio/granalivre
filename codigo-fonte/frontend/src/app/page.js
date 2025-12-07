@@ -1,6 +1,6 @@
 import TopBar from '@/components/layout/topbar/TopBar';
 import { validateSession } from '@/lib/serverAuth';
-import HomePageClient from '@/components/home/HomePageClient';
+import HomePageContent from '@/components/home/HomePageServer';
 import Footer from '@/components/footer/Footer';
 
 /**
@@ -18,10 +18,10 @@ export default async function HomePage() {
     <main className="min-h-screen bg-gray-50">
       <div className="flex-1 flex flex-col min-h-screen">
         <TopBar />
-        <div className="page-content py-8 px-4 sm:px-6 lg:px-8 transition-transform duration-300">
-          <HomePageClient />
+        <div className="page-content flex-1 py-0 px-0 min-h-[calc(100vh-64px)]">
+          <HomePageContent />
         </div>
-        <Footer />
+        {!initialUser && <Footer />}
       </div>
     </main>
   );
