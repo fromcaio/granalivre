@@ -2,7 +2,7 @@
 
 import DeleteTransactionModal from "@/components/transactions_/DeleteTransactionModal";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { deleteTransaction, getTransactions } from "@/lib/api";
+import { deleteTransaction, getTransactions, processAutomations } from "@/lib/api";
 import AddExpenseModal from "@/components/transactions_/AddExpenseModal";
 
 const currencyFormatter = new Intl.NumberFormat("pt-BR", {
@@ -55,7 +55,13 @@ export default function SaidasPageClient({ initialExpenses = [] }) {
 
   useEffect(() => {
     if (!initialExpenses.length) {
-      loadExpenses();
+      const processAndLoad = async () => {
+        // Processar automações primeiro para criar transações vencidas
+        await processAutomations();
+        // Depois carregar as saídas
+        await loadExpenses();
+      };
+      processAndLoad();
     }
   }, [initialExpenses.length, loadExpenses]);
 

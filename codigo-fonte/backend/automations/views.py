@@ -1,10 +1,12 @@
 import json
 
 from django.http import QueryDict
+from django.core.management import call_command
 from rest_framework import mixins, status, viewsets
 from rest_framework.exceptions import NotFound, ValidationError
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.decorators import action
 from drf_spectacular.utils import extend_schema
 
 from automations.models import Automation
@@ -31,6 +33,16 @@ class AutomationViewSet(
             .select_related("account")
             .order_by("-created_at", "-id")
         )
+
+    def create(self, request, *args, **kwargs):
+        # Debug: Print payload
+        print(f"[DEBUG CREATE] Payload: {request.data}")
+        
+        try:
+            return super().create(request, *args, **kwargs)
+        except Exception as e:
+            print(f"[DEBUG CREATE ERROR] {str(e)}")
+            raise
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
@@ -145,3 +157,30 @@ class AutomationViewSet(
         self.perform_destroy(instance)
 
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+    @action(detail=False, methods=["post"], url_path="process")
+    def process_automations(self, request):
+        """
+        Manually trigger automation processing.
+        This creates transactions for automations that match today's date.
+        
+        POST /api/automations/process/
+        """
+        try:
+            # Call the management command
+            call_command("process_automations")
+            return Response(
+                {
+                    "status": "success",
+                    "message": "Automation processing completed successfully"
+                },
+                status=status.HTTP_200_OK
+            )
+        except Exception as e:
+            return Response(
+                {
+                    "status": "error",
+                    "message": f"Error processing automations: {str(e)}"
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
