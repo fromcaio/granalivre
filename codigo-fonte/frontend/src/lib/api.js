@@ -332,6 +332,17 @@ export const deleteAutomation = async (id) => {
     }
 };
 
+export const processAutomations = async () => {
+    try {
+        const response = await axiosInstance.post('automations/process/');
+        return response.data;
+    } catch (e) {
+        console.error("Erro ao processar automações:", e);
+        // Don't throw error - this is non-critical background processing
+        return { status: "error", message: e.message };
+    }
+};
+
 // ... (Existing imports and functions) ...
 
 // --- INVESTMENTS ---

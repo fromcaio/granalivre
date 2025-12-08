@@ -2,7 +2,7 @@
 
 import DeleteTransactionModal from "@/components/transactions_/DeleteTransactionModal";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { getTransactions } from "@/lib/api";
+import { getTransactions, processAutomations } from "@/lib/api";
 import AddIncomeModal from "@/components/transactions_/AddIncomeModal";
 
 const currencyFormatter = new Intl.NumberFormat("pt-BR", {
@@ -55,7 +55,13 @@ export default function EntradasPageClient({ initialEntries = [] }) {
 
   useEffect(() => {
     if (!initialEntries.length) {
-      loadEntries();
+      const processAndLoad = async () => {
+        // Processar automações primeiro para criar transações vencidas
+        await processAutomations();
+        // Depois carregar as entradas
+        await loadEntries();
+      };
+      processAndLoad();
     }
   }, [initialEntries.length, loadEntries]);
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { createAutomation, updateAutomation, getAccounts } from "@/lib/api";
+import { createAutomation, updateAutomation, getAccounts, processAutomations } from "@/lib/api";
 import { formStyles } from "@/config/styles";
 
 export default function AutomationModal({ onClose, onSuccess, automationToEdit }) {
@@ -106,6 +106,8 @@ export default function AutomationModal({ onClose, onSuccess, automationToEdit }
         await updateAutomation({ ...payload, id: automationToEdit.id });
       } else {
         await createAutomation(payload);
+        // Processar automações imediatamente após criar uma nova
+        await processAutomations();
       }
 
       onSuccess();
