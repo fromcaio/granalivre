@@ -43,19 +43,22 @@ export default function AssetModal({ asset, onClose, onSuccess }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    try {
-        const payload = {
-            ...formData,
-            id: asset?.id
-        };
+   try {
+      const payload = {
+         ...formData,
+         id: asset?.id
+      };
 
-        if (isEdit) {
-            await updateAsset(payload);
-        } else {
-            await createAsset(payload);
-        }
-        onSuccess();
-        onClose();
+      let result = null;
+      if (isEdit) {
+         result = await updateAsset(payload);
+      } else {
+         result = await createAsset(payload);
+      }
+      // Pass the server response (created/updated object) to parent so it can
+      // merge the item into the current list immediately.
+      if (onSuccess) onSuccess(result);
+      onClose();
     } catch (error) {
         alert("Erro ao salvar patrimônio.");
     } finally {
@@ -93,23 +96,23 @@ export default function AssetModal({ asset, onClose, onSuccess }) {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
              <div>
-                <label className="block text-sm font-bold text-gray-900 mb-1">Alteração Anual (%)</label>
-                <input required type="number" step="0.01" name="annual_change_rate" placeholder="-5.4 ou 7.8" className={formStyles.input} value={formData.annual_change_rate} onChange={handleChange} />
+                <label className="block text-sm font-bold text-gray-900 mb-1">Alteração Anual (%) <span className="text-xs font-normal text-gray-500">(opcional)</span></label>
+                <input type="number" step="0.01" name="annual_change_rate" placeholder="-5.4 ou 7.8" className={formStyles.input} value={formData.annual_change_rate} onChange={handleChange} />
              </div>
              <div>
-                <label className="block text-sm font-bold text-gray-900 mb-1">Manutenção Mensal (R$)</label>
+                <label className="block text-sm font-bold text-gray-900 mb-1">Manutenção Mensal (R$) <span className="text-xs font-normal text-gray-500">(opcional)</span></label>
                 <input type="number" step="0.01" name="monthly_maintenance" className={formStyles.input} value={formData.monthly_maintenance} onChange={handleChange} />
              </div>
           </div>
 
           <div>
-             <label className="block text-sm font-bold text-gray-900 mb-1">Valor Atual do Patrimônio (R$)</label>
-             <input required type="number" step="0.01" name="current_value" className={formStyles.input} value={formData.current_value} onChange={handleChange} />
-             <p className="text-xs text-gray-500 mt-1">Preencha com o valor de mercado atual.</p>
+             <label className="block text-sm font-bold text-gray-900 mb-1">Valor Atual do Patrimônio (R$) <span className="text-xs font-normal text-gray-500">(opcional)</span></label>
+             <input type="number" step="0.01" name="current_value" className={formStyles.input} value={formData.current_value} onChange={handleChange} />
+             <p className="text-xs text-gray-500 mt-1">Opcional — se não preenchido, será estimado a partir do valor original e variação anual.</p>
           </div>
 
           <div>
-             <label className="block text-sm font-bold text-gray-900 mb-1">Descrição</label>
+             <label className="block text-sm font-bold text-gray-900 mb-1">Descrição <span className="text-xs font-normal text-gray-500">(opcional)</span></label>
              <textarea rows="3" name="description" className={formStyles.input} value={formData.description} onChange={handleChange} />
           </div>
 
