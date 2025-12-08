@@ -316,7 +316,8 @@ export const createAutomation = async (data) => {
 
 export const updateAutomation = async (data) => {
     try {
-        const response = await axiosInstance.put(`automations/${data.id}/`, data);
+        const { id, ...payload } = data;
+        const response = await axiosInstance.patch(`automations/`, { ...payload, id });
         return response.data;
     } catch (e) {
         throw new Error("Não foi possível atualizar a automação.");
@@ -325,7 +326,7 @@ export const updateAutomation = async (data) => {
 
 export const deleteAutomation = async (id) => {
     try {
-        await axiosInstance.delete(`automations/${id}/`);
+        await axiosInstance.delete(`automations/`, { data: { id } });
     } catch (e) {
         throw new Error("Não foi possível excluir a automação.");
     }

@@ -8,8 +8,14 @@ class Automation(models.Model):
     Represents a recurring automation rule that generates financial transactions.
     """
 
+    TIPO_CHOICES = [
+        ("entrada", "Entrada"),
+        ("saida", "Saída"),
+    ]
+
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=255)
+    tipo = models.CharField(max_length=10, choices=TIPO_CHOICES, default="saida")
     category = models.CharField(max_length=255)
     value = models.DecimalField(max_digits=10, decimal_places=2)
     frequency = models.CharField(max_length=255)

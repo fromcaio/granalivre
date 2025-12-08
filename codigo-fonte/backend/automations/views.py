@@ -32,6 +32,16 @@ class AutomationViewSet(
             .order_by("-created_at", "-id")
         )
 
+    def create(self, request, *args, **kwargs):
+        # Debug: Print payload
+        print(f"[DEBUG CREATE] Payload: {request.data}")
+        
+        try:
+            return super().create(request, *args, **kwargs)
+        except Exception as e:
+            print(f"[DEBUG CREATE ERROR] {str(e)}")
+            raise
+
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
 

@@ -26,8 +26,9 @@ class AutomationSerializer(serializers.ModelSerializer):
             "owner",
             "created_at",
             "account_info",
+            "tipo",
         )
-        read_only_fields = ("id", "created_at", "account_info", "owner")
+        read_only_fields = ("id", "created_at", "account_info", "owner", "tipo")
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -36,14 +37,34 @@ class AutomationSerializer(serializers.ModelSerializer):
             self.fields["account"].queryset = Account.objects.filter(owner=request.user)
 
     def validate_value(self, value: Decimal):
-        if value <= 0:
-            raise serializers.ValidationError("Value must be positive.")
+        # Aceitamos valores positivos ou negativos
+        # O tipo (entrada/saida) é deduzido baseado no sinal
+        if value == 0:
+            raise serializers.ValidationError("Value cannot be zero.")
         return value.quantize(Decimal("0.01"))
 
     def validate_day_of_month(self, day):
         if day is not None and (day < 1 or day > 31):
             raise serializers.ValidationError("Day of month must be 1–31.")
         return day
+
+    def create(self, validated_data):
+        """Deduz o tipo baseado no valor."""
+        value = validated_data.get('value')
+        if value < 0:
+            validated_data['tipo'] = 'saida'
+        elif value > 0:
+            validated_data['tipo'] = 'entrada'
+        return super().create(validated_data)
+
+    def update(self, instance, validated_data):
+        """Deduz o tipo baseado no valor durante atualização."""
+        value = validated_data.get('value', instance.value)
+        if value < 0:
+            validated_data['tipo'] = 'saida'
+        elif value > 0:
+            validated_data['tipo'] = 'entrada'
+        return super().update(instance, validated_data)
 
     def get_account_info(self, obj: Automation):
         acc = obj.account
