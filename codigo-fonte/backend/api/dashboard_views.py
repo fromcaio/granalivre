@@ -106,11 +106,8 @@ def dashboard_chart(request):
     end_date = tz_now.date()
     start_date = end_date - timedelta(days=days - 1)
 
-    # Sum of account initial balances
+    # Get all accounts with their creation dates
     accounts = Account.objects.filter(owner=user)
-    initial_sum = float(
-        accounts.aggregate(total=Sum("initial_balance")).get("total") or 0.0
-    )
 
     points = []
 
@@ -121,6 +118,13 @@ def dashboard_chart(request):
         day_end = timezone.make_aware(
             timezone.datetime.combine(d, timezone.datetime.max.time())
         )
+
+        # Sum account initial balances only if created on or before this day
+        initial_sum = 0.0
+        for acc in accounts:
+            acc_created_date = acc.created_at.date()
+            if acc_created_date <= d:
+                initial_sum += float(acc.initial_balance or 0.0)
 
         # cumulative transactions up to day_end
         cum_sum = (
