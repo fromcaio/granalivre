@@ -419,8 +419,21 @@ export const liquidateInvestment = async (investmentId, data) => {
 
 export const getAssets = async (filters = {}) => {
     try {
-        const response = await axiosInstance.get('assets/', { params: filters });
-        return response.data;
+        const response = await axiosInstance.get('patrimonios/', { params: filters });
+        const data = response.data;
+        const list = Array.isArray(data) ? data : data.results || data;
+        return list.map((item) => ({
+            id: item.id,
+            acquisition_date: item.data_aquisicao || item.acquisition_date,
+            name: item.nome || item.name,
+            type: item.tipo || item.type || '',
+            original_value: Number(item.valor_original ?? item.original_value ?? 0),
+            annual_change_rate: Number(item.variacao_anual_percent ?? item.annual_change_rate ?? 0),
+            monthly_maintenance: Number(item.manutencao_mensal ?? item.monthly_maintenance ?? 0),
+            current_value: Number(item.valor_atual ?? item.current_value ?? item.valor_original ?? 0),
+            description: item.descricao || item.description || '',
+            status: item.status,
+        }));
     } catch (e) {
         return [];
     }
@@ -428,7 +441,17 @@ export const getAssets = async (filters = {}) => {
 
 export const createAsset = async (data) => {
     try {
-        const response = await axiosInstance.post('assets/', data);
+        const payload = {
+            nome: data.name,
+            data_aquisicao: data.acquisition_date,
+            tipo: data.type,
+            valor_original: data.original_value,
+            variacao_anual_percent: data.annual_change_rate,
+            manutencao_mensal: data.monthly_maintenance,
+            valor_atual: data.current_value ?? data.valor_atual,
+            descricao: data.description,
+        };
+        const response = await axiosInstance.post('patrimonios/', payload);
         return response.data;
     } catch (e) {
         throw new Error("Não foi possível adicionar o patrimônio.");
@@ -437,7 +460,18 @@ export const createAsset = async (data) => {
 
 export const updateAsset = async (data) => {
     try {
-        const response = await axiosInstance.put(`assets/${data.id}/`, data);
+        const payload = {
+            id: data.id,
+            nome: data.name,
+            data_aquisicao: data.acquisition_date,
+            tipo: data.type,
+            valor_original: data.original_value,
+            variacao_anual_percent: data.annual_change_rate,
+            manutencao_mensal: data.monthly_maintenance,
+            valor_atual: data.current_value ?? data.valor_atual,
+            descricao: data.description,
+        };
+        const response = await axiosInstance.patch('patrimonios/', payload);
         return response.data;
     } catch (e) {
         throw new Error("Não foi possível atualizar o patrimônio.");
@@ -446,7 +480,7 @@ export const updateAsset = async (data) => {
 
 export const deleteAsset = async (id) => {
     try {
-        await axiosInstance.delete(`assets/${id}/`);
+        await axiosInstance.delete('patrimonios/', { data: { id } });
     } catch (e) {
         throw new Error("Não foi possível excluir o patrimônio.");
     }
@@ -454,9 +488,25 @@ export const deleteAsset = async (id) => {
 
 export const liquidateAsset = async (id, data) => {
     try {
-        const response = await axiosInstance.post(`assets/${id}/liquidate/`, data);
+        // backend expects { patrimonio_id, conta_id }
+        const payload = {
+            patrimonio_id: id,
+            conta_id: data.destination_account_id || data.destination_account || data.conta_id,
+            valor_venda: data.sale_value ?? data.valor_venda ?? data.saleValue,
+        };
+        const response = await axiosInstance.post('patrimonios/liquidar/', payload);
         return response.data;
     } catch (e) {
         throw new Error("Não foi possível liquidar o patrimônio.");
+    }
+};
+
+export const getAssetPosition = async (id) => {
+    try {
+        const response = await axiosInstance.post('patrimonios/position/', { id });
+        return response.data?.index ?? null;
+    } catch (e) {
+        console.error('Failed to fetch asset position', e);
+        return null;
     }
 };

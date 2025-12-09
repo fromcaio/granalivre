@@ -279,6 +279,9 @@ export const fetchInvestmentsServer = async (cookieHeader) => {
 /**
  * Fetch Assets (Server Side)
  */
+/**
+ * Fetch Assets (Server Side)
+ */
 export const fetchAssetsServer = async (cookieHeader) => {
   const url = `${SERVER_SIDE_API_URL}patrimonios/`;
   try {
