@@ -24,6 +24,8 @@ from api.routers import BodyIdRouter
 from transactions.views import TransactionViewSet
 from automations.views import AutomationViewSet
 from assets.views import PatrimonioViewSet
+from api.dashboard_views import dashboard_summary
+from api.dashboard_views import dashboard_chart
 
 router = BodyIdRouter()
 router.register("accounts", AccountViewSet, basename="accounts")
@@ -33,6 +35,8 @@ router.register("patrimonios", PatrimonioViewSet, basename="patrimonios")
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path("api/dashboard/summary/", dashboard_summary, name="dashboard-summary"),
+    path("api/dashboard/chart/", dashboard_chart, name="dashboard-chart"),
     path("api/schema/", SpectacularAPIView.as_view(), name="api-schema"),
     path(
         "api/docs/",

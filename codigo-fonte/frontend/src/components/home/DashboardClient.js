@@ -57,7 +57,7 @@ export default function DashboardClient({ initialUser, initialSummary, initialTr
     try {
       const [newSummary, newTransactions, newChart] = await Promise.all([
         getDashboardSummary(),
-        getTransactions({ limit: 10 }),
+        getTransactions({ limit: 5 }),
         getDashboardChart(30),
       ]);
       
@@ -133,13 +133,13 @@ export default function DashboardClient({ initialUser, initialSummary, initialTr
             <h2 className="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">Últimas Transações</h2>
             
             {/* Transaction List */}
-            <div className="flex-1 overflow-y-auto max-h-[400px] space-y-3 pr-2 custom-scrollbar">
+            <div className="flex-1 space-y-3">
               {transactions.length === 0 ? (
                 <div className="text-center text-gray-400 py-8">
                   <p>Nenhuma transação recente.</p>
                 </div>
               ) : (
-                transactions.map((t) => (
+                transactions.slice(0, 5).map((t) => (
                   <div key={t.id} className="flex justify-between items-center p-2 hover:bg-gray-50 rounded transition-colors border-b border-gray-50 last:border-0">
                     <div className="flex items-center gap-3">
                       <div className={`p-2 rounded-full ${t.value < 0 ? 'bg-red-50 text-red-500' : 'bg-green-50 text-green-500'}`}>

@@ -259,16 +259,19 @@ export const getAccountBalance = async (id) => {
  * TODO: Replace mock data with real API call: axiosInstance.get('dashboard/summary/')
  */
 export const getDashboardSummary = async () => {
-    // Simulate network delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
-
-    // MOCK DATA (Placeholder)
-    return {
-        last30DaysBalance: 2500.00, // Slightly different to show change on refresh
-        billsToPay: 300.50,
-        currentBalance: 1150.00,
-        patrimonio: 265000.00,
-    };
+    try {
+        const response = await axiosInstance.get('dashboard/summary/');
+        return response.data;
+    } catch (e) {
+        console.error('Failed to fetch dashboard summary, returning fallback mock:', e);
+        // Fallback MOCK DATA (if API unreachable)
+        return {
+            last30DaysBalance: 0,
+            billsToPay: 0,
+            currentBalance: 0,
+            patrimonio: 0,
+        };
+    }
 };
 
 /**
@@ -276,18 +279,26 @@ export const getDashboardSummary = async () => {
  * TODO: Replace mock with real API call: axiosInstance.get('dashboard/chart/', { params: { days } })
  */
 export const getDashboardChart = async (days = 30) => {
-    await new Promise(resolve => setTimeout(resolve, 500));
-
-    const today = new Date();
-    return Array.from({ length: days }, (_, idx) => {
-        const d = new Date(today);
-        d.setDate(d.getDate() - (days - idx - 1));
-        return {
-            label: `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}`,
-            total: 252000 + idx * 150,
-            spent: 1800 + (idx % 6) * 160,
-        };
-    });
+    try {
+        const response = await axiosInstance.get('dashboard/chart/', { params: { days } });
+        const data = response.data;
+        // Expecting an array of { label, total, spent }
+        if (Array.isArray(data)) return data;
+        // If backend returns an object with `points` key
+        return data.points || [];
+    } catch (e) {
+        console.error('Failed to fetch dashboard chart, returning fallback mock:', e);
+        const today = new Date();
+        return Array.from({ length: days }, (_, idx) => {
+            const d = new Date(today);
+            d.setDate(d.getDate() - (days - idx - 1));
+            return {
+                label: `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}`,
+                total: 252000 + idx * 150,
+                spent: 1800 + (idx % 6) * 160,
+            };
+        });
+    }
 };
 
 export const getAutomations = async () => {
@@ -408,21 +419,8 @@ export const liquidateInvestment = async (investmentId, data) => {
 
 export const getAssets = async (filters = {}) => {
     try {
-        const response = await axiosInstance.get('patrimonios/', { params: filters });
-        const data = response.data;
-        const list = Array.isArray(data) ? data : data.results || data;
-        return list.map((item) => ({
-            id: item.id,
-            acquisition_date: item.data_aquisicao || item.acquisition_date,
-            name: item.nome || item.name,
-            type: item.tipo || item.type || '',
-            original_value: Number(item.valor_original ?? item.original_value ?? 0),
-            annual_change_rate: Number(item.variacao_anual_percent ?? item.annual_change_rate ?? 0),
-            monthly_maintenance: Number(item.manutencao_mensal ?? item.monthly_maintenance ?? 0),
-            current_value: Number(item.valor_atual ?? item.current_value ?? item.valor_original ?? 0),
-            description: item.descricao || item.description || '',
-            status: item.status,
-        }));
+        const response = await axiosInstance.get('assets/', { params: filters });
+        return response.data;
     } catch (e) {
         return [];
     }
@@ -430,17 +428,7 @@ export const getAssets = async (filters = {}) => {
 
 export const createAsset = async (data) => {
     try {
-        const payload = {
-            nome: data.name,
-            data_aquisicao: data.acquisition_date,
-            tipo: data.type,
-            valor_original: data.original_value,
-            variacao_anual_percent: data.annual_change_rate,
-            manutencao_mensal: data.monthly_maintenance,
-            valor_atual: data.current_value ?? data.valor_atual,
-            descricao: data.description,
-        };
-        const response = await axiosInstance.post('patrimonios/', payload);
+        const response = await axiosInstance.post('assets/', data);
         return response.data;
     } catch (e) {
         throw new Error("Não foi possível adicionar o patrimônio.");
@@ -449,18 +437,7 @@ export const createAsset = async (data) => {
 
 export const updateAsset = async (data) => {
     try {
-        const payload = {
-            id: data.id,
-            nome: data.name,
-            data_aquisicao: data.acquisition_date,
-            tipo: data.type,
-            valor_original: data.original_value,
-            variacao_anual_percent: data.annual_change_rate,
-            manutencao_mensal: data.monthly_maintenance,
-            valor_atual: data.current_value ?? data.valor_atual,
-            descricao: data.description,
-        };
-        const response = await axiosInstance.patch('patrimonios/', payload);
+        const response = await axiosInstance.put(`assets/${data.id}/`, data);
         return response.data;
     } catch (e) {
         throw new Error("Não foi possível atualizar o patrimônio.");
@@ -469,7 +446,7 @@ export const updateAsset = async (data) => {
 
 export const deleteAsset = async (id) => {
     try {
-        await axiosInstance.delete('patrimonios/', { data: { id } });
+        await axiosInstance.delete(`assets/${id}/`);
     } catch (e) {
         throw new Error("Não foi possível excluir o patrimônio.");
     }
@@ -477,25 +454,9 @@ export const deleteAsset = async (id) => {
 
 export const liquidateAsset = async (id, data) => {
     try {
-        // backend expects { patrimonio_id, conta_id }
-        const payload = {
-            patrimonio_id: id,
-            conta_id: data.destination_account_id || data.destination_account || data.conta_id,
-            valor_venda: data.sale_value ?? data.valor_venda ?? data.saleValue,
-        };
-        const response = await axiosInstance.post('patrimonios/liquidar/', payload);
+        const response = await axiosInstance.post(`assets/${id}/liquidate/`, data);
         return response.data;
     } catch (e) {
         throw new Error("Não foi possível liquidar o patrimônio.");
-    }
-};
-
-export const getAssetPosition = async (id) => {
-    try {
-        const response = await axiosInstance.post('patrimonios/position/', { id });
-        return response.data?.index ?? null;
-    } catch (e) {
-        console.error('Failed to fetch asset position', e);
-        return null;
     }
 };
