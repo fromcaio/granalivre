@@ -279,18 +279,26 @@ export const getDashboardSummary = async () => {
  * TODO: Replace mock with real API call: axiosInstance.get('dashboard/chart/', { params: { days } })
  */
 export const getDashboardChart = async (days = 30) => {
-    await new Promise(resolve => setTimeout(resolve, 500));
-
-    const today = new Date();
-    return Array.from({ length: days }, (_, idx) => {
-        const d = new Date(today);
-        d.setDate(d.getDate() - (days - idx - 1));
-        return {
-            label: `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}`,
-            total: 252000 + idx * 150,
-            spent: 1800 + (idx % 6) * 160,
-        };
-    });
+    try {
+        const response = await axiosInstance.get('dashboard/chart/', { params: { days } });
+        const data = response.data;
+        // Expecting an array of { label, total, spent }
+        if (Array.isArray(data)) return data;
+        // If backend returns an object with `points` key
+        return data.points || [];
+    } catch (e) {
+        console.error('Failed to fetch dashboard chart, returning fallback mock:', e);
+        const today = new Date();
+        return Array.from({ length: days }, (_, idx) => {
+            const d = new Date(today);
+            d.setDate(d.getDate() - (days - idx - 1));
+            return {
+                label: `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}`,
+                total: 252000 + idx * 150,
+                spent: 1800 + (idx % 6) * 160,
+            };
+        });
+    }
 };
 
 export const getAutomations = async () => {

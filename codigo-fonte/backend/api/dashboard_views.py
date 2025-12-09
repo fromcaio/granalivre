@@ -82,3 +82,75 @@ def dashboard_summary(request):
     }
 
     return Response(data)
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def dashboard_chart(request):
+    """Return chart points for the last `days` days.
+
+    Response: list of { label: 'dd/mm', total: number, spent: number }
+    - `total` is the user's total balance as of that day
+    - `spent` is the absolute sum of negative transactions on that day
+    """
+    try:
+        days = int(request.query_params.get("days", 30))
+    except Exception:
+        days = 30
+
+    if days < 1:
+        days = 30
+
+    user = request.user
+    tz_now = timezone.now()
+    end_date = tz_now.date()
+    start_date = end_date - timedelta(days=days - 1)
+
+    # Sum of account initial balances
+    accounts = Account.objects.filter(owner=user)
+    initial_sum = float(
+        accounts.aggregate(total=Sum("initial_balance")).get("total") or 0.0
+    )
+
+    points = []
+
+    # Precompute cumulative transaction sums per day by querying ranges
+    for i in range(days):
+        d = start_date + timedelta(days=i)
+        # end of the day (inclusive)
+        day_end = timezone.make_aware(
+            timezone.datetime.combine(d, timezone.datetime.max.time())
+        )
+
+        # cumulative transactions up to day_end
+        cum_sum = (
+            Transaction.objects.filter(owner=user, datetime__lte=day_end)
+            .aggregate(total=Sum("value"))
+            .get("total")
+        )
+        cum_total = float(cum_sum) if cum_sum is not None else 0.0
+
+        # spent on the day: sum of negative values for that day
+        day_start = timezone.make_aware(
+            timezone.datetime.combine(d, timezone.datetime.min.time())
+        )
+        spent_sum = (
+            Transaction.objects.filter(
+                owner=user, datetime__gte=day_start, datetime__lte=day_end, value__lt=0
+            )
+            .aggregate(total=Sum("value"))
+            .get("total")
+        )
+        spent = abs(float(spent_sum)) if spent_sum is not None else 0.0
+
+        total_balance = initial_sum + cum_total
+
+        points.append(
+            {
+                "label": d.strftime("%d/%m"),
+                "total": total_balance,
+                "spent": spent,
+            }
+        )
+
+    return Response(points)
